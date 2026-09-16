@@ -14,7 +14,7 @@ relationship between correlation and causation for this widely used class of
 dynamical system.
 
 
-<img src="figures/fig1_topologies.png" alt="Figure 1: Nine network topologies analyzed in this paper." width="100%">
+<img src="figures/fig1_topologies.png" alt="Figure 1: Nine network topologies analyzed in this paper." width="80%">
 
 
 
