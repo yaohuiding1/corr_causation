@@ -1,0 +1,2508 @@
+% ============================================================
+%  MAIN MANUSCRIPT
+%  "How does correlation relate to causation"
+%  Author: Yaohui Ding
+%
+%  Numbered snapshots of this manuscript's earlier lineage (v1-v4) live in
+%  versions/; this file is the current, versionless working copy.
+% ============================================================
+
+\documentclass[12pt]{article}
+
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=2.54cm,right=2.54cm,marginparwidth=1.75cm]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{comment}
+\usepackage{xcolor}
+\usepackage[font=small]{caption} % captions smaller than 12pt body text
+                                  % (standard convention), applies to all
+                                  % figures project-wide
+\usepackage{float}
+\usepackage{subcaption}
+
+\newlength{\diagcolht} % diagram+matrices column height, matched to a panel's
+\newlength{\cellwd}    % per-cell width, 3-column tabulars (Fig 3+)
+\newlength{\rowwd}     % = 3*\cellwd + 12pt, full row width (for the colorbar)
+\newlength{\labxshiftB} % xshift for column-2/3 panel labels
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning}
+\usepackage[natbibapa]{apacite}
+\usepackage{standalone}
+\usepackage{cancel} % for \cancel{} diagonal strikethrough (Appendix D reducibility subsection)
+\renewcommand{\CancelColor}{\color{red}} % make \cancel{} strikethrough lines red
+\usepackage{bibunits} % gives each \input'd appendix its own local reference list
+
+\input{scripts/plot_figure1/fig1_network_diagram_macros}
+
+\setlength{\parindent}{0pt}
+
+\title{How does correlation relate to causation: seven insights from an analytic relationship between the two}
+
+\author{Yaohui Ding}
+
+\begin{document}
+
+\maketitle
+
+% ============================================================
+%  ABSTRACT
+% ============================================================
+
+
+\section*{Abstract}
+
+``Correlation does not imply causation,'' the adage warns.
+But how does correlation relate to causation?
+For linear stochastic dynamical systems driven by white
+noise, a widely used class of models across the natural and
+social sciences, the question has an exact answer.
+At steady state, correlation (more precisely covariance) and causation are linked by the
+Lyapunov equation. From this equation we derive closed-form expressions for pairwise correlation coefficients as explicit
+functions of the causal parameters and noise variances. We analyze these expressions for nine network topologies and unpack seven insights regarding the relationship between correlation and causation. For instance, we illustrate through some examples that causation is transitive, while correlation is not; and that the mapping from causation to correlation is generally many-to-one. The formulae also reveal that the covariance
+between any two variables is a linear combination of the
+noise variances, with weights that are
+highly nonlinear functions of the causal parameters. This is one of the reasons that
+the relationship between correlation and causation resists simple
+intuition. We show that the formulae from the
+fully connected three-node network serve as the ``master
+formulae'' for $3\times3$ networks, because of the structural
+symmetry of its topology, and can be reduced to the formulae for
+every sparser three-node network as causal connections are
+set to zero. Finally, we note that the Lyapunov equation is a unifying  mathematical object for causal modeling
+frameworks such as Granger causality and dynamic causal modeling, with additive white noise assumption. \\
+
+\noindent\textbf{Keywords:} correlation, causation, linear stochastic dynamical system, Lyapunov equation
+
+
+
+
+% \newpage
+
+% ============================================================
+%  INTRODUCTION
+%  For: "How does correlation relate to causation"
+%  Author: Yaohui Ding
+% ============================================================
+
+\clearpage
+\section*{Introduction}
+
+``Correlation does not imply causation'' is one of the most
+repeated mantras in science, taught early and invoked often.
+Yet the mantra, for all its wisdom, leaves a deeper question
+unanswered. If correlation does not imply causation, how
+exactly do they relate to each other?
+Intuitively, a correlation between two variables can arise because one
+directly causes the other, both are driven by a common cause, influence is relayed through intermediary variables, or some
+combination of all three.
+
+Quantifying the relationship between correlation and causation is a problem that is at least a century old.
+Sewall Wright, in a landmark paper titled \textit{Correlation
+and Causation} \citep{Wright1921}, gave an early rigorous answer to this problem:
+the correlation between any two variables equals the sum of
+the products of the path coefficients along each path, over
+all directed paths in a causal diagram connecting these two
+variables.
+Wright later developed this idea, which he called the
+\textit{tracing rule}, into the \textit{method of path
+coefficients} \citep{Wright1934}.
+But the method has a structural limitation. It applies only
+to directed acyclic graphs, in which the causal influences
+from one variable to another flow only in one direction and
+never loop back (i.e., no reciprocal interaction).
+Wright saw the limitation clearly and returned to it nearly
+four decades later.
+He attempted to accommodate reciprocal interaction and
+feedback (self-loop) through lagged models and simultaneous
+equations \citep{Wright1960}, yet without
+arriving at a satisfying closed-form analytic solution for
+this problem.
+
+Surprisingly, for dynamical systems with reciprocal
+interaction and feedback --- the norm rather than the
+exception in biology, neuroscience, and the social sciences
+--- the problem of determining, precisely and analytically,
+the pattern of correlation from a
+known causal structure remained open
+for more than half of a century (\hyperref[app:appE]{Appendix~E}) after \citet{Wright1960}.
+In the last few years, work in algebraic statistics has
+generalized Wright's method of path coefficients (or
+\textit{tracing rule}) to a \textit{trek rule}
+\citep{VarandoHansen2020, HansenTrek2025} for dynamic causal networks with reciprocal
+interaction and feedback, which is referred to as graphical continuous Lyapunov models in this line of work. Although the \textit{trek rule} is a powerful tool for studying the reachability, conditional independence, and learning of causal networks, it involves evaluating convergent but infinite power series when calculating the covariance of a pair of variables of interest from the network.
+
+
+% ------------------------------------------------------------
+\subsection*{The Present Work}
+% ------------------------------------------------------------
+Our current study takes a complementary approach to that of \citet{VarandoHansen2020}. Similar to their approach, we model $n$ interacting variables as a linear stochastic dynamical system with additive white noise. It is known in the literature that, at steady state, the patterns of causation and patterns of correlation (more precisely covariance) of such kind of system are related to each other via the Lyapunov equation
+\citep{Lyapunov1892, Pavliotis2014, AstromMurray2021}. We solve the Lyapunov equation symbolically through a combination of the half-vectorization and Kronecker product techniques and express every
+pairwise correlation coefficient $\rho_{ij}$ as a ratio of elementary functions (polynomials and square root) of the causal parameters and
+noise variances --- for networks of arbitrary sizes. However, because the general formula is difficult to interpret
+for large networks, we analyze it explicitly for nine
+network topologies (Figure~\ref{fig:schematic_network_topo}).
+The simplest is a two-node network (\textit{dyad}), in
+which two variables influence each other reciprocally.
+The remaining eight topologies are three-node networks. Three of these are the classic acyclic motifs in the literature of causal
+reasoning \citep{Pearl2009}: the \textit{confounder}, in
+which a common driver causally influences two otherwise unconnected
+variables; the \textit{mediator}, in which causal influence is
+relayed through an intermediary variable; and the \textit{collider},
+in which two independent variables drive a common
+target. The other three-node networks all have cycles. For example, a
+\textit{two-way mediator} network has mediating influence
+running in both directions that forms two \textit{2-cycles}. In contrast, in the \textit{3-cycle} example, the three variables form a \textit{3-cycle}.
+Finally, the
+\textit{fully connected} network, in which every variable
+influences every other, is the most general three-node topology
+and subsumes all the other $3\times3$ networks.
+We emphasize that triadic architectures are prevalent in the
+scientific literature --- for example, the triple-network
+model in neuroscience \citep{Menon2011, Menon2023}, which posits three
+interacting large-scale brain networks to explain a range of
+psychopathologies \citep{Kaiser2015, MenonPalaniyappanSupekar2023, LiEtAl2023}. Thus, the analytic results and insights we derive in the current study may prove useful when reasoning about the relationship between correlation and causation in these triadic models, provided that they make similar modeling assumptions.
+
+
+\input{scripts/plot_figure1/fig1_draw_nine_network_topologies_manuscript}
+
+% ============================================================
+%  MATHEMATICAL FRAMEWORK (short version, appears before Results)
+%  For: "How does correlation relate to causation"
+%  Author: Yaohui Ding
+% ============================================================
+
+\section*{Methods}
+
+We model a system of $n$ interacting variables as a linear
+stochastic dynamical system driven by additive white noise.
+The pattern of causal interaction among these variables is encoded by a generally asymmetric matrix $\mathbf{A}$, whose off-diagonal entry $a_{ij}$ represents the direct causal influence of variable $j$ on
+variable $i$. We assume that $\mathbf{A}$ is Hurwitz stable, i.e., all of its eigenvalues have strictly
+negative real part. We further assume that the state variables ($\mathbf{X}$) are directly observed, i.e., $\mathbf{X}=\mathbf{Y}$.
+
+\begin{equation}
+\begin{aligned}
+\mathbf{A} =
+\begin{bmatrix}
+    a_{11}  & \cdots & a_{1n} \\
+     \vdots & \ddots & \vdots  \\
+    a_{n1}  & \cdots & a_{nn}
+\end{bmatrix},
+\mathbf{\Sigma_\mathbf{Y}}=
+\begin{bmatrix}
+    \sigma_{11}  & \cdots & \sigma_{1n} \\
+     \vdots & \ddots & \vdots  \\
+    \sigma_{n1}  & \cdots & \sigma_{nn}
+\end{bmatrix},
+\mathbf{\Sigma_\mathbf{W}} =
+\begin{bmatrix}
+    \sigma_{W_1}  & \cdots & 0 \\
+     \vdots & \ddots & \vdots  \\
+    0  & \cdots & \sigma_{W_n}
+\end{bmatrix}
+\end{aligned}
+\label{eq:nByn_network_mf}
+\end{equation}
+From these assumptions, we derive in
+\hyperref[app:appA]{Appendix~A} that the steady-state
+covariance matrix $\mathbf{\Sigma}_Y$ satisfies the
+continuous-time Lyapunov equation
+\begin{equation}
+\mathbf{A}\,\mathbf{\Sigma}_Y
++ \mathbf{\Sigma}_Y\,\mathbf{A}^T
++ \mathbf{\Sigma}_W = \mathbf{0}.
+\label{eq:lyapunov_mf}
+\end{equation}
+where $\mathbf{\Sigma}_W$ is the covariance matrix of the additive white noise, assumed to be diagonal. To solve equation~(\ref{eq:lyapunov_mf}) for a
+network of arbitrary size $N$, we apply the vectorization
+($\operatorname{vec}(\cdot)$) and Kronecker product ($\otimes$)
+techniques (\hyperref[app:appB]{Appendix~B}) to it, which gives us
+\begin{equation}
+(\mathbf{I}\otimes\mathbf{A}+\mathbf{A}\otimes\mathbf{I})\,
+\mathrm{vec} \mathbf{\Sigma}_Y
+= -\mathrm{vec} \mathbf{\Sigma}_W,
+\label{eq:lyapunov_vec_results}
+\end{equation}
+whose unique solution (guaranteed to exist when $\mathbf{A}$ is Hurwitz
+stable) is
+\begin{equation}
+\mathrm{vec}\mathbf{\Sigma}_Y =
+-(\mathbf{I}\otimes\mathbf{A}+\mathbf{A}\otimes\mathbf{I})^{-1}
+\,\mathrm{vec} \mathbf{\Sigma}_W.
+\label{eq:sigma_nn}
+\end{equation}
+Expressing the inverse via the cofactor matrix ($\mathbf{C}$) and the determinant ($|\mathbf{K}|$)
+of $\mathbf{K}=\mathbf{I}\otimes\mathbf{A}
++\mathbf{A}\otimes\mathbf{I}$, each entry $\sigma_{ij}$
+of $\mathbf{\Sigma}_Y$ is
+\begin{equation}
+\sigma_{ij}=\sigma_{ji}=
+-\frac{1}{|\mathbf{K}|}
+\sum_{u=1}^{N}
+C_{ij}^{uu}\,\sigma_{W_{u}},
+\label{eq:sigma_ij_general}
+\end{equation}
+where $C_{ij}^{uu}$ is the entry of the cofactor matrix $\mathbf{C}$ at
+position $((u,u),(i,j))$. In \hyperref[app:appC]{Appendix~C}, we refine this solution with a
+symmetry-exploiting technique (half-vectorization; $\operatorname{vech}(\cdot)$) that
+reduces the dimensionality of the Kronecker sum $(\mathbf{I}\otimes\mathbf{A}+\mathbf{A}\otimes\mathbf{I})$, and demonstrate it via a
+two-node network~(\ref{eq:lya_vec_half1}). Finally,
+we compute the closed-form expressions for pairwise covariance and correlation coefficients for eight three-node
+network topologies in Figure~\ref{fig:schematic_network_topo}
+with an in-house MATLAB solver, see \hyperref[app:appD]{Appendix~D} for more details.
+
+
+\subsection*{AI Use Disclosure}
+The large language model Claude (\textit{Sonnet} 4.6 and \textit{Opus} 4.8) was used as an interactive tool, via its Claude Code extension in VS Code, during the preparation of this manuscript. Importantly, the mathematical derivations in Appendices A to C and the first part of Appendix D (confounder network topology) were done and written by the author independently and \textit{prior} to the use of Claude Code. Claude Code was used to generate the content of the remaining portion of Appendix D (starting from the fully connected $3\times3$ network section) under the author's iterative guidance and direction. The summary table of prior work in Appendix E was also generated by Claude Code under the author's guidance and verified for accuracy by the author.
+
+In the main manuscript, Claude Code was used to generate initial drafts of the Abstract, Introduction, Methods, Results, and Discussion sections based on Appendices A to E. However, the author devised the headings and subheadings for every section and subsection and determined their order. The AI-generated sections were reviewed and edited sentence by sentence by the author, with sentences deleted and/or added throughout wherever appropriate; many paragraphs were substantially rewritten, such that the final text differs significantly from Claude Code's initial drafts. Claude Code was also used to generate MATLAB scripts for solving and plotting the formulae for the nine network topologies presented in the paper, based on MATLAB scripts the author had initially written. The author designed the figure layouts, selected the parameter sets, and made other design decisions for producing Figures 1 to 9. Finally, the author is solely responsible for the mathematical derivations, results, interpretations, and conclusions presented in the current manuscript.
+
+%\clearpage
+\section*{Results}
+% Structure: this subsection states the general N-node rho_ij (eq:rho_ij_general);
+% every later topology subsection specializes it to one A sparsity pattern,
+% cross-referencing its derivation in Appendix C (dyad) or D (triadic).
+
+% ============================================================
+\subsection*{General $N\times N$ Network}
+% ============================================================
+Normalizing the covariance entries of
+equation~(\ref{eq:sigma_ij_general}) by their corresponding
+variances gives the general formula for the pairwise correlation coefficient,
+\begin{equation}
+\rho_{ij}=-\operatorname{sgn}(\det\mathbf{K})\,\frac{
+  \sum_{u}C_{ij}^{uu}\,\sigma_{W_{u}}
+}{
+  \sqrt{\sum_{u}C_{ii}^{uu}\,\sigma_{W_{u}}}\;
+  \sqrt{\sum_{u}C_{jj}^{uu}\,\sigma_{W_{u}}}
+}.
+\label{eq:rho_ij_general}
+\end{equation}
+The prefactor $\operatorname{sgn}(\det\mathbf{K})$ arises because the common factor
+$1/|\mathbf{K}|$ in $\sigma_{ij}$, $\sigma_{ii}$, and $\sigma_{jj}$ can be either positive or negative. Equation~(\ref{eq:rho_ij_general}) expresses every pairwise correlation in an arbitrary
+Hurwitz-stable $N\times N$ linear stochastic dynamical system as
+a ratio of elementary functions (polynomials and square root) of the entries of $\mathbf{A}$ and the noise variances $\sigma_{W_u}$.
+The cofactor $C_{ij}^{uu}$ entry and the determinant $|\mathbf{K}|$
+are polynomials in the entries of $\mathbf{A}$.
+Every formula detailed in the following subsections is a
+special instance of
+equation~(\ref{eq:sigma_ij_general}) or equation~(\ref{eq:rho_ij_general}).
+
+% ============================================================
+\subsection*{Dyad}
+% ============================================================
+
+Dyadic interaction
+(Figure~\ref{fig:rho21_dyad}\hyperref[fig:dyad_A1]{.A1}) is the simplest
+setting where the relationship between correlation and causation can be
+quantified. Here $a_{12}$ is the causal influence from node~2 to node~1,
+similarly $a_{21}$ the influence from node~1 to node~2. Self-connections
+$a_{11}$ and $a_{22}$ represent self-inhibition or self-excitation
+(Figure~\ref{fig:rho21_dyad}\hyperref[fig:dyad_A2]{.A2}). Hurwitz
+stability requires $a_{11}+a_{22}<0$ and $a_{11}a_{22}-a_{12}a_{21}>0$.
+% Headline result: dyad rho_21, derived in Appendix C.
+Solving the Lyapunov equation for this dyadic network yields (see
+\hyperref[app:appC]{Appendix~C} for more details),
+\begin{equation}
+\rho_{21} = -\frac{
+  a_{21}a_{22}\,\sigma_{W_1} + a_{11}a_{12}\,\sigma_{W_2}
+}{
+  \sqrt{\bigl[(a_{11}a_{22}+a_{22}^2-a_{12}a_{21})\sigma_{W_1}
+              +a_{12}^2\sigma_{W_2}\bigr]
+        \bigl[(a_{11}a_{22}+a_{11}^2-a_{12}a_{21})\sigma_{W_2}
+              +a_{21}^2\sigma_{W_1}\bigr]}
+}
+\label{eq:rho21_dyad}
+\end{equation}
+
+Several features of equation~(\ref{eq:rho21_dyad}) are
+immediately apparent.
+The numerator $a_{21}a_{22}\sigma_{W_1}+a_{11}a_{12}\sigma_{W_2}$
+is a linear combination of the two noise variances with
+coefficients that are products of causal parameters. The sign
+of this quantity determines the sign of $\rho_{21}$.
+Crucially, $\rho_{21}$ can change sign as the magnitudes of $a_{12}$ and $a_{21}$ vary
+continuously even when their respective signs stay the same (see the
+2nd and 4th quadrants of Figure~\ref{fig:rho21_dyad}\hyperref[fig:dyad_B1]{.B1}). What matters is the sum, not necessarily the magnitude or strength of each individual
+causal connection.
+The denominator, a product of two square-root expressions
+that are themselves linear combinations of noise variances
+weighted by polynomials in $\mathbf{A}$, captures how the
+marginal variances $\sigma_{11}$ and $\sigma_{22}$ depend on
+the causal architecture and the noise variances.
+
+% ============================================================
+% Figure template (applies to every topology figure below, not just this
+% one): individually exported per-panel PDFs, laid out per
+% tasks/stage3_tasks_plot_networks/stage3_topo_x-node_figure_template_instructions.md.
+% ============================================================
+\begin{figure}[H]
+\centering
+{\setlength{\fboxrule}{0.6pt}\setlength{\arrayrulewidth}{0.6pt}%
+\fbox{%
+\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}
+\centering
+\setlength{\cellwd}{\dimexpr(0.95\linewidth-12pt)/3\relax}
+\setlength{\rowwd}{\dimexpr3\cellwd+12pt\relax}
+\setlength{\labxshiftB}{-0.26pt}
+\vspace{3pt}
+{\normalsize\textbf{$\rho_{21}$ as a function of $a_{12}$ and $a_{21}$ (dyad)}}\par
+% --- divider between title and row A ---
+\vspace{6pt}
+\hrule height 0.6pt
+\vspace{6pt}
+\nointerlineskip
+% Structure strip (A1-A3): diagram + A + Sigma_W, individually \ref{}-able.
+\renewcommand{\thesubfigure}{A1}
+\phantomsubcaption\label{fig:dyad_A1}
+\renewcommand{\thesubfigure}{A2}
+\phantomsubcaption\label{fig:dyad_A2}
+\renewcommand{\thesubfigure}{A3}
+\phantomsubcaption\label{fig:dyad_A3}
+\begin{tabular}{c@{\hspace{6pt}}|@{\hspace{6pt}}c@{\hspace{6pt}}|@{\hspace{6pt}}c}
+\begin{minipage}[c]{\cellwd}
+\centering
+\def\a{1.0 cm}
+\def\nodeSize{0.7}
+\def\r{0.5*\nodeSize cm}
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (dyadDiagram) {%
+\begin{tikzpicture}[
+    >={Stealth[length=3mm,width=2mm]},
+    every node/.style={circle,draw,
+        minimum size=\nodeSize cm}]
+\node (1) at (-\a,0) {1};
+\node (2) at (\a,0)  {2};
+\draw[->] (1) to[bend left=12] (2);
+\draw[->] (2) to[bend left=12] (1);
+\selfloop{1}{1}
+\selfloop{2}{2}
+\end{tikzpicture}%
+};
+\useasboundingbox (-0.5\cellwd,-15.94pt) rectangle (0.5\cellwd,15.94pt);
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=-3.26pt,yshift=0.36pt] at (current bounding box.south west) {A1};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[c]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (matA) {$\mathbf{A}=\begin{bmatrix}a_{11}&a_{12}\\a_{21}&a_{22}\end{bmatrix}$};
+\useasboundingbox (-0.5\cellwd,-15.94pt) rectangle (0.5\cellwd,15.94pt);
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=0.36pt] at (current bounding box.south west) {A2};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[c]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (matSW) {$\mathbf{\Sigma}_W=\begin{bmatrix}\sigma_{W_1}&0\\0&\sigma_{W_2}\end{bmatrix}$};
+\useasboundingbox (-0.5\cellwd,-15.94pt) rectangle (0.5\cellwd,15.94pt);
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=0.36pt] at (current bounding box.south west) {A3};
+\end{tikzpicture}
+\end{minipage}
+\end{tabular}
+% --- divider between the structure strip and row A ---
+\vspace{6pt}
+\hrule height 0.6pt
+\vspace{6pt}
+\nointerlineskip
+% Row B: 2x3 grid of exported panel PDFs (see plot_topo_2node_dyad_subplot.m).
+\renewcommand{\thesubfigure}{B1}
+\phantomsubcaption\label{fig:dyad_B1}
+\renewcommand{\thesubfigure}{B2}
+\phantomsubcaption\label{fig:dyad_B2}
+\renewcommand{\thesubfigure}{B3}
+\phantomsubcaption\label{fig:dyad_B3}
+\begin{tabular}{c@{\hspace{6pt}}|@{\hspace{6pt}}c@{\hspace{6pt}}|@{\hspace{6pt}}c}
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgA1) {\includegraphics[width=\linewidth]{figures/topo_2node_dyad_figures/B1.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=-3.26pt,yshift=-2.42pt] at (imgA1.south west) {B1};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgA2) {\includegraphics[width=\linewidth]{figures/topo_2node_dyad_figures/B2.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=-2.42pt] at (imgA2.south west) {B2};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgA3) {\includegraphics[width=\linewidth]{figures/topo_2node_dyad_figures/B3.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=-2.42pt] at (imgA3.south west) {B3};
+\end{tikzpicture}
+\end{minipage}
+\end{tabular}
+\par
+% --- divider between row A and row B ---
+\vspace{6pt}
+\hrule height 0.6pt
+\vspace{6pt}
+\nointerlineskip
+\renewcommand{\thesubfigure}{C1}
+\phantomsubcaption\label{fig:dyad_C1}
+\renewcommand{\thesubfigure}{C2}
+\phantomsubcaption\label{fig:dyad_C2}
+\renewcommand{\thesubfigure}{C3}
+\phantomsubcaption\label{fig:dyad_C3}
+\begin{tabular}{c@{\hspace{6pt}}|@{\hspace{6pt}}c@{\hspace{6pt}}|@{\hspace{6pt}}c}
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgB1) {\includegraphics[width=\linewidth]{figures/topo_2node_dyad_figures/C1.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=-3.26pt,yshift=-2.42pt] at (imgB1.south west) {C1};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgB2) {\includegraphics[width=\linewidth]{figures/topo_2node_dyad_figures/C2.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=-2.42pt] at (imgB2.south west) {C2};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgB3) {\includegraphics[width=\linewidth]{figures/topo_2node_dyad_figures/C3.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=-2.42pt] at (imgB3.south west) {C3};
+\end{tikzpicture}
+\end{minipage}
+\end{tabular}
+\par
+% --- divider between row B and the colorbar ---
+\vspace{6pt}
+\hrule height 0.6pt
+\vspace{6pt}
+\nointerlineskip
+% --- standalone colorbar, width \rowwd (see plot_topo_2node_dyad_subplot.m) ---
+\includegraphics[width=\rowwd]{figures/topo_2node_dyad_figures/colorbar.pdf}
+\par
+\vspace{3pt}
+\end{minipage}%
+}}
+\end{figure}
+
+% \captionof (not \caption{}, so the caption can break across a page even
+% though the figure itself can't) + counter rollback for the
+% \phantomsubcaption bump above -- see the figure-template guide.
+\addtocounter{figure}{-1}
+\captionof{figure}{Dyadic network.
+Each panel is a contour/vector field plot of equation~(\ref{eq:rho21_dyad})
+over $a_{12},a_{21}\in[-1.5,1.5]$, for the self-connections
+$a_{11}$, $a_{22}$ and noise variances $\sigma_{W_1}$, $\sigma_{W_2}$
+indicated in its title.
+Each column pairs two noise settings ($\sigma_{W_1}=1$ top,
+$\sigma_{W_1}=3$ bottom) for the same self-connections; the third
+column instead contrasts a dyad with its two self-connection
+roles swapped.
+Color encodes $\rho_{21}$ on a diverging scale from $-1$ (blue)
+through white to $+1$ (red), with $|\rho_{21}|<0.05$ shown in white.
+The dashed green curve marks $\rho_{21}=0$; the solid black curve
+is the Hurwitz stability boundary, with the grey region outside it
+(no steady state, $\rho_{21}$ undefined).}
+\label{fig:rho21_dyad}
+
+% ============================================================
+\subsection*{Confounder}
+% ============================================================
+
+In the confounder network
+(Figure~\ref{fig:rho21_confounder}\hyperref[fig:confounder_A1]{.A1}), nodes~1 and~2 have no direct causal connection, yet both are
+driven by another node (node~3), which alone induces a (spurious)
+correlation between them.
+Here $a_{13}$ and $a_{23}$ are the causal influences of
+node~3 on nodes~1 and~2, respectively. Because matrix $\mathbf{A}$ is upper triangular for this topology,
+Hurwitz stability reduces to $a_{11}<0$, $a_{22}<0$, and
+$a_{33}<0$.
+Solving the Lyapunov equation for this confounder network
+under the equal-diagonal simplification
+$a_{11}=a_{22}=a_{33}=a$ yields (see
+% Headline result: confounder rho_21, derived in Appendix D.
+\hyperref[app:appD]{Appendix~D},
+equation~\ref{eq:d26_rho21_confounder}),
+\begin{equation}
+\rho_{21} = \frac{
+  a_{13}\,a_{23}\,\sigma_{W_3}
+}{
+  \sqrt{
+    \bigl(2a^2\sigma_{W_1}+a_{13}^2\sigma_{W_3}\bigr)
+    \bigl(2a^2\sigma_{W_2}+a_{23}^2\sigma_{W_3}\bigr)
+  }
+}.
+\label{eq:rho21_confounder}
+\end{equation}
+
+% ============================================================
+% Confounder figure -- individual-panel template (produced per
+% tasks/stage3_tasks_plot_networks/stage3_topo_x-node_figure_template_instructions.md).
+% Panels exported by scripts/plot_networks/plot_topo_3node_confounder_subplot.m
+% to figures/topo_3node_confounder_figures/. Two subplot rows (A/B); no row C.
+% ============================================================
+\begin{figure}[H]
+\centering
+{\setlength{\fboxrule}{0.6pt}\setlength{\arrayrulewidth}{0.6pt}%
+\fbox{%
+\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}
+\centering
+\setlength{\cellwd}{\dimexpr(0.95\linewidth-12pt)/3\relax}
+\setlength{\rowwd}{\dimexpr3\cellwd+12pt\relax}
+\setlength{\labxshiftB}{-0.26pt}
+\vspace{3pt}
+% --- title ---
+{\normalsize\textbf{$\rho_{21}$ as a function of $a_{13}$ and $a_{23}$ (confounder)}}\par
+
+\vspace{6pt}\hrule height 0.6pt\vspace{6pt}\nointerlineskip   
+
+% Divider 4
+% --- structure strip: diagram | A | Sigma_W ---
+% --- structure strip labels A1-A3 -- see dyad figure's comment
+% for the label mechanism.
+\renewcommand{\thesubfigure}{A1}
+\phantomsubcaption\label{fig:confounder_A1}
+\renewcommand{\thesubfigure}{A2}
+\phantomsubcaption\label{fig:confounder_A2}
+\renewcommand{\thesubfigure}{A3}
+\phantomsubcaption\label{fig:confounder_A3}
+\begin{tabular}{c@{\hspace{6pt}}|@{\hspace{6pt}}c@{\hspace{6pt}}|@{\hspace{6pt}}c}
+\begin{minipage}[c]{\cellwd}
+\centering
+\def\a{1.0 cm}
+\def\nodeSize{0.7}
+\def\r{0.5*\nodeSize cm}
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (confounderDiagram) {%
+\begin{tikzpicture}[
+    >={Stealth[length=3mm,width=2mm]},
+    every node/.style={circle,draw,
+        minimum size=\nodeSize cm}]
+\node (1) at (-\a,0)          {1};
+\node (2) at (\a,0)           {2};
+\node (3) at (0,{sqrt(3)*\a}) {3};
+\draw[->] (3) to[bend right=12] (1);
+\draw[->] (3) to[bend left=12]  (2);
+\selfloop{1}{1}
+\selfloop{2}{2}
+\selfloop{3}{3}
+\end{tikzpicture}%
+};
+\useasboundingbox (-0.5\cellwd,-45.35pt) rectangle (0.5\cellwd,45.35pt);
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=-3.26pt,yshift=3.91pt] at (current bounding box.south west) {A1};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[c]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (matA) {$\mathbf{A}=\begin{bmatrix}
+a & 0 & a_{13}\\
+0 & a & a_{23}\\
+0 & 0 & a
+\end{bmatrix}$};
+\useasboundingbox (-0.5\cellwd,-45.35pt) rectangle (0.5\cellwd,45.35pt);
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=3.91pt] at (current bounding box.south west) {A2};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[c]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (matSW) {$\mathbf{\Sigma}_W=\begin{bmatrix}
+\sigma_{W_1}&0&0\\0&\sigma_{W_2}&0\\0&0&\sigma_{W_3}
+\end{bmatrix}$};
+\useasboundingbox (-0.5\cellwd,-45.35pt) rectangle (0.5\cellwd,45.35pt);
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=3.91pt] at (current bounding box.south west) {A3};
+\end{tikzpicture}
+\end{minipage}
+\end{tabular}
+
+\vspace{6pt}\hrule height 0.6pt\vspace{6pt}\nointerlineskip   % 
+
+
+%Divider 1
+% --- Row A ---
+\renewcommand{\thesubfigure}{B1}\phantomsubcaption\label{fig:confounder_B1}
+\renewcommand{\thesubfigure}{B2}\phantomsubcaption\label{fig:confounder_B2}
+\renewcommand{\thesubfigure}{B3}\phantomsubcaption\label{fig:confounder_B3}
+\begin{tabular}{c@{\hspace{6pt}}|@{\hspace{6pt}}c@{\hspace{6pt}}|@{\hspace{6pt}}c}
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgA1) {\includegraphics[width=\linewidth]{figures/topo_3node_confounder_figures/B1.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=-3.26pt,yshift=0.58pt] at (imgA1.south west) {B1};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgA2) {\includegraphics[width=\linewidth]{figures/topo_3node_confounder_figures/B2.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=0.58pt] at (imgA2.south west) {B2};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgA3) {\includegraphics[width=\linewidth]{figures/topo_3node_confounder_figures/B3.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=0.58pt] at (imgA3.south west) {B3};
+\end{tikzpicture}
+\end{minipage}
+\end{tabular}
+\par
+\vspace{6pt}\hrule height 0.6pt\vspace{6pt}\nointerlineskip   
+
+% Divider 2
+% --- Row B ---
+\renewcommand{\thesubfigure}{C1}\phantomsubcaption\label{fig:confounder_C1}
+\renewcommand{\thesubfigure}{C2}\phantomsubcaption\label{fig:confounder_C2}
+\renewcommand{\thesubfigure}{C3}\phantomsubcaption\label{fig:confounder_C3}
+\begin{tabular}{c@{\hspace{6pt}}|@{\hspace{6pt}}c@{\hspace{6pt}}|@{\hspace{6pt}}c}
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgB1) {\includegraphics[width=\linewidth]{figures/topo_3node_confounder_figures/C1.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=-3.26pt,yshift=0.58pt] at (imgB1.south west) {C1};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgB2) {\includegraphics[width=\linewidth]{figures/topo_3node_confounder_figures/C2.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=0.58pt] at (imgB2.south west) {C2};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgB3) {\includegraphics[width=\linewidth]{figures/topo_3node_confounder_figures/C3.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=0.58pt] at (imgB3.south west) {C3};
+\end{tikzpicture}
+\end{minipage}
+\end{tabular}
+
+\vspace{6pt}\hrule height 0.6pt\vspace{6pt}\nointerlineskip   
+
+% Divider 3
+% --- colorbar (spans \rowwd) ---
+\includegraphics[width=\rowwd]{figures/topo_3node_confounder_figures/colorbar.pdf}
+\par
+\vspace{3pt}
+\end{minipage}%
+}}
+\end{figure}
+
+% caption OUTSIDE the float; \addtocounter rolls back the phantomsubcaption bump
+\addtocounter{figure}{-1}
+\captionof{figure}{Confounder network.
+Each panel is a contour/vector field plot of equation~(\ref{eq:rho21_confounder}) for
+$\rho_{21}$ over $a_{13},a_{23}\in[-1.5,1.5]$, for the combination of the
+common self-connection $a$, $\sigma_{W_2}$, and $\sigma_{W_3}$ shown in
+each panel's title ($\sigma_{W_1}=1$ throughout); across the three
+columns the common self-inhibition strengthens ($a=-0.5,-1.0,-1.5$).
+Color encodes $\rho_{21}$ on a diverging scale from $-1$ (blue) through white
+to $+1$ (red); values with $|\rho_{21}|<0.05$ are shown in white.
+The dashed green lines mark $\rho_{21}=0$ exactly, forming a cross along
+$a_{13}=0$ and $a_{23}=0$.}
+\label{fig:rho21_confounder}
+
+\vspace{6pt}
+From equation~(\ref{eq:rho21_confounder}), we see that the numerator $a_{13}\,a_{23}\,\sigma_{W_3}$ is zero if either $a_{13}=0$ or $a_{23}=0$. Therefore, the
+correlation vanishes exactly whenever either connection from
+node~3 is absent (the green zero-contour cross in
+Figure~\ref{fig:rho21_confounder}), showing that the spurious correlation between node~1 and node~2 is
+entirely driven by the common input, node~3. Correspondingly, the
+sign of $\rho_{21}$ equals the sign of $a_{13}\,a_{23}$,
+positive if node~3 drives both nodes in the same direction
+and negative if in opposite directions.
+As the self-inhibition strength $|a|$ increases relative to
+the driving connections $a_{13}$ and $a_{23}$ (left to right
+across the panels of Figure~\ref{fig:rho21_confounder}), the
+magnitude of $\rho_{21}$ decreases.
+
+% ============================================================
+\subsection*{Collider}
+% ============================================================
+
+The collider network
+(Figure~\ref{fig:rho31_collider}\hyperref[fig:collider_A1]{.A1})
+is termed a collider because causal paths from two
+independent sources ``collide'' at node~3 \citep{Pearl2009}.
+Both node~1 and node~2 send unidirectional connections to node~3, with no direct connection
+between nodes~1 and~2. Because
+$\mathbf{A}$
+(Figure~\ref{fig:rho31_collider}\hyperref[fig:collider_A2]{.A2})
+is lower triangular for this topology,
+Hurwitz stability reduces to $a<0$ under the equal-diagonal
+simplification $a_{11}=a_{22}=a_{33}=a$.
+% Headline result: collider rho_21 vanishes identically (derived in
+% Appendix D) -- the notable negative case; rho_31/rho_32 below are the
+% topology-specific quantities that are actually informative here.
+Solving the Lyapunov equation for this collider network gives us, $\sigma_{21}=0$ (see
+\hyperref[app:appD]{Appendix~D}). Therefore,
+\begin{equation}
+\rho_{21} = 0.
+\label{eq:rho21_collider}
+\end{equation}
+The correlations $\rho_{31}$ and $\rho_{32}$ are in general
+nonzero, however, since each of nodes~1 and~2 drives node~3
+directly (see \hyperref[app:appD]{Appendix~D}),
+\begin{equation}
+\rho_{31} = \frac{a_{31}\,\sigma_{W_1}}
+{\sqrt{2\sigma_{W_1}
+  \bigl(2a^2\sigma_{W_3}+a_{32}^2\sigma_{W_2}
+        +a_{31}^2\sigma_{W_1}\bigr)}}.
+\label{eq:rho31_collider_main}
+\end{equation}
+\begin{equation}
+\rho_{32} = \frac{a_{32}\,\sigma_{W_2}}
+{\sqrt{2\sigma_{W_2}
+  \bigl(2a^2\sigma_{W_3}+a_{32}^2\sigma_{W_2}
+        +a_{31}^2\sigma_{W_1}\bigr)}}.
+\label{eq:rho32_collider_main}
+\end{equation}
+Notice the symmetry in equations (\ref{eq:rho31_collider_main}) \& (\ref{eq:rho32_collider_main}) and that $\rho_{31}$ carries the sign of $a_{31}$ and
+depends on the strengths of \emph{both} causal connections
+($a_{31}$ and $a_{32}$), through their influences on
+the variance of node~3 in the denominator of equation (\ref{eq:rho31_collider_main}).
+Thus, strengthening the causal influence from node~2 to
+node~3 weakens the correlation between node~1 and node~3,
+even though node~1 and node~2 remain uncoupled and
+uncorrelated.
+As Figure~\ref{fig:rho31_collider}\hyperref[fig:collider_B1]{.B1}
+shows, $\rho_{31}$ (and
+correspondingly $\rho_{32}$) can be strong for suitable
+parameter values of $a_{31}$ and $a_{32}$, yet $\rho_{21}$ remains $0$ regardless.
+This shows that correlation is not \emph{transitive}, a point
+we discuss in more depth in the Discussion section.
+
+% ============================================================
+% Collider figure -- individual-panel template (produced per
+% tasks/stage3_tasks_plot_networks/stage3_topo_x-node_figure_template_instructions.md).
+% Panels exported by scripts/plot_networks/plot_topo_3node_collider_subplot.m
+% to figures/topo_3node_collider_figures/. Two subplot rows (A/B); no row C.
+% ============================================================
+\begin{figure}[H]
+\centering
+{\setlength{\fboxrule}{0.6pt}\setlength{\arrayrulewidth}{0.6pt}%
+\fbox{%
+\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}
+\centering
+\setlength{\cellwd}{\dimexpr(0.95\linewidth-12pt)/3\relax}
+\setlength{\rowwd}{\dimexpr3\cellwd+12pt\relax}
+\setlength{\labxshiftB}{-0.26pt}
+\vspace{3pt}
+% --- title ---
+{\normalsize\textbf{$\rho_{31}$ as a function of $a_{31}$ and $a_{32}$ (collider)}}\par
+\vspace{6pt}\hrule height 0.6pt\vspace{6pt}\nointerlineskip   % Divider 4
+% --- structure strip: diagram | A | Sigma_W ---
+% --- structure strip labels A1-A3 -- see dyad figure's comment
+% for the label mechanism.
+\renewcommand{\thesubfigure}{A1}
+\phantomsubcaption\label{fig:collider_A1}
+\renewcommand{\thesubfigure}{A2}
+\phantomsubcaption\label{fig:collider_A2}
+\renewcommand{\thesubfigure}{A3}
+\phantomsubcaption\label{fig:collider_A3}
+\begin{tabular}{c@{\hspace{6pt}}|@{\hspace{6pt}}c@{\hspace{6pt}}|@{\hspace{6pt}}c}
+\begin{minipage}[c]{\cellwd}
+\centering
+\def\a{1.0 cm}
+\def\nodeSize{0.7}
+\def\r{0.5*\nodeSize cm}
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (colliderDiagram) {%
+\begin{tikzpicture}[
+    >={Stealth[length=3mm,width=2mm]},
+    every node/.style={circle,draw,
+        minimum size=\nodeSize cm}]
+\node (1) at (-\a,0)          {1};
+\node (2) at (\a,0)           {2};
+\node (3) at (0,{sqrt(3)*\a}) {3};
+\draw[->] (1) to[bend left=12]  (3);
+\draw[->] (2) to[bend right=12] (3);
+\selfloop{1}{1}
+\selfloop{2}{2}
+\selfloop{3}{3}
+\end{tikzpicture}%
+};
+\useasboundingbox (-0.5\cellwd,-45.35pt) rectangle (0.5\cellwd,45.35pt);
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=-3.26pt,yshift=3.91pt] at (current bounding box.south west) {A1};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[c]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (matA) {$\mathbf{A}=\begin{bmatrix}
+a      & 0      & 0\\
+0      & a      & 0\\
+a_{31} & a_{32} & a
+\end{bmatrix}$};
+\useasboundingbox (-0.5\cellwd,-45.35pt) rectangle (0.5\cellwd,45.35pt);
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=3.91pt] at (current bounding box.south west) {A2};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[c]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (matSW) {$\mathbf{\Sigma}_W=\begin{bmatrix}
+\sigma_{W_1}&0&0\\0&\sigma_{W_2}&0\\0&0&\sigma_{W_3}
+\end{bmatrix}$};
+\useasboundingbox (-0.5\cellwd,-45.35pt) rectangle (0.5\cellwd,45.35pt);
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=3.91pt] at (current bounding box.south west) {A3};
+\end{tikzpicture}
+\end{minipage}
+\end{tabular}
+\vspace{6pt}\hrule height 0.6pt\vspace{6pt}\nointerlineskip   % Divider 1
+% --- Row A ---
+\renewcommand{\thesubfigure}{B1}\phantomsubcaption\label{fig:collider_B1}
+\renewcommand{\thesubfigure}{B2}\phantomsubcaption\label{fig:collider_B2}
+\renewcommand{\thesubfigure}{B3}\phantomsubcaption\label{fig:collider_B3}
+\begin{tabular}{c@{\hspace{6pt}}|@{\hspace{6pt}}c@{\hspace{6pt}}|@{\hspace{6pt}}c}
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgA1) {\includegraphics[width=\linewidth]{figures/topo_3node_collider_figures/B1.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=-3.26pt,yshift=0.58pt] at (imgA1.south west) {B1};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgA2) {\includegraphics[width=\linewidth]{figures/topo_3node_collider_figures/B2.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=0.58pt] at (imgA2.south west) {B2};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgA3) {\includegraphics[width=\linewidth]{figures/topo_3node_collider_figures/B3.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=0.58pt] at (imgA3.south west) {B3};
+\end{tikzpicture}
+\end{minipage}
+\end{tabular}
+\par
+\vspace{6pt}\hrule height 0.6pt\vspace{6pt}\nointerlineskip   % Divider 2
+% --- Row B ---
+\renewcommand{\thesubfigure}{C1}\phantomsubcaption\label{fig:collider_C1}
+\renewcommand{\thesubfigure}{C2}\phantomsubcaption\label{fig:collider_C2}
+\renewcommand{\thesubfigure}{C3}\phantomsubcaption\label{fig:collider_C3}
+\begin{tabular}{c@{\hspace{6pt}}|@{\hspace{6pt}}c@{\hspace{6pt}}|@{\hspace{6pt}}c}
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgB1) {\includegraphics[width=\linewidth]{figures/topo_3node_collider_figures/C1.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=-3.26pt,yshift=0.58pt] at (imgB1.south west) {C1};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgB2) {\includegraphics[width=\linewidth]{figures/topo_3node_collider_figures/C2.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=0.58pt] at (imgB2.south west) {C2};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgB3) {\includegraphics[width=\linewidth]{figures/topo_3node_collider_figures/C3.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=0.58pt] at (imgB3.south west) {C3};
+\end{tikzpicture}
+\end{minipage}
+\end{tabular}
+
+\vspace{6pt}\hrule height 0.6pt\vspace{6pt}\nointerlineskip   % Divider 3
+% --- colorbar (spans \rowwd) ---
+\includegraphics[width=\rowwd]{figures/topo_3node_collider_figures/colorbar.pdf}
+\par
+\vspace{3pt}
+\end{minipage}%
+}}
+\end{figure}
+
+% caption OUTSIDE the float; \addtocounter rolls back the phantomsubcaption bump
+\addtocounter{figure}{-1}
+\captionof{figure}{Collider network.
+Each panel is a contour/vector field plot of equation~(\ref{eq:rho31_collider_main}) for
+$\rho_{31}$ over $a_{31},a_{32}\in[-1.5,1.5]$, for the combination of the
+common self-connection $a$, $\sigma_{W_2}$, and $\sigma_{W_3}$ shown in
+each panel's title ($\sigma_{W_1}=1$ throughout); $a$ strengthens across
+the three columns ($a=-0.3,-0.6,-1.0$).
+Color encodes $\rho_{31}$ on a diverging scale from $-1$ (blue) through white
+to $+1$ (red); values with $|\rho_{31}|<0.05$ are shown in white.
+The dashed green line marks $\rho_{31}=0$ exactly, at $a_{31}=0$.}
+\label{fig:rho31_collider}
+
+% ============================================================
+\subsection*{One-Way Mediator}
+% ============================================================
+
+The mediator network
+(Figure~\ref{fig:rho21_mediator}\hyperref[fig:mediator_A1]{.A1})
+is one in which node~1 influences node~2 not directly but
+through an intermediary node~3.
+Therefore, any observed correlation between node~1 and
+node~2 must be mediated by node~3.
+Hurwitz stability requires that $a<0$ under the equal-diagonal
+simplification $a_{11}=a_{22}=a_{33}=a$.
+Solving the Lyapunov equation for this mediator network yields
+% Headline result: one-way mediator rho_21, derived in Appendix D.
+(\hyperref[app:appD]{Appendix~D},
+equation~\ref{eq:rho21_mediator}),
+\begin{equation}
+\rho_{21} = \frac{
+  a_{31}\,a_{23}\,\sigma_{W_1}
+}{
+  \sqrt{2\sigma_{W_1}
+        \bigl(8a^4\sigma_{W_2}
+              +4a^2 a_{23}^2\sigma_{W_3}
+              +3a_{23}^2 a_{31}^2\sigma_{W_1}\bigr)}
+}.
+\label{eq:rho21_mediator_main}
+\end{equation}
+
+% ============================================================
+% Mediator figure -- individual-panel template (produced per
+% tasks/stage3_tasks_plot_networks/stage3_topo_x-node_figure_template_instructions.md).
+% Panels exported by scripts/plot_networks/plot_topo_3node_mediator_subplot.m
+% to figures/topo_3node_mediator_figures/. Two subplot rows (A/B); no row C.
+% ============================================================
+\begin{figure}[H]
+\centering
+{\setlength{\fboxrule}{0.6pt}\setlength{\arrayrulewidth}{0.6pt}%
+\fbox{%
+\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}
+\centering
+\setlength{\cellwd}{\dimexpr(0.95\linewidth-12pt)/3\relax}
+\setlength{\rowwd}{\dimexpr3\cellwd+12pt\relax}
+\setlength{\labxshiftB}{-0.26pt}
+\vspace{3pt}
+% --- title ---
+{\normalsize\textbf{$\rho_{21}$ as a function of $a_{31}$ and $a_{23}$ (mediator)}}\par
+\vspace{6pt}\hrule height 0.6pt\vspace{6pt}\nointerlineskip   % Divider 4
+% --- structure strip: diagram | A | Sigma_W ---
+% --- structure strip labels A1-A3 -- see dyad figure's comment
+% for the label mechanism.
+\renewcommand{\thesubfigure}{A1}
+\phantomsubcaption\label{fig:mediator_A1}
+\renewcommand{\thesubfigure}{A2}
+\phantomsubcaption\label{fig:mediator_A2}
+\renewcommand{\thesubfigure}{A3}
+\phantomsubcaption\label{fig:mediator_A3}
+\begin{tabular}{c@{\hspace{6pt}}|@{\hspace{6pt}}c@{\hspace{6pt}}|@{\hspace{6pt}}c}
+\begin{minipage}[c]{\cellwd}
+\centering
+\def\a{1.0 cm}
+\def\nodeSize{0.7}
+\def\r{0.5*\nodeSize cm}
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (mediatorDiagram) {%
+\begin{tikzpicture}[
+    >={Stealth[length=3mm,width=2mm]},
+    every node/.style={circle,draw,
+        minimum size=\nodeSize cm}]
+\node (1) at (-\a,0)          {1};
+\node (2) at (\a,0)           {2};
+\node (3) at (0,{sqrt(3)*\a}) {3};
+\draw[->] (1) to[bend left=12]  (3);
+\draw[->] (3) to[bend left=12]  (2);
+\selfloop{1}{1}
+\selfloop{2}{2}
+\selfloop{3}{3}
+\end{tikzpicture}%
+};
+\useasboundingbox (-0.5\cellwd,-45.35pt) rectangle (0.5\cellwd,45.35pt);
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=-3.26pt,yshift=3.91pt] at (current bounding box.south west) {A1};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[c]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (matA) {$\mathbf{A}=\begin{bmatrix}
+a      & 0   & 0\\
+0      & a   & a_{23}\\
+a_{31} & 0   & a
+\end{bmatrix}$};
+\useasboundingbox (-0.5\cellwd,-45.35pt) rectangle (0.5\cellwd,45.35pt);
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=3.91pt] at (current bounding box.south west) {A2};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[c]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (matSW) {$\mathbf{\Sigma}_W=\begin{bmatrix}
+\sigma_{W_1}&0&0\\0&\sigma_{W_2}&0\\0&0&\sigma_{W_3}
+\end{bmatrix}$};
+\useasboundingbox (-0.5\cellwd,-45.35pt) rectangle (0.5\cellwd,45.35pt);
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=3.91pt] at (current bounding box.south west) {A3};
+\end{tikzpicture}
+\end{minipage}
+\end{tabular}
+\vspace{6pt}\hrule height 0.6pt\vspace{6pt}\nointerlineskip   % Divider 1
+% --- Row A ---
+\renewcommand{\thesubfigure}{B1}\phantomsubcaption\label{fig:mediator_B1}
+\renewcommand{\thesubfigure}{B2}\phantomsubcaption\label{fig:mediator_B2}
+\renewcommand{\thesubfigure}{B3}\phantomsubcaption\label{fig:mediator_B3}
+\begin{tabular}{c@{\hspace{6pt}}|@{\hspace{6pt}}c@{\hspace{6pt}}|@{\hspace{6pt}}c}
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgA1) {\includegraphics[width=\linewidth]{figures/topo_3node_mediator_figures/B1.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=-3.26pt,yshift=0.58pt] at (imgA1.south west) {B1};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgA2) {\includegraphics[width=\linewidth]{figures/topo_3node_mediator_figures/B2.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=0.58pt] at (imgA2.south west) {B2};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgA3) {\includegraphics[width=\linewidth]{figures/topo_3node_mediator_figures/B3.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=0.58pt] at (imgA3.south west) {B3};
+\end{tikzpicture}
+\end{minipage}
+\end{tabular}
+\par
+\vspace{6pt}\hrule height 0.6pt\vspace{6pt}\nointerlineskip   % Divider 2
+% --- Row B ---
+\renewcommand{\thesubfigure}{C1}\phantomsubcaption\label{fig:mediator_C1}
+\renewcommand{\thesubfigure}{C2}\phantomsubcaption\label{fig:mediator_C2}
+\renewcommand{\thesubfigure}{C3}\phantomsubcaption\label{fig:mediator_C3}
+\begin{tabular}{c@{\hspace{6pt}}|@{\hspace{6pt}}c@{\hspace{6pt}}|@{\hspace{6pt}}c}
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgB1) {\includegraphics[width=\linewidth]{figures/topo_3node_mediator_figures/C1.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=-3.26pt,yshift=0.58pt] at (imgB1.south west) {C1};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgB2) {\includegraphics[width=\linewidth]{figures/topo_3node_mediator_figures/C2.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=0.58pt] at (imgB2.south west) {C2};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgB3) {\includegraphics[width=\linewidth]{figures/topo_3node_mediator_figures/C3.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=0.58pt] at (imgB3.south west) {C3};
+\end{tikzpicture}
+\end{minipage}
+\end{tabular}
+
+\vspace{6pt}\hrule height 0.6pt\vspace{6pt}\nointerlineskip   % Divider 3
+% --- colorbar (spans \rowwd) ---
+\includegraphics[width=\rowwd]{figures/topo_3node_mediator_figures/colorbar.pdf}
+\par
+\vspace{3pt}
+\end{minipage}%
+}}
+\end{figure}
+
+% caption OUTSIDE the float; \addtocounter rolls back the phantomsubcaption bump
+\addtocounter{figure}{-1}
+\captionof{figure}{Mediator network.
+Each panel is a contour/vector field plot of equation~(\ref{eq:rho21_mediator_main}) for
+$\rho_{21}$ as a function of the mediation path coefficients $a_{31}$ and
+$a_{23}$, over $a_{31},a_{23}\in[-1.5,1.5]$, for the combination of the
+common self-connection $a$, $\sigma_{W_2}$, and $\sigma_{W_3}$ shown in
+each panel's title ($\sigma_{W_1}=1$ throughout); $a$ strengthens across
+the three columns ($a=-0.3,-0.6,-1.0$).
+Arrows show the gradient direction of $\rho_{21}$.
+Color encodes $\rho_{21}$ on a diverging scale from $-1$ (blue) through white
+to $+1$ (red); values with $|\rho_{21}|<0.05$ are shown in white.
+The dashed green lines mark $\rho_{21}=0$ exactly, forming a cross along
+$a_{31}=0$ and $a_{23}=0$, where the correlation vanishes.}
+\label{fig:rho21_mediator}
+
+\vspace{6pt}
+From equation~\ref{eq:rho21_mediator_main}, we see that the
+numerator $a_{31}\,a_{23}\,\sigma_{W_1}$ is the product of
+the two mediation path coefficients, weighted by the noise
+variance of the source node~1 --- the continuous-time
+dynamical analog of the Sobel test statistic \citep{Sobel1982}.
+Just as the Sobel test quantifies an indirect effect as the
+product of two path coefficients, our formula shows that the
+mediated correlation is nonzero if and only if both
+$a_{31}\neq0$ and $a_{23}\neq0$, and its sign matches the
+sign of $a_{31}a_{23}$.
+Two links of the same sign produce a positive correlation,
+links of opposite signs a negative correlation.
+The denominator makes explicit a feature that classical
+mediation analysis treats as a nuisance.
+The magnitude of the mediated correlation also depends on the
+self-connection strength $a$ and the noise variances
+$\sigma_{W_2}$ and $\sigma_{W_3}$, which scale the background
+variance of nodes~2 and~3 against which the mediated influence from node~1 to node~2 must prevail (Figure~\ref{fig:rho21_mediator}).
+
+% ============================================================
+\subsection*{Two-Way Mediator}
+% ============================================================
+
+The two-way mediator network
+(Figure~\ref{fig:rho21_mediator2way}\hyperref[fig:mediator2way_A1]{.A1})
+extends the one-way mediator by adding returning connections. Node~1 and node~3 are reciprocally connected, as are node~2
+and node~3, with no direct connection between nodes~1 and~2.
+Writing $s=a_{13}a_{31}+a_{23}a_{32}$, the determinant factors
+as $|\mathbf{K}|=16a^2\bigl(s-a^2\bigr)\bigl(s-4a^2\bigr)$.
+Hurwitz stability requires $s<a^2$, together with $a<0$.
+Under this condition both bracketed factors are negative, so
+$|\mathbf{K}|>0$ throughout the stability region
+(Figure~\ref{fig:rho21_mediator2way}).
+Solving the Lyapunov equation for this two-way mediator
+% Headline result: two-way mediator rho_21, derived in Appendix D.
+network yields (\hyperref[app:appD]{Appendix~D},
+equation~\ref{eq:rho21_mediator2way}),
+\begin{equation}
+\rho_{21} = \frac{N_{21}}{\sqrt{D_{11}\,D_{22}}},
+\label{eq:rho21_med2way_main}
+\end{equation}
+where the numerator and denominator components are
+\begin{align}
+N_{21} &= \bigl(2a^2a_{23}a_{31} + a_{13}a_{23}a_{31}^2
+          - 2a_{23}^2a_{31}a_{32}\bigr)\sigma_{W_1} \notag\\
+&\quad+ \bigl(2a^2a_{13}a_{32} - 2a_{13}^2a_{31}a_{32}
+          + a_{13}a_{23}a_{32}^2\bigr)\sigma_{W_2} \notag\\
+&\quad+ \bigl(4a^2a_{13}a_{23} - a_{13}^2a_{23}a_{31}
+          - a_{13}a_{23}^2a_{32}\bigr)\sigma_{W_3},
+\label{eq:N21_med2way_main}\\[4pt]
+D_{11} &= \bigl(8a^4 - 6a^2a_{13}a_{31} - 10a^2a_{23}a_{32}
+          + a_{13}^2a_{31}^2 + 2a_{23}^2a_{32}^2\bigr)\sigma_{W_1}
+          + 3a_{13}^2a_{32}^2\,\sigma_{W_2} \notag\\
+&\quad+ \bigl(4a^2a_{13}^2 - a_{13}^3a_{31}
+          - a_{13}^2a_{23}a_{32}\bigr)\sigma_{W_3},
+\label{eq:D11_med2way_main}\\[4pt]
+D_{22} &= 3a_{23}^2a_{31}^2\,\sigma_{W_1}
+          + \bigl(8a^4 - 10a^2a_{13}a_{31} - 6a^2a_{23}a_{32}
+          + 2a_{13}^2a_{31}^2 + a_{23}^2a_{32}^2\bigr)\sigma_{W_2} \notag\\
+&\quad+ \bigl(4a^2a_{23}^2 - a_{23}^3a_{32}
+          - a_{13}a_{23}^2a_{31}\bigr)\sigma_{W_3}.
+\label{eq:D22_med2way_main}
+\end{align}
+
+A distinctive feature of the two-way mediator network, relative to its
+one-way counterpart, is that all three noise variances now
+appear in the numerator $N_{21}$.
+This is because, with the "returning" connections $a_{13}$ and
+$a_{32}$ present, fluctuations originating at any of the three
+nodes can propagate to both node~1 and node~2, so every noise
+source contributes to their covariance.
+In the one-way mediator, by contrast, only $\sigma_{W_1}$
+appears in the numerator of equation~(\ref{eq:rho21_mediator_main}).
+Setting $a_{13}=a_{32}=0$ (removing the return connections and
+leaving only the one-way path $1\to3\to2$) recovers the one-way
+mediator network (see Figure~\ref{fig:rho21_mediator2way}\hyperref[fig:mediator2way_B1]{.B1})
+
+% ============================================================
+% Two-way mediator figure -- individual-panel template (produced per
+% tasks/stage3_tasks_plot_networks/stage3_topo_x-node_figure_template_instructions.md).
+% Panels exported by
+% scripts/plot_networks/plot_topo_3node_mediator_2way_subplot.m to
+% figures/topo_3node_mediator_2way_figures/. Two subplot rows (A/B); no row C.
+% Panel mapping preserves the original 6 (a13,a32,a,sigma_W3) combinations and
+% reading order (1->A1 ... 6->B3) -- see script header for why this topology
+% does not split into a clean 3+3 row contrast.
+% ============================================================
+\begin{figure}[H]
+\centering
+{\setlength{\fboxrule}{0.6pt}\setlength{\arrayrulewidth}{0.6pt}%
+\fbox{%
+\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}
+\centering
+\setlength{\cellwd}{\dimexpr(0.95\linewidth-12pt)/3\relax}
+\setlength{\rowwd}{\dimexpr3\cellwd+12pt\relax}
+\setlength{\labxshiftB}{-0.26pt}
+\vspace{3pt}
+% --- title ---
+{\normalsize\textbf{$\rho_{21}$ as a function of $a_{31}$ and $a_{23}$ (two-way mediator)}}\par
+\vspace{6pt}\hrule height 0.6pt\vspace{6pt}\nointerlineskip   % Divider 4
+% --- structure strip: diagram | A | Sigma_W ---
+% --- structure strip labels A1-A3 -- see dyad figure's comment
+% for the label mechanism.
+\renewcommand{\thesubfigure}{A1}
+\phantomsubcaption\label{fig:mediator2way_A1}
+\renewcommand{\thesubfigure}{A2}
+\phantomsubcaption\label{fig:mediator2way_A2}
+\renewcommand{\thesubfigure}{A3}
+\phantomsubcaption\label{fig:mediator2way_A3}
+\begin{tabular}{c@{\hspace{6pt}}|@{\hspace{6pt}}c@{\hspace{6pt}}|@{\hspace{6pt}}c}
+\begin{minipage}[c]{\cellwd}
+\centering
+\def\a{1.0 cm}
+\def\nodeSize{0.7}
+\def\r{0.5*\nodeSize cm}
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (mediator2wayDiagram) {%
+\begin{tikzpicture}[
+    >={Stealth[length=3mm,width=2mm]},
+    every node/.style={circle,draw,
+        minimum size=\nodeSize cm}]
+\node (1) at (-\a,0)          {1};
+\node (2) at (\a,0)           {2};
+\node (3) at (0,{sqrt(3)*\a}) {3};
+\draw[->] (1) to[bend left=12]  (3);
+\draw[->] (3) to[bend left=12]  (1);
+\draw[->] (3) to[bend left=12]  (2);
+\draw[->] (2) to[bend left=12]  (3);
+\selfloop{1}{1}
+\selfloop{2}{2}
+\selfloop{3}{3}
+\end{tikzpicture}%
+};
+\useasboundingbox (-0.5\cellwd,-45.35pt) rectangle (0.5\cellwd,45.35pt);
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=-3.26pt,yshift=3.91pt] at (current bounding box.south west) {A1};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[c]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (matA) {$\mathbf{A}=\begin{bmatrix}
+a      & 0      & a_{13}\\
+0      & a      & a_{23}\\
+a_{31} & a_{32} & a
+\end{bmatrix}$};
+\useasboundingbox (-0.5\cellwd,-45.35pt) rectangle (0.5\cellwd,45.35pt);
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=3.91pt] at (current bounding box.south west) {A2};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[c]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (matSW) {$\mathbf{\Sigma}_W=\begin{bmatrix}
+\sigma_{W_1}&0&0\\0&\sigma_{W_2}&0\\0&0&\sigma_{W_3}
+\end{bmatrix}$};
+\useasboundingbox (-0.5\cellwd,-45.35pt) rectangle (0.5\cellwd,45.35pt);
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=3.91pt] at (current bounding box.south west) {A3};
+\end{tikzpicture}
+\end{minipage}
+\end{tabular}
+\vspace{6pt}\hrule height 0.6pt\vspace{6pt}\nointerlineskip   % Divider 1
+% --- Row A ---
+\renewcommand{\thesubfigure}{B1}\phantomsubcaption\label{fig:mediator2way_B1}
+\renewcommand{\thesubfigure}{B2}\phantomsubcaption\label{fig:mediator2way_B2}
+\renewcommand{\thesubfigure}{B3}\phantomsubcaption\label{fig:mediator2way_B3}
+\begin{tabular}{c@{\hspace{6pt}}|@{\hspace{6pt}}c@{\hspace{6pt}}|@{\hspace{6pt}}c}
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgA1) {\includegraphics[width=\linewidth]{figures/topo_3node_mediator_2way_figures/B1.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=-3.26pt,yshift=0.58pt] at (imgA1.south west) {B1};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgA2) {\includegraphics[width=\linewidth]{figures/topo_3node_mediator_2way_figures/B2.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=0.58pt] at (imgA2.south west) {B2};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgA3) {\includegraphics[width=\linewidth]{figures/topo_3node_mediator_2way_figures/B3.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=0.58pt] at (imgA3.south west) {B3};
+\end{tikzpicture}
+\end{minipage}
+\end{tabular}
+\par
+\vspace{6pt}\hrule height 0.6pt\vspace{6pt}\nointerlineskip   % Divider 2
+% --- Row B ---
+\renewcommand{\thesubfigure}{C1}\phantomsubcaption\label{fig:mediator2way_C1}
+\renewcommand{\thesubfigure}{C2}\phantomsubcaption\label{fig:mediator2way_C2}
+\renewcommand{\thesubfigure}{C3}\phantomsubcaption\label{fig:mediator2way_C3}
+\begin{tabular}{c@{\hspace{6pt}}|@{\hspace{6pt}}c@{\hspace{6pt}}|@{\hspace{6pt}}c}
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgB1) {\includegraphics[width=\linewidth]{figures/topo_3node_mediator_2way_figures/C1.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=-3.26pt,yshift=0.58pt] at (imgB1.south west) {C1};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgB2) {\includegraphics[width=\linewidth]{figures/topo_3node_mediator_2way_figures/C2.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=0.58pt] at (imgB2.south west) {C2};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgB3) {\includegraphics[width=\linewidth]{figures/topo_3node_mediator_2way_figures/C3.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=0.58pt] at (imgB3.south west) {C3};
+\end{tikzpicture}
+\end{minipage}
+\end{tabular}
+
+\vspace{6pt}\hrule height 0.6pt\vspace{6pt}\nointerlineskip   % Divider 3
+% --- colorbar (spans \rowwd) ---
+\includegraphics[width=\rowwd]{figures/topo_3node_mediator_2way_figures/colorbar.pdf}
+\par
+
+\vspace{3pt}
+\end{minipage}%
+}}
+\end{figure}
+
+% caption OUTSIDE the float; \addtocounter rolls back the phantomsubcaption bump
+\addtocounter{figure}{-1}
+\captionof{figure}{Two-way mediator network.
+Each panel is a contour/vector field plot of equation~(\ref{eq:rho21_med2way_main}) for
+$\rho_{21}$ over $a_{31},a_{23}\in[-1.5,1.5]$, with $a$ and
+$\sigma_{W_3}$ shown in each panel's title.
+Panel~\hyperref[fig:mediator2way_B1]{B1} sets $a_{13}=a_{32}=0$,
+recovering the one-way mediator (Figure~\ref{fig:rho21_mediator})
+exactly.
+Panels~\hyperref[fig:mediator2way_B2]{B2}--\hyperref[fig:mediator2way_B3]{B3}
+and~\hyperref[fig:mediator2way_C1]{C1} rotate $(a_{13},a_{32})$
+through three sign quadrants at fixed magnitude 1, with
+$a=-0.5$ and $\sigma_{W_1}=\sigma_{W_2}=\sigma_{W_3}=1$.
+Panels~\hyperref[fig:mediator2way_C2]{C2}--\hyperref[fig:mediator2way_C3]{C3}
+repeat those same $(a_{13},a_{32})$ pairs with $a=-1.0$ and
+$\sigma_{W_3}=3$ instead, isolating how node~3's own dynamics ---
+its self-connection and noise variance --- reshape the
+correlation geometry for a fixed pair of return connections.
+Color encodes $\rho_{21}$ on a diverging scale from $-1$ (blue) through white
+to $+1$ (red); values with $|\rho_{21}|<0.05$ are shown in white.
+The dashed green curve marks $\rho_{21}=0$ exactly.
+The solid black curve is the Hurwitz stability boundary
+$a_{13}a_{31}+a_{23}a_{32}=a^2$, with the grey region outside it
+--- no steady state, $\rho_{21}$ undefined --- absent from
+panel~\hyperref[fig:mediator2way_B1]{B1}, where $a_{13}=a_{32}=0$
+makes the system stable everywhere.}
+\label{fig:rho21_mediator2way}
+
+% ============================================================
+\subsection*{3-Cycle}
+% ============================================================
+
+The 3-cycle network
+(Figure~\ref{fig:rho21_cycle}\hyperref[fig:cycle_A1]{.A1})
+forms a directed ring. Node~1 drives node~3
+($a_{31}\neq0$), node~3 drives node~2 ($a_{23}\neq0$),
+and node~2 drives node~1 ($a_{12}\neq0$).
+The feedback loop makes all three pairwise correlations
+interdependent. The corresponding
+$\mathbf{A}$ matrix
+(Figure~\ref{fig:rho21_cycle}\hyperref[fig:cycle_A2]{.A2})
+shows the equal-diagonal simplification $a=a_{11}=a_{22}=a_{33}$.
+Writing $c=a_{12}a_{23}a_{31}$, the determinant factors as
+$|\mathbf{K}|=8\bigl(8a^3-c\bigr)\bigl(a^3+c\bigr)$.
+Hurwitz stability of the network requires a two-sided bound
+$8a^3<c<-a^3$ (\hyperref[app:appD]{Appendix~D}).
+Throughout this region both factors of $|\mathbf{K}|$ are
+negative, so $|\mathbf{K}|>0$ and no sign prefactor is needed. The sign of each correlation is carried entirely by its
+numerator. Solving the Lyapunov equation for this 3-cycle network yields
+% Headline result: 3-cycle rho_21, derived in Appendix D.
+(\hyperref[app:appD]{Appendix~D},
+equation~\ref{eq:rho_cycle}),
+\begin{equation}
+\rho_{21} = \frac{N_{21}}{\sqrt{D_{11}\,D_{22}}},
+\label{eq:rho21_cycle_main}
+\end{equation}
+where
+\begin{align}
+N_{21} &= \bigl(-2a^3a_{23}a_{31}+a_{12}a_{23}^2a_{31}^2\bigr)\sigma_{W_1}
+        + \bigl(4a^4a_{12}+aa_{12}^2a_{23}a_{31}\bigr)\sigma_{W_2}
+        + 3a^2a_{12}a_{23}^2\,\sigma_{W_3},
+\label{eq:N21_cycle_main}\\[4pt]
+D_{11} &= \bigl(8a^5+5a^2a_{12}a_{23}a_{31}\bigr)\sigma_{W_1}
+        + \bigl(4a^3a_{12}^2+a_{12}^3a_{23}a_{31}\bigr)\sigma_{W_2}
+        + 3aa_{12}^2a_{23}^2\,\sigma_{W_3},
+\label{eq:D11_cycle_main}\\[4pt]
+D_{22} &= \bigl(8a^5+5a^2a_{12}a_{23}a_{31}\bigr)\sigma_{W_2}
+        + \bigl(4a^3a_{23}^2+a_{12}a_{23}^3a_{31}\bigr)\sigma_{W_3}
+        + 3aa_{23}^2a_{31}^2\,\sigma_{W_1}.
+\label{eq:D22_cycle_main}
+\end{align}
+The corresponding formulae for $\rho_{31}$ and $\rho_{32}$
+follow the same pattern and are cyclically symmetric to
+equation~(\ref{eq:rho21_cycle_main}), reflecting the rotational
+symmetry of the network itself
+(\hyperref[app:appD]{Appendix~D}). These expressions also reflect the feedback mechanism in this 3-cycle network topology. Although
+each node sends a connection to only one other node, every
+pairwise correlation depends on the strengths of all causal connections
+($a_{12}$, $a_{23}$, $a_{31}$) and all three noise variances,
+since influence injected anywhere on the ring eventually
+reaches every node (Figure~\ref{fig:rho21_cycle}).
+
+% ============================================================
+% Cyclic network figure -- individual-panel template (produced per
+% tasks/stage3_tasks_plot_networks/stage3_topo_x-node_figure_template_instructions.md).
+% Panels exported by scripts/plot_networks/plot_topo_3node_cycle_subplot.m
+% to figures/topo_3node_cycle_figures/. Two subplot rows (A/B); no row C.
+% Panel mapping preserves the original 6 (a12,sigma_W3) combinations and
+% reading order (1->A1 ... 6->B3) -- see script header for why this topology
+% does not split into a clean 3+3 row contrast.
+% ============================================================
+\begin{figure}[H]
+\centering
+{\setlength{\fboxrule}{0.6pt}\setlength{\arrayrulewidth}{0.6pt}%
+\fbox{%
+\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}
+\centering
+\setlength{\cellwd}{\dimexpr(0.95\linewidth-12pt)/3\relax}
+\setlength{\rowwd}{\dimexpr3\cellwd+12pt\relax}
+\setlength{\labxshiftB}{-0.26pt}
+\vspace{3pt}
+% --- title ---
+{\normalsize\textbf{$\rho_{21}$ as a function of $a_{31}$ and $a_{23}$ (3-cycle)}}\par
+\vspace{6pt}\hrule height 0.6pt\vspace{6pt}\nointerlineskip   % Divider 4
+% --- structure strip: diagram | A | Sigma_W ---
+% --- structure strip labels A1-A3 -- see dyad figure's comment
+% for the label mechanism.
+\renewcommand{\thesubfigure}{A1}
+\phantomsubcaption\label{fig:cycle_A1}
+\renewcommand{\thesubfigure}{A2}
+\phantomsubcaption\label{fig:cycle_A2}
+\renewcommand{\thesubfigure}{A3}
+\phantomsubcaption\label{fig:cycle_A3}
+\begin{tabular}{c@{\hspace{6pt}}|@{\hspace{6pt}}c@{\hspace{6pt}}|@{\hspace{6pt}}c}
+\begin{minipage}[c]{\cellwd}
+\centering
+\def\a{1.0 cm}
+\def\nodeSize{0.7}
+\def\r{0.5*\nodeSize cm}
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (cycleDiagram) {%
+\begin{tikzpicture}[
+    >={Stealth[length=3mm,width=2mm]},
+    every node/.style={circle,draw,
+        minimum size=\nodeSize cm}]
+\node (1) at (-\a,0)          {1};
+\node (2) at (\a,0)           {2};
+\node (3) at (0,{sqrt(3)*\a}) {3};
+\draw[->] (2) to[bend left=12]  (1);
+\draw[->] (3) to[bend left=12]  (2);
+\draw[->] (1) to[bend left=12]  (3);
+\selfloop{1}{1}
+\selfloop{2}{2}
+\selfloop{3}{3}
+\end{tikzpicture}%
+};
+\useasboundingbox (-0.5\cellwd,-45.35pt) rectangle (0.5\cellwd,45.35pt);
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=-3.26pt,yshift=3.91pt] at (current bounding box.south west) {A1};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[c]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (matA) {$\mathbf{A}=\begin{bmatrix}
+a      & a_{12} & 0\\
+0      & a      & a_{23}\\
+a_{31} & 0      & a
+\end{bmatrix}$};
+\useasboundingbox (-0.5\cellwd,-45.35pt) rectangle (0.5\cellwd,45.35pt);
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=3.91pt] at (current bounding box.south west) {A2};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[c]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (matSW) {$\mathbf{\Sigma}_W=\begin{bmatrix}
+\sigma_{W_1}&0&0\\0&\sigma_{W_2}&0\\0&0&\sigma_{W_3}
+\end{bmatrix}$};
+\useasboundingbox (-0.5\cellwd,-45.35pt) rectangle (0.5\cellwd,45.35pt);
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=3.91pt] at (current bounding box.south west) {A3};
+\end{tikzpicture}
+\end{minipage}
+\end{tabular}
+\vspace{6pt}\hrule height 0.6pt\vspace{6pt}\nointerlineskip   % Divider 1
+% --- Row A ---
+\renewcommand{\thesubfigure}{B1}\phantomsubcaption\label{fig:cycle_B1}
+\renewcommand{\thesubfigure}{B2}\phantomsubcaption\label{fig:cycle_B2}
+\renewcommand{\thesubfigure}{B3}\phantomsubcaption\label{fig:cycle_B3}
+\begin{tabular}{c@{\hspace{6pt}}|@{\hspace{6pt}}c@{\hspace{6pt}}|@{\hspace{6pt}}c}
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgA1) {\includegraphics[width=\linewidth]{figures/topo_3node_cycle_figures/B1.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=-3.26pt,yshift=0.58pt] at (imgA1.south west) {B1};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgA2) {\includegraphics[width=\linewidth]{figures/topo_3node_cycle_figures/B2.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=0.58pt] at (imgA2.south west) {B2};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgA3) {\includegraphics[width=\linewidth]{figures/topo_3node_cycle_figures/B3.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=0.58pt] at (imgA3.south west) {B3};
+\end{tikzpicture}
+\end{minipage}
+\end{tabular}
+\par
+\vspace{6pt}\hrule height 0.6pt\vspace{6pt}\nointerlineskip   % Divider 2
+% --- Row B ---
+\renewcommand{\thesubfigure}{C1}\phantomsubcaption\label{fig:cycle_C1}
+\renewcommand{\thesubfigure}{C2}\phantomsubcaption\label{fig:cycle_C2}
+\renewcommand{\thesubfigure}{C3}\phantomsubcaption\label{fig:cycle_C3}
+\begin{tabular}{c@{\hspace{6pt}}|@{\hspace{6pt}}c@{\hspace{6pt}}|@{\hspace{6pt}}c}
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgB1) {\includegraphics[width=\linewidth]{figures/topo_3node_cycle_figures/C1.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=-3.26pt,yshift=0.58pt] at (imgB1.south west) {C1};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgB2) {\includegraphics[width=\linewidth]{figures/topo_3node_cycle_figures/C2.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=0.58pt] at (imgB2.south west) {C2};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgB3) {\includegraphics[width=\linewidth]{figures/topo_3node_cycle_figures/C3.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=0.58pt] at (imgB3.south west) {C3};
+\end{tikzpicture}
+\end{minipage}
+\end{tabular}
+
+\vspace{6pt}\hrule height 0.6pt\vspace{6pt}\nointerlineskip   % Divider 3
+% --- colorbar (spans \rowwd) ---
+\includegraphics[width=\rowwd]{figures/topo_3node_cycle_figures/colorbar.pdf}
+\par
+
+\vspace{3pt}
+\end{minipage}%
+}}
+\end{figure}
+
+% caption OUTSIDE the float; \addtocounter rolls back the phantomsubcaption bump
+\addtocounter{figure}{-1}
+\captionof{figure}{3-Cycle network.
+Each panel is a contour/vector field plot of equation~(\ref{eq:rho21_cycle_main}) for
+$\rho_{21}$ as a function of $a_{31}$ and $a_{23}$ (two of the three ring
+edges), over $a_{31},a_{23}\in[-1.5,1.5]$, with $a=-0.5$ and
+$\sigma_{W_1}=1$ fixed throughout; $a_{12}$ (the third ring edge),
+$\sigma_{W_2}$, and $\sigma_{W_3}$ are indicated in each panel's title.
+Color encodes $\rho_{21}$ on a diverging scale from $-1$ (blue) through white
+to $+1$ (red); values with $|\rho_{21}|<0.05$ are shown in white.
+The dashed green curve marks $\rho_{21}=0$ exactly.
+The solid black curves are the Hurwitz stability boundaries
+$a_{12}a_{23}a_{31}=8a^3$ and $=-a^3$; the grey region outside them is where
+no steady state exists and $\rho_{21}$ is undefined.}
+\label{fig:rho21_cycle}
+
+\clearpage
+% ============================================================
+\subsection*{Moderator}
+% ============================================================
+
+The moderator network topology
+(Figure~\ref{fig:rho21_moderator}\hyperref[fig:moderator_A1]{.A1})
+combines elements from the dyad and confounder networks. Nodes~1
+and~2 exert direct reciprocal influences on each other
+($a_{12}\neq0$, $a_{21}\neq0$), and both also receive input
+from a third node~3 ($a_{13}\neq0$, $a_{23}\neq0$). However, node~3 receives no input from nodes~1 or~2.
+Here $a_{12}$, $a_{21}$, $a_{13}$, and $a_{23}$ are the four
+causal influences forming the reciprocal pair and the common
+driver (Figure~\ref{fig:rho21_moderator}\hyperref[fig:moderator_A2]{.A2}).
+The determinant $|\mathbf{K}|=16a^2\bigl(a^2-a_{12}a_{21}\bigr)
+\bigl(4a^2-a_{12}a_{21}\bigr)$ is strictly positive under
+Hurwitz stability (\hyperref[app:appD]{Appendix~D}). Thus, the
+sign of $\rho_{21}$ is carried entirely by its numerator
+$N_{21}$ and no sign prefactor appears in $\rho_{21}$.
+Solving the Lyapunov equation for this moderator network
+% Headline result: moderator rho_21, derived in Appendix D.
+yields the following formula for $\rho_{21}$ (\hyperref[app:appD]{Appendix~D},
+equation~\ref{eq:rho21_moderator}),
+\begin{equation}
+\rho_{21} = \frac{N_{21}}{\sqrt{D_{11}\,D_{22}}},
+\label{eq:rho21_moderator_main}
+\end{equation}
+where the numerator and denominator components are
+\begin{align}
+N_{21} &=
+  (aa_{12}a_{21}^2-4a^3a_{21})\sigma_{W_1}
+  +(aa_{12}^2a_{21}-4a^3a_{12})\sigma_{W_2} \notag\\
+  &\quad+(-3aa_{12}a_{23}^2-3aa_{13}^2a_{21}
+    +2a_{12}a_{13}a_{21}a_{23}
+    +4a^2a_{13}a_{23})\sigma_{W_3},
+\label{eq:N21_mod}\\[4pt]
+D_{11} &=
+  (8a^4-6a^2a_{12}a_{21}+a_{12}^2a_{21}^2)\sigma_{W_1}
+  +(4a^2a_{12}^2-a_{12}^3a_{21})\sigma_{W_2} \notag\\
+  &\quad+(4a^2a_{13}^2-6aa_{12}a_{13}a_{23}
+    +3a_{12}^2a_{23}^2-a_{12}a_{13}^2a_{21})\sigma_{W_3},
+\label{eq:D11_mod}\\[4pt]
+D_{22} &=
+  (8a^4-6a^2a_{12}a_{21}+a_{12}^2a_{21}^2)\sigma_{W_2}
+  +(4a^2a_{21}^2-a_{12}a_{21}^3)\sigma_{W_1} \notag\\
+  &\quad+(4a^2a_{23}^2-6aa_{13}a_{21}a_{23}
+    +3a_{13}^2a_{21}^2-a_{12}a_{21}a_{23}^2)\sigma_{W_3}.
+\label{eq:D22_mod}
+\end{align}
+
+Setting $a_{13}=a_{23}=0$ in
+equations~(\ref{eq:N21_mod})--(\ref{eq:D22_mod}) immediately
+recovers the formula for the dyadic network~(see Equation (\ref{eq:rho21_dyad})),
+confirming the moderator network as a direct extension of
+the dyadic case.
+The $\sigma_{W_3}$ terms quantify the additional contribution
+of the common driver to the correlation. They appear in both
+the numerator and denominator, reshaping the correlation
+surface even when the direct connections $a_{12}$ and $a_{21}$
+are held fixed.
+This has an important practical implication. The same pair of
+directly connected nodes can exhibit substantially different
+correlations depending on whether they have a common driver,
+even if the direct connection strengths are identical.
+The correlation structure observable from data therefore
+reflects not just the direct connections but the entire
+embedding of those connections within a larger causal network.
+
+% ============================================================
+% Moderator figure -- individual-panel template (produced per
+% tasks/stage3_tasks_plot_networks/stage3_topo_x-node_figure_template_instructions.md).
+% Panels exported by
+% scripts/plot_networks/plot_topo_3node_moderator_subplot.m to
+% figures/topo_3node_moderator_figures/. Two subplot rows (A/B); no row C.
+% Panel mapping preserves the original 6 (a13,a23) combinations and reading
+% order (1->A1 ... 6->B3) -- a, sigma_W1, sigma_W2, sigma_W3 are fixed across
+% all panels here, so there is no row/column contrast to exploit.
+% ============================================================
+\begin{figure}[H]
+\centering
+{\setlength{\fboxrule}{0.6pt}\setlength{\arrayrulewidth}{0.6pt}%
+\fbox{%
+\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}
+\centering
+\setlength{\cellwd}{\dimexpr(0.95\linewidth-12pt)/3\relax}
+\setlength{\rowwd}{\dimexpr3\cellwd+12pt\relax}
+\setlength{\labxshiftB}{-0.26pt}
+\vspace{3pt}
+% --- title ---
+{\normalsize\textbf{$\rho_{21}$ as a function of $a_{12}$ and $a_{21}$ (moderator)}}\par
+\vspace{6pt}\hrule height 0.6pt\vspace{6pt}\nointerlineskip   % Divider 4
+% --- structure strip: diagram | A | Sigma_W ---
+% --- structure strip labels A1-A3 -- see dyad figure's comment
+% for the label mechanism.
+\renewcommand{\thesubfigure}{A1}
+\phantomsubcaption\label{fig:moderator_A1}
+\renewcommand{\thesubfigure}{A2}
+\phantomsubcaption\label{fig:moderator_A2}
+\renewcommand{\thesubfigure}{A3}
+\phantomsubcaption\label{fig:moderator_A3}
+\begin{tabular}{c@{\hspace{6pt}}|@{\hspace{6pt}}c@{\hspace{6pt}}|@{\hspace{6pt}}c}
+\begin{minipage}[c]{\cellwd}
+\centering
+\def\a{1.0 cm}
+\def\nodeSize{0.7}
+\def\r{0.5*\nodeSize cm}
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (moderatorDiagram) {%
+\begin{tikzpicture}[
+    >={Stealth[length=3mm,width=2mm]},
+    every node/.style={circle,draw,
+        minimum size=\nodeSize cm}]
+\node (1) at (-\a,0)          {1};
+\node (2) at (\a,0)           {2};
+\node (3) at (0,{sqrt(3)*\a}) {3};
+\draw[->] (1) to[bend left=12]  (2);
+\draw[->] (2) to[bend left=12]  (1);
+\draw[->] (3) to[bend right=12] (1);
+\draw[->] (3) to[bend left=12]  (2);
+\selfloop{1}{1}
+\selfloop{2}{2}
+\selfloop{3}{3}
+\end{tikzpicture}%
+};
+\useasboundingbox (-0.5\cellwd,-45.35pt) rectangle (0.5\cellwd,45.35pt);
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=-3.26pt,yshift=3.91pt] at (current bounding box.south west) {A1};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[c]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (matA) {$\mathbf{A}=\begin{bmatrix}
+a      & a_{12} & a_{13}\\
+a_{21} & a      & a_{23}\\
+0      & 0      & a
+\end{bmatrix}$};
+\useasboundingbox (-0.5\cellwd,-45.35pt) rectangle (0.5\cellwd,45.35pt);
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=3.91pt] at (current bounding box.south west) {A2};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[c]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (matSW) {$\mathbf{\Sigma}_W=\begin{bmatrix}
+\sigma_{W_1}&0&0\\0&\sigma_{W_2}&0\\0&0&\sigma_{W_3}
+\end{bmatrix}$};
+\useasboundingbox (-0.5\cellwd,-45.35pt) rectangle (0.5\cellwd,45.35pt);
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=3.91pt] at (current bounding box.south west) {A3};
+\end{tikzpicture}
+\end{minipage}
+\end{tabular}
+\vspace{6pt}\hrule height 0.6pt\vspace{6pt}\nointerlineskip   % Divider 1
+% --- Row A ---
+\renewcommand{\thesubfigure}{B1}\phantomsubcaption\label{fig:moderator_B1}
+\renewcommand{\thesubfigure}{B2}\phantomsubcaption\label{fig:moderator_B2}
+\renewcommand{\thesubfigure}{B3}\phantomsubcaption\label{fig:moderator_B3}
+\begin{tabular}{c@{\hspace{6pt}}|@{\hspace{6pt}}c@{\hspace{6pt}}|@{\hspace{6pt}}c}
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgA1) {\includegraphics[width=\linewidth]{figures/topo_3node_moderator_figures/B1.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=-3.26pt,yshift=0.58pt] at (imgA1.south west) {B1};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgA2) {\includegraphics[width=\linewidth]{figures/topo_3node_moderator_figures/B2.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=0.58pt] at (imgA2.south west) {B2};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgA3) {\includegraphics[width=\linewidth]{figures/topo_3node_moderator_figures/B3.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=0.58pt] at (imgA3.south west) {B3};
+\end{tikzpicture}
+\end{minipage}
+\end{tabular}
+\par
+\vspace{6pt}\hrule height 0.6pt\vspace{6pt}\nointerlineskip   % Divider 2
+% --- Row B ---
+\renewcommand{\thesubfigure}{C1}\phantomsubcaption\label{fig:moderator_C1}
+\renewcommand{\thesubfigure}{C2}\phantomsubcaption\label{fig:moderator_C2}
+\renewcommand{\thesubfigure}{C3}\phantomsubcaption\label{fig:moderator_C3}
+\begin{tabular}{c@{\hspace{6pt}}|@{\hspace{6pt}}c@{\hspace{6pt}}|@{\hspace{6pt}}c}
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgB1) {\includegraphics[width=\linewidth]{figures/topo_3node_moderator_figures/C1.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=-3.26pt,yshift=0.58pt] at (imgB1.south west) {C1};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgB2) {\includegraphics[width=\linewidth]{figures/topo_3node_moderator_figures/C2.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=0.58pt] at (imgB2.south west) {C2};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgB3) {\includegraphics[width=\linewidth]{figures/topo_3node_moderator_figures/C3.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=0.58pt] at (imgB3.south west) {C3};
+\end{tikzpicture}
+\end{minipage}
+\end{tabular}
+
+\vspace{6pt}\hrule height 0.6pt\vspace{6pt}\nointerlineskip   % Divider 3
+% --- colorbar (spans \rowwd) ---
+\includegraphics[width=\rowwd]{figures/topo_3node_moderator_figures/colorbar.pdf}
+\par
+\vspace{3pt}
+\end{minipage}%
+}}
+\end{figure}
+
+% caption OUTSIDE the float; \addtocounter rolls back the phantomsubcaption bump
+\addtocounter{figure}{-1}
+\captionof{figure}{Moderator network.
+Each panel is a contour/vector field plot of equation~(\ref{eq:rho21_moderator_main}) for
+$\rho_{21}$ as a function of $a_{12}$ and $a_{21}$, over
+$a_{12},a_{21}\in[-1.5,1.5]$, across six combinations of $a_{13}$ and
+$a_{23}$ (node~3's driving connections, shown in each panel's title), with
+$a_{13},a_{23}\in[-1,1]$ and $a=-0.5$ fixed throughout.
+$\sigma_{W_1}=\sigma_{W_3}=1$ throughout; $\sigma_{W_2}=1$ for row~B
+(panels~\hyperref[fig:moderator_B1]{B1}--\hyperref[fig:moderator_B3]{B3})
+and $\sigma_{W_2}=3$ for row~C
+(panels~\hyperref[fig:moderator_C1]{C1}--\hyperref[fig:moderator_C3]{C3}).
+Panel~\hyperref[fig:moderator_B1]{B1} ($a_{13}=a_{23}=0$) recovers the
+dyadic formula~(\ref{eq:rho21_dyad}) exactly; the remaining five panels
+(\hyperref[fig:moderator_B2]{B2}--\hyperref[fig:moderator_C3]{C3}) vary
+both the magnitude and sign of $a_{13}$ and $a_{23}$, showing that the
+driving connections' \emph{direction} and \emph{magnitude} reshape the
+correlation surface.
+Color encodes $\rho_{21}$ on a diverging scale from $-1$ (blue) through white
+to $+1$ (red); values with $|\rho_{21}|<0.05$ are shown in white.
+The dashed green curve marks $\rho_{21}=0$ exactly.
+The solid black curve is the Hurwitz stability boundary $a_{12}a_{21}=a^2$,
+unaffected by $a_{13}$ or $a_{23}$ since node~3 does not feed back into
+nodes~1 or~2; the grey region outside it is where no steady state exists
+and $\rho_{21}$ is undefined.}
+\label{fig:rho21_moderator}
+
+% ============================================================
+\subsection*{Coupled Drivers}
+% ============================================================
+
+The coupled-drivers network
+(Figure~\ref{fig:sigma33_coupled}\hyperref[fig:coupled_A1]{.A1})
+combines reciprocal dyadic interaction between nodes~1
+and~2 ($a_{12}\neq0$, $a_{21}\neq0$) with unidirectional
+connections from both nodes to a downstream node~3
+($a_{31}\neq0$, $a_{32}\neq0$). Because $\mathbf{A}$ is block lower triangular, with the
+dyadic $2\times2$ block in its upper-left corner and the
+scalar $a$ in its lower-right, its eigenvalues are exactly
+those of the dyad together with $a$ itself. Hurwitz stability
+therefore reduces to the same condition as the dyad, $a<0$
+and $a_{12}a_{21}<a^2$.
+Solving the Lyapunov equation for this coupled drivers
+network confirms that the entries $\sigma_{21}$,
+$\sigma_{11}$, and $\sigma_{22}$ of the steady-state
+covariance matrix are independent of $a_{31}$ and $a_{32}$,
+% Headline result: coupled-drivers rho_21 -- coincides exactly with the
+% dyadic formula (eq:rho21_dyad) at a11=a22=a; derived in Appendix D.
+yielding (\hyperref[app:appD]{Appendix~D},
+equation~\ref{eq:rho21_coupled})
+\begin{equation}
+\rho_{21} = \frac{|a|\bigl(a_{21}\sigma_{W_1}+a_{12}\sigma_{W_2}\bigr)}
+                 {\sqrt{D_{11}\,D_{22}}},
+\label{eq:rho21_coupled_main}
+\end{equation}
+where
+\begin{align}
+D_{11} &= \bigl(2a^2-a_{12}a_{21}\bigr)\sigma_{W_1}
+          + a_{12}^2\,\sigma_{W_2},
+\label{eq:D11_coupled_main}\\
+D_{22} &= \bigl(2a^2-a_{12}a_{21}\bigr)\sigma_{W_2}
+          + a_{21}^2\,\sigma_{W_1}.
+\label{eq:D22_coupled_main}
+\end{align}
+Equation~(\ref{eq:rho21_coupled_main}) coincides exactly with the dyadic
+formula~(\ref{eq:rho21_dyad}) evaluated at
+$a_{11}=a_{22}=a$. Node~3 contributes to the correlations
+$\rho_{31}$ and $\rho_{32}$, but it leaves the correlation
+between node~1 and node~2 unaltered.
+Because $\rho_{21}$ for this topology is identical to
+the dyadic case already shown in Figure~\ref{fig:rho21_dyad}, the
+quantity illustrated below is instead the steady-state
+\emph{variance} of the receiving node, $\sigma_{33}$, which does
+% Headline result: coupled-drivers plots sigma_33, not rho_21, since rho_21
+% here is identical to the dyad case already shown; sigma_33 is the
+% quantity that actually depends on a31/a32. Derived in Appendix D.
+depend on $a_{31}$ and $a_{32}$ (\hyperref[app:appD]{Appendix~D},
+equation~\ref{eq:sigma33_coupled}):
+\begin{equation}
+\sigma_{33} = -\frac{1}{|\mathbf{K}|}\Bigl\{
+  E_{1}\,\sigma_{W_1} + E_{2}\,\sigma_{W_2} + E_{3}\,\sigma_{W_3}
+\Bigr\},
+\label{eq:sigma33_coupled_main}
+\end{equation}
+where
+\begin{align}
+E_{1} &= 16a^3a_{31}^2 - 24a^2a_{21}a_{31}a_{32}
+        + 12aa_{21}^2a_{32}^2 - 4aa_{12}a_{21}a_{31}^2,
+\label{eq:E1_coupled}\\
+E_{2} &= 16a^3a_{32}^2 - 24a^2a_{12}a_{31}a_{32}
+        + 12aa_{12}^2a_{31}^2 - 4aa_{12}a_{21}a_{32}^2,
+\label{eq:E2_coupled}\\
+E_{3} &= 32a^5 - 40a^3a_{12}a_{21} + 8aa_{12}^2a_{21}^2.
+\label{eq:E3_coupled}
+\end{align}
+Unlike every correlation $\rho_{ij}$ considered elsewhere in this
+paper, $\sigma_{33}$ is not bounded to $[-1,1]$. Instead, it is always non-negative and unbounded from above as $a_{31}$ and
+$a_{32}$ increase.
+The connections $a_{31}$ and $a_{32}$ enter only through $E_1$
+and $E_2$, which are independent of $\sigma_{W_3}$; the node's
+own noise variance $\sigma_{W_3}$ enters only through $E_3$,
+which is independent of $a_{31}$ and $a_{32}$.
+Because $\sigma_{33}$ depends on $a_{31}$ and $a_{32}$ only
+through $a_{31}^2$, $a_{32}^2$, and the cross term
+$a_{31}a_{32}$, it is invariant under
+$(a_{31},a_{32})\to(-a_{31},-a_{32})$, and reversing just one
+of the two rotates the surface by $180^\circ$ rather than
+reshaping it.
+The coefficient of $\sigma_{W_3}$, $E_3/|\mathbf{K}|$, reduces
+exactly to $1/(2|a|)$, independent of every causal parameter,
+so $\sigma_{W_3}$ shifts $\sigma_{33}$ by a constant everywhere
+on the plane rather than reshaping its dependence on $a_{31}$
+and $a_{32}$.
+At $a_{12}=a_{21}=0$, this closed form reduces to
+$\sigma_{33}=\bigl(a_{31}^2\sigma_{W_1}+a_{32}^2\sigma_{W_2}\bigr)/(4|a|^3)
++\sigma_{W_3}/(2|a|)$, the independent-node floor plus the
+variance injected by the two drivers.
+
+% ============================================================
+% Coupled drivers figure -- individual-panel template (produced per
+% tasks/stage3_tasks_plot_networks/stage3_topo_x-node_figure_template_instructions.md).
+% Panels exported by
+% scripts/plot_networks/plot_topo_3node_coupled_drivers_subplot.m to
+% figures/topo_3node_coupled_drivers_figures/. Plots sigma_33 (variance),
+% not rho_21 -- see prose above. Sequential (viridis-like) LOG-scale
+% colormap, not the diverging rho colormap: see the script header for the
+% full rationale (no zero-crossing, no stability mask needed since a31/a32
+% do not affect stability, log scale chosen since floor-to-ceiling spans
+% ~1.5 log10-decades). Two subplot rows (A/B); no row C.
+% ============================================================
+\begin{figure}[H]
+\centering
+{\setlength{\fboxrule}{0.6pt}\setlength{\arrayrulewidth}{0.6pt}%
+\fbox{%
+\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}
+\centering
+\setlength{\cellwd}{\dimexpr(0.95\linewidth-12pt)/3\relax}
+\setlength{\rowwd}{\dimexpr3\cellwd+12pt\relax}
+\setlength{\labxshiftB}{-0.26pt}
+\vspace{3pt}
+% --- title ---
+{\normalsize\textbf{$\sigma_{33}$ as a function of $a_{12}$ and $a_{21}$ (coupled drivers)}}\par
+\vspace{6pt}\hrule height 0.6pt\vspace{6pt}\nointerlineskip   % Divider 4
+% --- structure strip: diagram | A | Sigma_W ---
+% --- structure strip labels A1-A3 -- see dyad figure's comment
+% for the label mechanism.
+\renewcommand{\thesubfigure}{A1}
+\phantomsubcaption\label{fig:coupled_A1}
+\renewcommand{\thesubfigure}{A2}
+\phantomsubcaption\label{fig:coupled_A2}
+\renewcommand{\thesubfigure}{A3}
+\phantomsubcaption\label{fig:coupled_A3}
+\begin{tabular}{c@{\hspace{6pt}}|@{\hspace{6pt}}c@{\hspace{6pt}}|@{\hspace{6pt}}c}
+\begin{minipage}[c]{\cellwd}
+\centering
+\def\a{1.0 cm}
+\def\nodeSize{0.7}
+\def\r{0.5*\nodeSize cm}
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (coupledDiagram) {%
+\begin{tikzpicture}[
+    >={Stealth[length=3mm,width=2mm]},
+    every node/.style={circle,draw,
+        minimum size=\nodeSize cm}]
+\node (1) at (-\a,0)          {1};
+\node (2) at (\a,0)           {2};
+\node (3) at (0,{sqrt(3)*\a}) {3};
+\draw[->] (1) to[bend left=12]  (2);
+\draw[->] (2) to[bend left=12]  (1);
+\draw[->] (1) to[bend left=12]  (3);
+\draw[->] (2) to[bend right=12] (3);
+\selfloop{1}{1}
+\selfloop{2}{2}
+\selfloop{3}{3}
+\end{tikzpicture}%
+};
+\useasboundingbox (-0.5\cellwd,-45.35pt) rectangle (0.5\cellwd,45.35pt);
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=-3.26pt,yshift=3.91pt] at (current bounding box.south west) {A1};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[c]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (matA) {$\mathbf{A}=\begin{bmatrix}
+a      & a_{12} & 0\\
+a_{21} & a      & 0\\
+a_{31} & a_{32} & a
+\end{bmatrix}$};
+\useasboundingbox (-0.5\cellwd,-45.35pt) rectangle (0.5\cellwd,45.35pt);
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=3.91pt] at (current bounding box.south west) {A2};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[c]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (matSW) {$\mathbf{\Sigma}_W=\begin{bmatrix}
+\sigma_{W_1}&0&0\\0&\sigma_{W_2}&0\\0&0&\sigma_{W_3}
+\end{bmatrix}$};
+\useasboundingbox (-0.5\cellwd,-45.35pt) rectangle (0.5\cellwd,45.35pt);
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=3.91pt] at (current bounding box.south west) {A3};
+\end{tikzpicture}
+\end{minipage}
+\end{tabular}
+\vspace{6pt}\hrule height 0.6pt\vspace{6pt}\nointerlineskip   % Divider 1
+% --- Row A ---
+\renewcommand{\thesubfigure}{B1}\phantomsubcaption\label{fig:coupled_B1}
+\renewcommand{\thesubfigure}{B2}\phantomsubcaption\label{fig:coupled_B2}
+\renewcommand{\thesubfigure}{B3}\phantomsubcaption\label{fig:coupled_B3}
+\begin{tabular}{c@{\hspace{6pt}}|@{\hspace{6pt}}c@{\hspace{6pt}}|@{\hspace{6pt}}c}
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgA1) {\includegraphics[width=\linewidth]{figures/topo_3node_coupled_drivers_figures/B1.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=-3.26pt,yshift=0.58pt] at (imgA1.south west) {B1};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgA2) {\includegraphics[width=\linewidth]{figures/topo_3node_coupled_drivers_figures/B2.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=0.58pt] at (imgA2.south west) {B2};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgA3) {\includegraphics[width=\linewidth]{figures/topo_3node_coupled_drivers_figures/B3.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=0.58pt] at (imgA3.south west) {B3};
+\end{tikzpicture}
+\end{minipage}
+\end{tabular}
+\par
+\vspace{6pt}\hrule height 0.6pt\vspace{6pt}\nointerlineskip   % Divider 2
+% --- Row B ---
+\renewcommand{\thesubfigure}{C1}\phantomsubcaption\label{fig:coupled_C1}
+\renewcommand{\thesubfigure}{C2}\phantomsubcaption\label{fig:coupled_C2}
+\renewcommand{\thesubfigure}{C3}\phantomsubcaption\label{fig:coupled_C3}
+\begin{tabular}{c@{\hspace{6pt}}|@{\hspace{6pt}}c@{\hspace{6pt}}|@{\hspace{6pt}}c}
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgB1) {\includegraphics[width=\linewidth]{figures/topo_3node_coupled_drivers_figures/C1.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=-3.26pt,yshift=0.58pt] at (imgB1.south west) {C1};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgB2) {\includegraphics[width=\linewidth]{figures/topo_3node_coupled_drivers_figures/C2.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=0.58pt] at (imgB2.south west) {C2};
+\end{tikzpicture}
+\end{minipage}
+&
+\begin{minipage}[b]{\cellwd}
+\centering
+\begin{tikzpicture}[inner sep=0pt,outer sep=0pt]
+\node[inner sep=0pt] (imgB3) {\includegraphics[width=\linewidth]{figures/topo_3node_coupled_drivers_figures/C3.pdf}};
+\node[overlay,anchor=south west,font=\bfseries\footnotesize,xshift=\labxshiftB,yshift=0.58pt] at (imgB3.south west) {C3};
+\end{tikzpicture}
+\end{minipage}
+\end{tabular}
+
+\vspace{6pt}\hrule height 0.6pt\vspace{6pt}\nointerlineskip   % Divider 3
+% --- colorbar (spans \rowwd) ---
+\includegraphics[width=\rowwd]{figures/topo_3node_coupled_drivers_figures/colorbar.pdf}
+\par
+
+
+\vspace{3pt}
+\end{minipage}%
+}}
+\end{figure}
+
+% caption OUTSIDE the float; \addtocounter rolls back the phantomsubcaption bump
+\addtocounter{figure}{-1}
+\captionof{figure}{Coupled drivers network.
+Each panel is a contour/vector field plot of equation~(\ref{eq:sigma33_coupled_main}) for
+$\sigma_{33}$ as a function of $a_{12}$ and $a_{21}$ over
+$a_{12},a_{21}\in[-1.5,1.5]$, with $a=-0.5$ and
+$\sigma_{W_1}=\sigma_{W_2}=\sigma_{W_3}=1$ fixed throughout.
+Panels~\hyperref[fig:coupled_B1]{B1}--\hyperref[fig:coupled_C3]{C3} fix
+$(a_{31},a_{32})$ at $(+0.30,+0.30)$, $(+0.30,-0.30)$, $(+0.30,+0.50)$,
+$(0,+0.30)$, $(+0.50,+0.50)$, and $(+0.60,-0.20)$ respectively, shown in
+each panel's title.
+Color encodes $\log_{10}\sigma_{33}$ on a sequential scale from dark purple
+(low) to yellow (high), capped at $\sigma_{33}=3.5$ (about $10\%$ of the
+stable region saturates at the top color); the colorbar is labeled with the
+corresponding untransformed $\sigma_{33}$ values.
+Arrows show the gradient direction of $\sigma_{33}$.
+The solid black curve is the Hurwitz stability boundary $a_{12}a_{21}=a^2$,
+with the grey region beyond it --- no steady state, $\sigma_{33}$
+undefined.}
+\label{fig:sigma33_coupled}
+
+% ============================================================
+\subsection*{Fully Connected Three-Node Network}
+% ============================================================
+
+Taken together, Figures~\ref{fig:rho21_dyad}--\ref{fig:rho21_moderator} illustrates how the correlation between two variables (nodes) changes with the \emph{presence} or \emph{absence} of a third variable, and with the way the third node interacts with the first two. From the simplest dyad
+(Figure~\ref{fig:rho21_dyad}) to the more complex moderator (Figure~\ref{fig:rho21_moderator}) networks, we see how the pairwise
+correlation $\rho_{21}$ takes on markedly different ``causal'' geometries. Each of these architectures is a special case of the fully connected triad, which we unpack here.
+The fully connected three-node network allows all six
+off-diagonal causal connections to be nonzero. The diagonal entries $a_{ii}$ encode self-connections and
+are generally unequal to each other. Solving the Lyapunov equation for the general asymmetric
+% Headline result: general (dense-A) 3-node sigma_ij and rho_ij, the
+% capstone result all eight preceding topologies specialize -- derived in
+% Appendix D via lyap_halfvec.m directly (A has no exploitable sparsity).
+$3\times3$ network yields closed-form expressions for all
+entries of $\mathbf{\Sigma}_Y$,
+\begin{equation}
+\sigma_{ij} = -\frac{1}{|\mathbf{K}|}
+\Bigl[
+  f_{ij}^{(i)}(\mathbf{A})\,\sigma_{W_i}
+  + f_{ij}^{(j)}(\mathbf{A})\,\sigma_{W_j}
+  + f_{ij}^{(k)}(\mathbf{A})\,\sigma_{W_k}
+\Bigr],
+\quad \{i,j,k\}=\{1,2,3\},
+\label{eq:sigma_ij_3x3}
+\end{equation}
+where $|\mathbf{K}|$ is the determinant of the half-vectorized Kronecker sum
+($\mathbf{I}\otimes\mathbf{A}
++\mathbf{A}\otimes\mathbf{I}$) and the polynomial coefficient
+functions $f_{ij}^{(\cdot)}(\mathbf{A})$ are given explicitly
+in \hyperref[app:appD]{Appendix~D}
+(equations~\ref{eq:network3by3_sigma_ii}
+and~\ref{eq:network3by3_sigma_ij_v2}).
+The pairwise correlation is
+\begin{equation}
+\rho_{ij} = \frac{\sigma_{ij}}
+                 {\sqrt{\sigma_{ii}\,\sigma_{jj}}}.
+\label{eq:rho_ij_3x3}
+\end{equation}
+
+No contour plots are shown for this topology. With six
+independent off-diagonal connections and three unrestricted
+diagonal entries, the $\sigma_{ij}$ formula above has
+dozens of polynomial terms for each noise variance (\hyperref[app:appD]{Appendix~D}), too
+complex to visualize meaningfully in a two-parameter plane. However, several properties of the
+formulas~(\ref{eq:sigma_ij_3x3}) are noteworthy.
+
+\vspace{6pt}
+\textit{Structural and reflective symmetry.}
+The fully connected topology is invariant under swapping the
+labels of the two non-focal nodes ($j \leftrightarrow k$ for
+fixed $i$), and the variance formulae $\sigma_{ii}$ inherit
+this invariance. The covariance formulas $\sigma_{ij}$ are invariant under $i \leftrightarrow j$ for fixed $k$,
+reflecting the symmetry $\sigma_{ij}=\sigma_{ji}$ of the
+covariance matrix itself.
+Neither invariance is immediately obvious from the raw
+polynomial coefficients, but both become visually apparent in
+the color-coded templates of
+\hyperref[app:appD]{Appendix~D}
+(equations~\ref{eq:network3by3_sigma_ii}
+and~\ref{eq:network3by3_sigma_ij_v2}), and each provides a
+consistency check on the derivation.
+
+\vspace{6pt}
+\textit{The ``master formula'' for $3\times3$ networks.}
+The covariance formula for every sparse three-node topology is a special case of
+equation~(\ref{eq:sigma_ij_3x3}), recovered by setting the
+appropriate entries of $\mathbf{A}$ to zero:
+\begin{itemize}
+\item confounder: set $a_{12}=a_{21}=a_{31}=a_{32}=0$;
+\item mediator: set $a_{12}=a_{21}=a_{13}=a_{32}=0$;
+\item moderator: set $a_{31}=a_{32}=0$.
+\end{itemize}
+Reduction to the formulae for the confounder network was verified through
+direct symbolic elimination, recovering the
+independently derived covariance
+formulae~(\ref{eq:sigma11_confounder})--(\ref{eq:sigma32_confounder})
+and determinant~(\ref{eq:network3by3_detK_confounder}) exactly.
+The fully connected $3\times3$ formula thus serves as
+\textit{the ``master formula'' for $3\times3$ networks}.
+
+% ============================================================
+% ============================================================
+%  DISCUSSION
+% ============================================================
+% ============================================================
+%  DISCUSSION SECTION
+%  For: "How does correlation relate to causation"
+%  Author: Yaohui Ding
+% ============================================================
+
+\section*{Discussion}
+
+% ------------------------------------------------------------
+\subsection*{Correlation Is Symmetric but Not Transitive}
+% ------------------------------------------------------------
+
+Correlation is symmetric by definition, $\rho_{ij}=\rho_{ji}$. However, it is \emph{not} transitive. A mathematical relation ($\sim$) is transitive, if $x\sim y$
+and $y\sim z$ together imply $x\sim z$. For example, ``is a cousin of'' is not a transitive relation. A is a cousin of B (premise no. 1) and B is a cousin of C (premise no. 2) together do not imply A is a cousin of C (conclusion), necessarily. The premises would still be true if A and C were siblings and B was their cousin. However, the conclusion would be wrong in this case. 
+The collider topology in the results section provides a simple and intuitive example of the fact that correlation is not a transitive relation, either. In this network topology, $\rho_{31}$ and
+$\rho_{32}$ are both nonzero (sometimes fairly strong, Figure~\ref{fig:rho31_collider}\hyperref[fig:collider_B1]{.B1}) whenever $a_{31}\neq0$ and
+$a_{32}\neq0$~(Equation (\ref{eq:rho31_collider_main})), yet
+$\rho_{21}$ is always 0 by construction~(Equation (\ref{eq:rho21_collider})).
+Thus, node~1 correlating with node~3 ($\rho_{13}=\rho_{31}\neq0$) and node~3 correlating with node~2 ($\rho_{32}\neq0$) does not lead to node~1 correlating with node~2 ($\rho_{12}=\rho_{21}=0$). Correlation is \emph{not} transitive. For a more thorough treatment of the \emph{non-transitivity} of correlation, see \citet{LangfordSchwertmanOwens2001}. In this paper, they prove that $\rho_{XZ}$ must be
+positive ($>0$) whenever $\rho_{XY}^2+\rho_{YZ}^2>1$. The result ($\rho_{21}=0$) from our collider network offers an example of what might happen when this sum of squared correlation coefficients constraint is violated. In our setting, we have
+\begin{equation*}
+\rho_{31}^2+\rho_{32}^2 = \frac{a_{31}^2\sigma_{W_1}+a_{32}^2\sigma_{W_2}}
+{2\bigl(2a^2\sigma_{W_3}+a_{31}^2\sigma_{W_1}+a_{32}^2\sigma_{W_2}\bigr)}
+< \frac{1}{2}
+\end{equation*}
+because $\sigma_{W_3}$ is always greater than zero ($>0$) and $a\neq0$. But $\rho_{21}$ equals 0, not greater than 0. This raises an interesting possibility that there may exist a different bound for $\rho_{XZ}$, when $\rho_{XY}^2+\rho_{YZ}^2\leq1$.
+
+
+% ------------------------------------------------------------
+\subsection*{Causation Is Transitive: From Tracing Rule to
+             Trek Rule}
+% ------------------------------------------------------------
+
+Causal influence is, in general, \emph{asymmetric}.
+However, it is \emph{transitive}. The formula from the mediator network (equation~\ref{eq:rho21_mediator_main}) illustrates this transitivity of causation intuitively. Node~1
+reaches node~2 through the chain $1\to3\to2$.
+The resulting correlation (composite causal influence) is therefore proportional to the
+product of $a_{31}a_{23}$ and \emph{never} 0, unless $a_{31}$ or $a_{23}$ or both are zero. Wright proved this over a century ago for models that can be represented by directed acyclic graphs \citep{Wright1921}. He showed that the correlation (composite causal effect) between any pair of variables is the sum, over every connecting path, of the
+products of the path coefficients along it. Crucially, the composite causal effect (transitivity of causation) along a given path is \emph{never} zero, provided that the causal influence of every link in the path is non-zero. \citet{VarandoHansen2020} and \citet{HansenTrek2025} generalized the transitivity of causal influence to cyclic graphs with feedback. They showed that each covariance $\sigma_{ij}$ is an infinite power series over ``treks'' --- the same
+compositional idea, now summed over infinitely many paths.
+The closed-form formula that we derive in
+\hyperref[app:appB]{Appendix~B} (equation~\ref{eq:sigma_ij_final}) can be read
+as the exact summation of these infinite power series. The cofactor
+representation collapses infinitely many treks into a finite
+ratio of polynomials. 
+
+
+% ------------------------------------------------------------
+\subsection*{Many-to-One Mapping from Patterns of Causation
+             to Correlation}
+% ------------------------------------------------------------
+
+When $\mathbf{A}$ is Hurwitz stable,
+the Lyapunov equation~(\ref{eq:lyapunov_eq0}) has a unique
+solution $\mathbf{\Sigma}_Y$ for any given pair of
+$\mathbf{A}$ and $\mathbf{\Sigma}_W$
+\citep{Antsaklis1997, Hespanha2018}. Therefore, a given causal architecture
+and noise covariance jointly determine exactly one pattern
+of correlations. However, the reverse is not true. The same pattern of correlation can correspond to many distinct causal architectures and noise covariance structures (\emph{one-to-many}). The Results section provides many concrete examples. An identical value of $\rho_{21}$ can arise from direct
+reciprocal coupling between node~1 and node~2 with no hidden
+variables~(\ref{eq:rho21_dyad}) or entirely from a common cause with no direct causal interaction between them~(\ref{eq:rho21_confounder}). More strikingly, the collider maps every combination of $a_{31}$, $a_{32}$ to the same vanishing
+correlation of $\rho_{21}=0$~(\ref{eq:rho21_collider}).
+
+This under-determination problem of inferring causes from effects (e.g., patterns of correlation) is well recognized in the causal
+inference literature \citep{Pearl2009, PetersJanzingScholkopf2017,
+SpirtesGlymourScheines2000}. Identifiability of causal networks with
+structural constraints remains an active research area
+\citep{VarandoHansen2020, DettlingEtAl2023}.
+
+
+% ------------------------------------------------------------
+\subsection*{Linear in Noise Variances but Nonlinear in Causal Parameters}
+% ------------------------------------------------------------
+
+The general solution of the covariance matrix from the Lyapunov equation
+(Methods, equation~\ref{eq:sigma_ij_general};
+\hyperref[app:appB]{Appendix~B}, equation~\ref{eq:sigma_ij_final})
+exhibits a structural duality. Each entry
+$\sigma_{ij}$ is a \textit{linear combination} of the noise
+variances $\sigma_{W_u}$, with weights that are
+\textit{nonlinear} (polynomial) functions of the causal
+parameters $a_{ij}$.
+The linearity of the noise variances follows directly from the structure of
+the solution---
+noise variance enters the equation through the sum
+$\sum_{u} C_{ij}^{uu}\,\sigma_{W_u}$. The cofactor matrix entry $C_{ij}^{uu}$ and the
+determinant $|\mathbf{K}|$ depend only on $\mathbf{A}$. However, the
+nonlinearity of $C_{ij}^{uu}$ and $|\mathbf{K}|$ in the entries of matrix $\mathbf{A}$ grow quickly with network size.
+The covariance formulae for the dyadic network have only second-degree
+coefficients~(\ref{eq:rho21_dyad}), whereas the formulae from triadic networks carry fifth-degree coefficients
+(\hyperref[app:appD]{Appendix~D}, equation~\ref{eq:sigma33_coupled}). This linear-in-noise property is specific to the covariance, however
+(Results, equation~\ref{eq:rho_ij_general}
+\hyperref[app:appB]{Appendix~B}, equation~\ref{eq:rho_ij_nbyn}),
+because $\rho_{ij}=\sigma_{ij}/\sqrt{\sigma_{ii}\,\sigma_{jj}}$
+places the variance terms under a square root. The noise
+variances enter $\rho_{ij}$ nonlinearly, even though
+$\sigma_{ij}$, $\sigma_{ii}$, and $\sigma_{jj}$ are each
+individually linear in them.
+
+
+% ------------------------------------------------------------
+\subsection*{Structural Symmetry and Reducibility of the
+             ``Master Formulae'' from Fully Connected $N\times N$
+             Network}
+% ------------------------------------------------------------
+
+The formula for $\sigma_{ii}$ from the fully-connected $3\times3$ network shows \textit{structural symmetry} (\hyperref[app:appD]{Appendix~D}, equation~\ref{eq:network3by3_sigma_ii}), because the network's topology is invariant under the relabeling ($j\leftrightarrow k$) for fixed $i$. We emphasize that this symmetry is a property of the topology of the fully-connected $3\times3$ network itself (hence structural), not a property of the formula for $\sigma_{ii}$ in
+general. In contrast, the formulae for the covariance entry $\sigma_{ij}$ (when $i \neq j$) have to satisfy 
+\textit{reflective symmetry} (\hyperref[app:appD]{Appendix~D}, equation~\ref{eq:network3by3_sigma_ij_v2}), i.e., invariant under
+$i\leftrightarrow j$ for fixed $k$, for all types of network topologies. We made both types of symmetries for the fully-connected $3\times3$ network visually apparent in \hyperref[app:appD]{Appendix~D}, by color-coding the indices ($i,j,k$) and re-arranging the terms in a specific way. The formulae from the fully connected $3\times3$ network can also serve as the ``\textit{master
+formulae}'' for deriving the formulae for every other $3\times3$ network with a sparser topology, by setting the
+appropriate causal connections in the ``master formulae'' to zero, provided that Hurwitz stability condition is still satisfied. We verified this for the confounder network in \hyperref[app:appD]{Appendix~D} (equations~\ref{eq:sigma11_confounder}--\ref{eq:sigma32_confounder}
+and~\ref{eq:network3by3_detK_confounder}). Finally, both the structural symmetry and reducibility properties generalize beyond the $3\times3$ case to the $N\times N$ network with structural symmetry (both the incoming and out-going causal connections exist for any given pairs of nodes). This is because, for $\mathbf{A}$ matrix that has structural symmetry, the Kronecker sum ($(\mathbf{I}\otimes\mathbf{A}+\mathbf{A}\otimes\mathbf{I})$) is also symmetric; hence its inverse is symmetric as well. With diagonal noise covariance constraint, the general solution for $\sigma_{ij}$ shows structural symmetry. 
+
+% ------------------------------------------------------------
+\subsection*{Combinatoric Complexity of Determining Correlation
+             from Causation}
+% ------------------------------------------------------------
+The complexity of the closed-form solution for $\sigma_{ij}$
+(equation~\ref{eq:sigma_ij_general}) grows rapidly with network size and
+connectivity. For the fully connected $ N \times N $ network, the total number of terms in
+$\sigma_{ij}$'s numerator grows from 2 for the dyad~(equation \ref{eq:rho21_dyad}), to 55 for the $3\times3$ network
+(\hyperref[app:appD]{Appendix~D}, equation~\ref{eq:network3by3_sigma_ij_v2}),
+to 9{,}188 for the $4\times4$ network, which we confirmed by symbolically solving for the fully-connected $4\times4$ network. The degree of each term in the numerator of $\sigma_{ij}$ is exactly
+$m-1=N(N+1)/2-1$, because every entry of the Kronecker-sum matrix
+$\mathbf{K}$ is linear in $\mathbf{A}$. The degree is 2 for the dyad, 5 for the fully connected $3\times3$, and 9
+for the fully connected $4\times4$. 
+The number of terms, however, grows far faster than the degree ---
+nearly two orders of magnitude from $N=3$ to $N=4$. Despite the combinatoric complexity for large N, the entry-level formulae for small networks ($N \le 3$) are tractable and revealing. They make intuitive the ``causal geometries" of pairwise correlation and its noise variance dependence that the full formula obscures. 
+
+% ------------------------------------------------------------
+\subsection*{Lyapunov Equation as a Unifying Mathematical Object
+             for Causal Modeling of Dynamical Systems with Additive
+             White Noise}
+% ------------------------------------------------------------
+
+The Lyapunov equation is the common mathematical substrate
+of two causal modeling traditions that developed largely
+in parallel, namely, Granger causality \citep{Granger1969, BarnettSeth2014} and dynamic causal modeling
+\citep{FristonHarrisonPenny2003, DaunizeauStephanFriston2012}. In the Granger-causality tradition, the steady-state autocovariance of the
+underlying vector autoregressive model satisfies the \emph{discrete-time}
+ Lyapunov equation \citep{Stein1952}. In (spectral) dynamic causal modeling, it links the resting state effective
+connectivity matrix $\mathbf{A}$ to the resting state functional connectivity matrix
+$\mathbf{\Sigma}_Y$ \citep{Friston2014}, under the symmetric constraint ($\mathbf{A}=\mathbf{A}^T$).
+
+
+% ------------------------------------------------------------
+\subsection*{Limitations of the Mathematical Modeling Framework in the Current Study}
+% ------------------------------------------------------------
+
+\textit{Linearity.}
+The linear stochastic dynamical
+system is among the simplest possible
+stochastic models, and many systems of scientific interest
+are substantially nonlinear.
+In nonlinear systems, the Lyapunov
+equation no longer governs the
+steady-state covariance, and closed-form expressions of the
+type derived here are generally unavailable.
+Local linearization around a stable fixed point offers one
+extension to weakly nonlinear systems \citep{Gardiner2004},
+but its validity depends on the amplitude of fluctuations
+relative to the nonlinear terms.
+
+\medskip
+\textit{White noise.}
+The additive white noise assumption --- uncorrelated across
+time --- is what makes the system Markovian
+\citep{Gardiner2004}, such that
+$\mathbf{\Sigma}_Y$ satisfies the Lyapunov equation. Colored (temporally autocorrelated) noise would break this Markov property and require augmenting the state with
+the noise process itself before a Lyapunov-style steady-state
+equation could be obtained.
+
+\medskip
+\textit{No exogenous input.}
+The linear stochastic dynamical systems in our current study do not have time-varying exogenous input. However, many dynamical systems of interest are shaped by external inputs ---
+stimuli, treatments, or other interventions. Incorporating them would require augmenting the model with an explicit input term, as in Friston's dynamic causal modeling
+framework, whose bilinear state equation includes both exogenous
+driving and modulatory inputs \citep{FristonHarrisonPenny2003}.
+Pearl's do-calculus \citep{Pearl2009} provides a general
+framework for reasoning about the causal effect of
+interventions in structural causal models.
+
+\medskip
+\textit{Forward vs.\ inverse problem.}
+This paper addresses the forward problem: given a particular causal architecture and noise covariance, derive the pattern of correlation that arises at the steady state.
+The closed-form expressions may nonetheless be useful for
+the inverse problem --- inferring or estimating the underlying causal architecture from the data
+--- for instance, by providing analytic gradients for
+optimization-based inference, or by characterizing the
+identifiable combinations of causal parameters that can be
+recovered from observed covariance data alone
+\citep{VarandoHansen2020, BongersBlomMooij2022}.
+
+
+\section*{Code Availability}
+No experimental or simulated datasets are analyzed in the current study. All code necessary to reproduce the manuscript is publicly available at \url{https://github.com/yaohuiding1/corr_causation}.
+
+\section*{Acknowledgments}
+The author would like to thank John J.B. Allen, Jessica Andrews-Hanna, and Ying-hui Chou for inspiring his curiosity and interest in the topic of causal inference in the begining, in the context of studying how different brain regions causally influence each other at rest. The author would like to thank John Pearson for his comments and feedback on various drafts of the current manuscript. Finally, the author would like to thank Kevin Kuper, Miles Martinez, and Siyu Wang for their helpful discussions on the topic of causal modeling of dynamical systems in general. 
+
+\clearpage
+\bibliographystyle{apacite}
+\bibliography{corr_causation}
+
+\newpage
+\section*{Appendices}
+
+% Each appendix file ends with its own \bibliographystyle{apacite} and
+% \bibliography{appendix_X} commands (needed so it can also compile
+% standalone). Redirect those two commands here so that, when \input
+% into the main manuscript, they populate a LOCAL bibunit bibliography
+% (headed "References", same as the main text) instead of the main
+% manuscript's global one -- avoiding both the "multiply defined
+% citation" warnings and four unwanted extra copies of the full
+% reference list.
+\let\appendixbibliographystyle\bibliographystyle
+\let\appendixbibliography\bibliography
+\renewcommand{\bibliographystyle}[1]{}
+\renewcommand{\bibliography}[1]{\putbib[#1]}
+
+% apacite's thebibliography environment resets to \bibliographytypesize
+% (\normalsize by default) regardless of the surrounding font size, so
+% the \footnotesize below would otherwise stop at the "References"
+% heading -- redirect it to \footnotesize too, so each appendix's
+% reference list matches its own standalone 10pt rendering as well.
+\let\appendixbibliographytypesize\bibliographytypesize
+\let\bibliographytypesize\footnotesize
+
+% Each appendix's own standalone file is \documentclass{article} (10pt
+% default), while this manuscript is 12pt -- \footnotesize in a 12pt
+% document is exactly 10pt, so this reproduces each appendix's verified
+% standalone layout (no equation re-wrapping needed) instead of letting
+% dense equations overflow at the main text's larger 12pt size.
+\begin{bibunit}[apacite]
+\footnotesize
+\input{appendices/appendix_a_lyapunov_derivation}
+\end{bibunit}
+
+\newpage
+\begin{bibunit}[apacite]
+\footnotesize
+\input{appendices/appendix_b_nxn_network_solution}
+\end{bibunit}
+
+\newpage
+\begin{bibunit}[apacite]
+\footnotesize
+\input{appendices/appendix_c_dyadic_interaction}
+\end{bibunit}
+
+\newpage
+\begin{bibunit}[apacite]
+\footnotesize
+\input{appendices/appendix_d_triadic_interaction}
+\end{bibunit}
+
+\newpage
+\begin{bibunit}[apacite]
+\footnotesize
+\input{appendices/appendix_e_table_prior_studies}
+\end{bibunit}
+
+\let\bibliographytypesize\appendixbibliographytypesize
+\let\bibliographystyle\appendixbibliographystyle
+\let\bibliography\appendixbibliography
+
+\end{document}

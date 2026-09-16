@@ -1,0 +1,41 @@
+
+
+% ----------------------------
+% PARAMETERS
+% ----------------------------
+\def\a{1.2 cm}          % triangle size
+\def\nodeSize{0.7}     % node diameter (cm)
+\def\selfLoopR{0.5*\nodeSize cm}
+
+% ----------------------------
+% SELF-LOOPS
+% ----------------------------
+\newcommand{\selfloop}[2]{%
+% #1 = node, #2 = position (1=left, 2=right, 3=top)
+
+\ifnum#2=1
+\draw[->]
+({- \a},{-\selfLoopR})
+arc[start angle=0,end angle=-270,radius=\selfLoopR];
+\fi
+
+% Loop for node 2
+\ifnum#2=2
+\draw[->]
+({ \a},{-\selfLoopR})
+arc[start angle=-180,end angle=90,radius=\selfLoopR];
+\fi
+
+% Loop for node 3
+\ifnum#2=3
+\draw[->]
+({0},{sqrt(3) * \a +\selfLoopR})
+arc[start angle=180,end angle=-90,radius=\selfLoopR];
+\fi
+}
+
+
+
+
+
+

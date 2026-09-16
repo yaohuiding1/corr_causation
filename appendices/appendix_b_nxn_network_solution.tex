@@ -1,0 +1,414 @@
+\documentclass{article}
+
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=2.54cm,right=2.54cm,marginparwidth=1.75cm]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{comment}
+\usepackage[natbibapa]{apacite}
+\usepackage{xcolor} % added for reviewer comments
+\usepackage{xr-hyper} % resolve cross-references to Appendix A (eq:lds_state_eq, eq:lyapunov_eq0), clickable
+% 1st arg: path to the .aux, relative to this source dir (appendices/), for reading labels.
+% 3rd arg: path to the target PDF, relative to THIS pdf's own location (appendices/build/),
+% since both compiled PDFs live in the same build/ folder -- hence no "build/" prefix here.
+\externaldocument{../build/appendices/appendix_a_lyapunov_derivation/appendix_a_lyapunov_derivation}[appendix_a_lyapunov_derivation.pdf]
+
+\setlength{\parindent}{0pt}
+
+%\title{Appendix B: Analytic Relationship between Patterns of Correlation and Causation for an $N \times N$ Network}
+
+%\author{Yaohui Ding}
+
+\begin{document}
+
+%\maketitle
+
+\section*{Appendix B: Analytic Relationship between Patterns of Correlation and Causation for an $N \times N$ network}
+\phantomsection\label{app:appB}
+\renewcommand{\theequation}{B-\arabic{equation}}
+\setcounter{equation}{0}
+
+\subsection*{The Covariance of Observation $\mathbf{Y} (t)$}
+
+The observation equation of a linear stochastic dynamical system (\ref{eq:lds_state_eq}) is often given by
+% seperator %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% H maps the (possibly unobserved) state X(t) to what is actually measured,
+% Y(t), corrupted by observation noise V(t).
+\begin{equation}
+\mathbf{Y}(t)=\mathbf{H}\mathbf{X}(t)+\mathbf{V}(t)
+\label{eq:lds_obs_eq}
+\end{equation}
+
+where $\mathbf{Y}(t) \in \mathbb{R}^m, \mathbf{V}(t) \in \mathbb{R}^m$, and $\mathbf{H} \in \mathbb{R}^{m \times n}$. Let us assume $n=m$. Additionally,
+% seperator %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{equation}
+\begin{aligned}
+E[\mathbf{V}(t)]&=\mathbf{0},
+Cov \left ( \mathbf{V}(t) \right )=\mathbf{\Sigma}_\mathbf{V}
+\end{aligned}
+\end{equation}
+
+We further assume that the state $\mathbf{X}(t)$ and the observation noise $\mathbf{V}(t)$ are uncorrelated,
+% seperator %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{equation}
+Cov \left ( \mathbf{X}(t), \mathbf{V}(t) \right ) = E \left[ \mathbf{X}(t) \mathbf{V}(t)^T \right] = \mathbf{0}
+\label{eq:state_noise_uncorr}
+\end{equation}
+
+Without introducing any ambiguity and to simplify the notation, we will let $\mathbf{X}(t)=\mathbf{X}$ and $\mathbf{V}(t)=\mathbf{V}$. Furthermore, at steady state, $E[\mathbf{X}]=\mathbf{0}$, as established in (\ref{eq:ss_mean_steady}). The mean of $\mathbf{Y}(t)$ at steady state is
+% seperator %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{equation}
+\begin{aligned}
+E[\mathbf{Y}(t)] &=E \left[ \mathbf{H}\mathbf{X}+\mathbf{V} \right] =E \left[ \mathbf{H}\mathbf{X} \right ] + E \left [ \mathbf{V} \right]
+=\mathbf{H} E \left[ \mathbf{X} \right ] + E \left [ \mathbf{V} \right]
+=\mathbf{H} * \mathbf{0}+ \mathbf{0}=\mathbf{0}
+\end{aligned}
+\label{eq:mean_yt}
+\end{equation}
+
+
+% seperator %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Expand Y(t)Y(t)^T; the two cross terms vanish by eq:state_noise_uncorr,
+% leaving Sigma_Y = H*Sigma_X(infty)*H^T + Sigma_V.
+The covariance of $\mathbf{Y}(t)$ is
+\begin{equation}
+\begin{aligned}
+\mathbf{\Sigma_Y} &= E \left[ \left( \mathbf{Y}(t)-E[\mathbf{Y}(t)] \right) \left( \mathbf{Y}(t)-E[\mathbf{Y}(t)] \right)^T \right] \\
+&=E \left[ \mathbf{Y}(t) \mathbf{Y}(t)^T \right] \\
+&=E \left[ \left( \mathbf{H}\mathbf{X}+\mathbf{V} \right) \left( \mathbf{H}\mathbf{X}+\mathbf{V} \right)^T \right] \\
+&=E \left[ \mathbf{H} \mathbf{X} \mathbf{X}^T \mathbf{H}^T + \mathbf{H} \mathbf{X} \mathbf{V}^T + \mathbf{V} \mathbf{X}^T \mathbf{H}^T +\mathbf{V} \mathbf{V}^T \right] \\
+&= E \left[ \mathbf{H} \mathbf{X} \mathbf{X}^T \mathbf{H}^T \right] + E \left[ \mathbf{H} \mathbf{X} \mathbf{V}^T \right] + E \left [ \mathbf{V} \mathbf{X}^T \mathbf{H}^T \right] + E \left [\mathbf{V} \mathbf{V}^T \right] \\
+&= \mathbf{H} E \left [\mathbf{X} \mathbf{X}^T \right ] \mathbf{H}^T + \mathbf{0} + \mathbf{0} + \mathbf{\Sigma}_V \\
+&= \mathbf{H} \mathbf{\Sigma}_{\mathbf{X}(\infty)} \mathbf{H}^T + \mathbf{\Sigma}_V
+\end{aligned}
+\label{eq:cov_yt}
+\end{equation}
+
+\subsection*{Solving the Lyapunov Equation in Appendix A}
+% Strategy: apply vec() to turn the matrix equation A*Sigma+Sigma*A^T=-Sigma_W
+% into an ordinary linear system (I(x)A+A(x)I)vec(Sigma)=-vec(Sigma_W), then
+% show that Kronecker-sum matrix is invertible (Hurwitz => nonsingular).
+
+Re-arranging the terms in equation \ref{eq:lyapunov_eq0} and let $\mathbf{\Sigma}_{\mathbf{X}(\infty)}=\mathbf{\Sigma}_{\infty}$, we get
+\begin{equation}
+\mathbf{A} \mathbf{\Sigma}_\mathbf{\infty} +\mathbf{\Sigma}_\mathbf{\infty} \mathbf{A}^T=-\mathbf{\Sigma}_\mathbf{W}
+\label{eq:ss_lya_re0}
+\end{equation}
+
+
+Applying the vectorization operator $\operatorname{vec}$, which stacks the columns of a matrix to form a vector \citep{MagnusNeudecker1999}, to equation \ref{eq:ss_lya_re0}, we get.
+\begin{equation}
+\operatorname{vec}(\mathbf{A} \mathbf{\Sigma}_\mathbf{\infty} +\mathbf{\Sigma}_\mathbf{\infty} \mathbf{A}^T)=-\operatorname{vec} \mathbf{\Sigma}_\mathbf{W}
+\label{eq:ss_ly_re1}
+\end{equation}
+
+
+Or equivalently,
+\begin{equation}
+\operatorname{vec}(\mathbf{A} \mathbf{\Sigma}_\mathbf{\infty} \mathbf{I})+\operatorname{vec}(\mathbf{I} \mathbf{\Sigma}_\mathbf{\infty} \mathbf{A}^T)=
+-\operatorname{vec} \mathbf{\Sigma}_\mathbf{W}
+\label{eq:ss_ly_re2}
+\end{equation}
+
+
+The following identity holds for matrices $A $, $B $, and $C $ that are conformal with respect to each other, where $\otimes$ is the Kronecker product \citep{MagnusNeudecker1999}.
+\begin{equation}
+\operatorname{vec}(\mathbf{ABC})=(\mathbf{C}^T \otimes \mathbf{A} )\operatorname{vec}(\mathbf{B})
+\label{eq:vec_formula}
+\end{equation}
+
+
+Applying the formula from equation~\ref{eq:vec_formula} to equation~\ref{eq:ss_ly_re2}, we get
+\begin{equation}
+(\mathbf{I}^T \otimes \mathbf{A}) \operatorname{vec} \mathbf{\Sigma}_\mathbf{\infty} + \left ((\mathbf{A}^T)^T \otimes \mathbf{I} \right) \operatorname{vec} \mathbf{\Sigma}_\mathbf{\infty} = -\operatorname{vec} \mathbf{\Sigma}_\mathbf{W}
+\end{equation}
+
+
+Or equivalently,
+\begin{equation}
+(\mathbf{I} \otimes \mathbf{A} + \mathbf{A} \otimes \mathbf{I}) \operatorname{vec} \mathbf{\Sigma}_\mathbf{\infty} = -\operatorname{vec} \mathbf{\Sigma}_\mathbf{W}
+\end{equation}
+
+
+% Nonsingularity argument: Hurwitz A => all pairwise eigenvalue sums have
+% negative real part => Kronecker sum has no zero eigenvalue => invertible.
+The matrix $\mathbf{I} \otimes \mathbf{A} + \mathbf{A} \otimes \mathbf{I}$ is the Kronecker sum $\mathbf{A} \oplus \mathbf{A}$, whose eigenvalues are exactly the pairwise sums $\lambda_i + \lambda_j$ of the eigenvalues $\{\lambda_i\}$ of $\mathbf{A}$ \citep[Theorem~4.4.5]{HornJohnson1991}. Because $\mathbf{A}$ is Hurwitz, $\mathrm{Re}(\lambda_i) < 0$ for all $i$, so $\mathrm{Re}(\lambda_i + \lambda_j) < 0$ for every pair $(i,j)$; in particular no eigenvalue is zero, and the Kronecker sum is therefore nonsingular. Hence it is invertible, and
+\begin{equation}
+\operatorname{vec} \mathbf{\Sigma}_\mathbf{\infty} =
+-{(\mathbf{I} \otimes \mathbf{A} + \mathbf{A} \otimes \mathbf{I})}^{-1} \operatorname{vec}(\mathbf{\Sigma}_\mathbf{W})
+\label{eq:sigma_infty_vec}
+\end{equation}
+
+
+\subsection*{An Analytic Relationship between Entries of $\mathbf{\Sigma_Y}$ and $A$}
+% Substitute the vec(Sigma_infty) solution (eq:sigma_infty_vec) into
+% vec(Sigma_Y) to express the observed covariance directly in terms of A
+% and Sigma_W.
+Applying the vectorization operator to equation \ref{eq:cov_yt}, we get.
+\begin{equation}
+\begin{aligned}
+\operatorname{vec} \mathbf{\Sigma_Y} &= \operatorname{vec} (\mathbf{H} \mathbf{\Sigma}_\mathbf{\infty} \mathbf{H}^T) + \operatorname{vec} \mathbf{\Sigma}_V =\left( (\mathbf{H}^T)^T \otimes \mathbf{H} \right)\operatorname{vec} \mathbf{\Sigma}_\mathbf{\infty} + \operatorname{vec} \mathbf{\Sigma}_V =\left(\mathbf{H} \otimes \mathbf{H} \right)\operatorname{vec} \mathbf{\Sigma}_\mathbf{\infty} + \operatorname{vec} \mathbf{\Sigma}_V
+\end{aligned}
+\label{eq:cov_yt_vec}
+\end{equation}
+
+
+Substituting $\operatorname{vec} \mathbf{\Sigma}_\infty$ from equation \ref{eq:sigma_infty_vec} into equation \ref{eq:cov_yt_vec}, we get.
+\begin{equation}
+\begin{aligned}
+\operatorname{vec} \mathbf{\Sigma_Y} =\left(\mathbf{H} \otimes \mathbf{H} \right) \operatorname{vec} \mathbf{\Sigma}_\mathbf{\infty} + \operatorname{vec} \mathbf{\Sigma}_V =-\left(\mathbf{H} \otimes \mathbf{H} \right) \left \{ {(\mathbf{I} \otimes \mathbf{A} + \mathbf{A} \otimes \mathbf{I})}^{-1} \operatorname{vec}\mathbf{\Sigma}_\mathbf{W} \right \} + \operatorname{vec} \mathbf{\Sigma}_V
+\end{aligned}
+\label{eq:cov_yt_A_vec}
+\end{equation}
+
+
+% Specializes to the fully-observed, noise-free case used throughout the
+% rest of the paper (Sigma_Y is then just the state covariance Sigma_infty).
+With very little loss of generality, we will assume $\mathbf{H}=\mathbf{I}$ and $\mathbf{\Sigma}_V=\mathbf{0}$, i.e., the states $\mathbf{X}(t)$ of the dynamical system are directly observable and there is no observation noise $\mathbf{V} (t)$. The equation above (\ref{eq:cov_yt_A_vec}) can then be simplified as
+\begin{equation}
+\begin{aligned}
+\operatorname{vec} \mathbf{\Sigma_Y} &=- {(\mathbf{I} \otimes \mathbf{A} + \mathbf{A} \otimes \mathbf{I})}^{-1} \operatorname{vec} \mathbf{\Sigma}_\mathbf{W}
+\end{aligned}
+\label{eq:cov_yt_A_vec1}
+\end{equation}
+
+
+% From here on, work out vec(Sigma_Y)=-K^{-1}vec(Sigma_W) (eq:cov_yt_A_vec1)
+% explicitly for a general n-node network, to show sigma_ij/rho_ij are
+% closed-form (rational) functions of A's entries -- not yet solving any
+% specific topology (that's Appendices C/D).
+% describe a N x N network
+Let us consider an $N \times N$ network with the following architecture.
+% N by N matrix
+% a slightly more compact version of these matrices
+\begin{equation}
+\begin{aligned}
+\mathbf{A} =
+\begin{bmatrix}
+    a_{11}  & \cdots & a_{1n} \\
+     \vdots & \ddots & \vdots  \\
+    a_{n1}  & \cdots & a_{nn}
+\end{bmatrix},
+\mathbf{\Sigma_\mathbf{Y}}=
+\begin{bmatrix}
+    \sigma_{11}  & \cdots & \sigma_{1n} \\
+     \vdots & \ddots & \vdots  \\
+    \sigma_{n1}  & \cdots & \sigma_{nn}
+\end{bmatrix},
+\mathbf{\Sigma_\mathbf{W}} =
+\begin{bmatrix}
+    \sigma_{W_1}  & \cdots & 0 \\
+     \vdots & \ddots & \vdots  \\
+    0  & \cdots & \sigma_{W_n}
+\end{bmatrix}
+\end{aligned}
+\label{eq:nByn_network_append}
+\end{equation}
+
+
+% This is the same Kronecker-sum matrix from eq:sigma_infty_vec, just
+% written out explicitly in n-by-n block form for this general network.
+Therefore,
+\begin{equation}
+\begin{aligned}
+\mathbf{I} \otimes \mathbf{A}+ \mathbf{A} \otimes \mathbf{I} &=
+\left[ \begin{array}{cccc}
+\mathbf{A} & \mathbf{0} & \cdots & \mathbf{0} \\
+\mathbf{0} & \mathbf{A} & \cdots & \mathbf{0} \\
+\vdots & \vdots & \ddots & \vdots \\
+\mathbf{0} & \mathbf{0} & \cdots & \mathbf{A}
+\end{array} \right] +
+\left[ \begin{array}{cccc}
+a_{11}\mathbf{I} & a_{12}\mathbf{I} & \cdots & a_{1n}\mathbf{I} \\
+a_{21}\mathbf{I} & a_{22}\mathbf{I} & \cdots & a_{2n}\mathbf{I} \\
+\vdots & \vdots & \ddots & \vdots \\
+a_{n1}\mathbf{I} & a_{n2}\mathbf{I} & \cdots & a_{nn}\mathbf{I}
+\end{array} \right] \\
+&=\left[ \begin{array}{cccc}
+\mathbf{A}+a_{11}\mathbf{I} & a_{12}\mathbf{I} & \cdots & a_{1n}\mathbf{I} \\
+a_{21}\mathbf{I} & \mathbf{A}+a_{22}\mathbf{I} & \cdots & a_{2n}\mathbf{I} \\
+\vdots & \vdots & \ddots & \vdots \\
+a_{n1}\mathbf{I} & a_{n2}\mathbf{I} & \cdots & \mathbf{A}+a_{nn}\mathbf{I}
+\end{array} \right] \\
+&=\left[ \begin{array}{cccc}
+k_{11}^{11} & k_{21}^{11} & \cdots & k_{nn}^{11} \\
+k_{11}^{21} & k_{21}^{21} & \cdots & k_{nn}^{21} \\
+\vdots & k_{ij}^{uv} & \ddots & \vdots \\
+k_{11}^{nn} & k_{21}^{nn} & \cdots & k_{nn}^{nn} \\
+\end{array} \right]=\mathbf{K}_{n^2 \times n^2}
+\end{aligned}
+\end{equation}
+
+
+
+% Key existence argument: |K| is a polynomial in K's own entries (Leibniz
+% formula), and each entry of K is itself linear in A's entries, so |K| is
+% a well-defined polynomial function g of A's entries too -- this is what
+% guarantees a genuine closed form exists, before deriving its details.
+Where we use superscripts to indicate the row indices and subscripts the column indices of $\mathbf{K}$, respectively. According to the Leibniz formula, the determinant of $\mathbf{K}$ is a homogeneous polynomial of degree $n^2$ in the entries of $\mathbf{K}$: each of the $(n^2)!$ signed terms is a product of $n^2$ entries, one taken from each row and each column. Hence, it is a well-defined (polynomial, and therefore nonlinear) function, which we represent with $g_{0}$
+
+\begin{equation}
+|\mathbf{K}|=g_{0}(k_{11}^{11},k_{21}^{11}, k_{ij}^{uv},\cdots, k_{nn}^{nn})
+\label{eq:det_k}
+\end{equation}
+
+% John P. thinks the following explanation is not necessary. I think so too.
+\begin{comment}
+\sum_{\sigma \in S_{n^2}} sgn(\sigma) k_{\sigma(11)}^{11} k_{\sigma(21)}^{21}, \cdots, k_{\sigma(nn)}^{nn}
+
+Where $\sigma$ is a bijective function from the set of column indices ${11, 21, \cdots, nn }$ to itself, i.e., the output of the function is a permutation of the set, and $sgn(\sigma)$ is the signature of the permutation. The signature $+1$ is  if the permutation can be obtained via an even number of transpositions (swapping two elements of the set). Otherwise, the signature is $-1$,  if the permutation can only be obtained via an odd number of swaps. Finally, $S_{n^2}$ is the symmetry group of the set ${11, 21, \cdots, nn }$, which contains all such permutations. The important thing to recognize here is that the determinant of a square matrix is always well defined and it is the sum of the signed products of entries chosen from the matrix, where each entry is chosen from a unique row such that no two entries are from the same column. Thus, each summand is a polynomial function of n entries from the matrix $K$. Therefore, the determinant of $K$ can be considered as a nonlinear function of its entries and we write it as the following,
+
+\begin{equation}
+|K|=\sum_{\sigma \in S_{n^2}} sgn(\sigma) k_{\sigma(11)}^{11} k_{\sigma(21)}^{21}, \cdots, k_{\sigma(nn)}^{nn}=g_{0}(k_{11}^{11},k_{21}^{11}, k_{ij}^{uv},\cdots, k_{nn}^{nn})
+\end{equation}
+\end{comment}
+
+
+Because each entry ($k_{ij}^{uv}$) of the matrix $\mathbf{K}=\mathbf{I} \otimes \mathbf{A}+ \mathbf{A} \otimes \mathbf{I}$ is a linear combination of the entries of $\mathbf{A}$ (a single off-diagonal entry $a_{ij}$, a sum $a_{ii}+a_{kk}$ on a diagonal position, or $0$), composing $g_{0}$ with these linear maps shows that $|\mathbf{K}|$ is also a polynomial function, and hence a nonlinear function ($g$), of the entries of $\mathbf{A}$.
+\begin{equation}
+|\mathbf{K}|=
+g_{0}(k_{11}^{11},k_{21}^{11}, k_{ij}^{uv},\cdots, k_{nn}^{nn})=g(a_{11},a_{12},\cdots, a_{nn})
+\end{equation}
+
+
+The inverse of $\mathbf{K}$ can be computed from its cofactor matrix $\mathbf{C}$ and determinant $|\mathbf{K}|$.
+\begin{equation}
+\mathbf{K}^{-1}=\frac{1}{|\mathbf{K}|} \mathbf{C}^T=\frac{1}{|\mathbf{K}|}
+\left[ \begin{array}{cccc}
+C_{11}^{11} & C_{21}^{11} & \cdots & C_{nn}^{11} \\
+C_{11}^{21} & C_{21}^{21} & \cdots & C_{nn}^{21} \\
+\vdots & C_{ij}^{uv} & \ddots & \vdots \\
+C_{11}^{nn} & C_{21}^{nn} & \cdots & C_{nn}^{nn} \\
+\end{array} \right]^T
+\end{equation}
+
+
+\begin{comment}
+\frac{1}{|\mathbf{K}|}\left[ \begin{array}{cccc}
+C_{11}^{11} & C_{11}^{21} & \cdots & C_{11}^{nn} \\
+C_{21}^{11} & C_{21}^{21} & C_{ij}^{uv} & C_{21}^{nn} \\
+\vdots & \vdots & \ddots & \vdots \\
+C_{nn}^{11} & C_{nn}^{21} & \cdots & C_{nn}^{nn} \\
+\end{array} \right]
+\end{comment}
+
+
+Each entry $C_{ij}^{uv}$ of matrix $\mathbf{C}$ is obtained by multiplying $(-1)^{\{u+(v-1)n\}+\{i+(j-1)n\}}$ by the associated minor $M_{\{u+(v-1)n\},\,\{i+(j-1)n\}}$ of $\mathbf{K}$, i.e.
+\begin{comment}
+\begin{equation}
+C=\left[ \begin{array}{cccc}
+C_{11}^{11} & C_{21}^{11} & \cdots & C_{nn}^{11} \\
+C_{11}^{21} & C_{21}^{21} & \cdots & C_{nn}^{21} \\
+\vdots & \vdots & \ddots & \vdots \\
+C_{11}^{nn} & C_{21}^{nn} & \cdots & C_{nn}^{nn} \\
+\end{array} \right]
+\end{equation}
+\end{comment}
+
+\begin{equation}
+C_{ij}^{uv}=(-1)^{\{u+(v-1)n\}+\{i+(j-1)n\}}M_{\{u+(v-1)n\},\,\{i+(j-1)n\}}
+\end{equation}
+
+
+Where $i=1,2,\cdots,n$, $j=1,2,\cdots,n$, $u=1,2,\cdots,n$, and $v=1,2,\cdots, n$. Each pair of $(i,j)$ identifies a unique column of the cofactor matrix $\mathbf{C}$  and each pair of $(u,v)$ a unique row of $\mathbf{C}$, respectively. The minor $M_{\{u+(v-1)n\},\,\{i+(j-1)n\}}$ is the determinant of the submatrix formed by deleting the $\{u+(v-1)n\}$ row and $\{i+(j-1)n\}$ column of matrix $\mathbf{K}$. For example,
+\begin{equation}
+\left[ \begin{array}{ccc}
+a & d & g \\
+b & e & h \\
+c & f & i \\
+\end{array} \right],
+\quad
+M_{2,3}=det
+\left[ \begin{array}{ccc}
+a & d & {[]} \\
+{[]} & {[]} & {[]} \\
+c & f & {[]} \\
+\end{array} \right]=
+det
+\left[ \begin{array}{cc}
+a & d \\
+c & f \\
+\end{array} \right]=af-cd
+\end{equation}
+
+
+Again, each entry of the cofactor matrix $\mathbf{C}$ is well defined and can be identified as a nonlinear function of $(k_{11}^{11},k_{21}^{11}, k_{ij}^{uv},\cdots, k_{nn}^{nn})$ or equivalently a nonlinear function of $(a_{11},a_{12},\cdots, a_{nn})$.
+%%%%%%%%%%%%%%%%%%%%%
+\begin{equation}
+C_{ij}^{uv}=f_{ij}^{uv}(a_{11},a_{12},\cdots, a_{nn})
+\label{eq:cofactor_poly}
+\end{equation}
+%%%%%%%%%%%%%%%%%%%%%
+
+Equation $\operatorname{vec} \mathbf{\Sigma}_Y =- {(\mathbf{I} \otimes \mathbf{A} + \mathbf{A} \otimes \mathbf{I})}^{-1} \operatorname{vec} \mathbf{\Sigma}_\mathbf{W}$ (\ref{eq:cov_yt_A_vec1}) can now be written, equivalently, as the following.
+
+\begin{equation}
+\operatorname{vec} \mathbf{\Sigma}_Y=
+\left[ \begin{array}{c}
+\sigma_{11} \\
+\vdots \\
+\sigma_{n1} \\
+\sigma_{ij} \\
+\vdots \\
+\sigma_{n2} \\
+\sigma_{1n} \\
+\vdots \\
+\sigma_{nn} \\
+\end{array} \right]=
+-\mathbf{K}^{-1} \operatorname{vec} \mathbf{\Sigma_W} =- \frac{1}{|\mathbf{K}|}
+\left[ \begin{array}{cccc}
+C_{11}^{11} & C_{21}^{11} & \cdots & C_{nn}^{11} \\
+C_{11}^{21} & C_{21}^{21} & \cdots & C_{nn}^{21} \\
+\vdots & C_{ij}^{uv} & \ddots & \vdots \\
+C_{11}^{nn} & C_{21}^{nn} & \cdots & C_{nn}^{nn} \\
+\end{array} \right]^T
+\left[ \begin{array}{c}
+\sigma_{W_1} \\
+0 \\
+\vdots \\
+0 \\
+\sigma_{W_2} \\
+0 \\
+\vdots \\
+0 \\
+\sigma_{W_n} \\
+\end{array} \right]
+\end{equation}
+
+
+Or equivalently,
+\begin{equation}
+\sigma_{ij}=\sigma_{ji}=- \frac{1}{|\mathbf{K}|}
+\sum_{u=1}^{n} \sum_{v=1}^{n} C_{ij}^{uv} \sigma_{W_{uv}}=
+- \frac{\sum_{u=1}^{n} \sum_{v=1}^{n}
+f_{ij}^{uv}(a_{11},a_{12},\cdots, a_{nn}) \sigma_{W_{uv}}}{g(a_{11},a_{12},\cdots, a_{nn})}
+\label{eq:sigma_ij_final}
+\end{equation}
+
+Each pair $(i,j)$ identifies a unique entry of the covariance matrix $\mathbf{\Sigma_Y}$, which corresponds to a unique column of the cofactor matrix $\mathbf{C}$, and each pair $(u,v)$ identifies a unique row of $\mathbf{C}$. Summing over $u$ and $v$ therefore cycles through all the entries (rows) in the column identified by $(i,j)$. Because $\mathbf{\Sigma_W}$ is diagonal, $\sigma_{W_{uv}}=0$ whenever $u \neq v$, so only the diagonal terms ($u=v$) contribute to these sums. The correlation coefficient then follows from its definition, $\rho_{ij}=\sigma_{ij}/\sqrt{\sigma_{ii}\,\sigma_{jj}}$. 
+\begin{equation}
+\begin{aligned}
+\rho_{ij} &=\frac{\sigma_{ij}}{\sqrt{\sigma_{ii}\,\sigma_{jj}}} \\
+\\
+&=\frac{- \frac{1}{|\mathbf{K}|}\sum_{u=1}^{n} C_{ij}^{uu} \sigma_{W_{u}}}{\sqrt{\left(- \frac{1}{|\mathbf{K}|}\sum_{u=1}^{n} C_{ii}^{uu} \sigma_{W_{u}}\right)\left(- \frac{1}{|\mathbf{K}|}\sum_{u=1}^{n} C_{jj}^{uu} \sigma_{W_{u}}\right)}} \\
+\\
+&=-\operatorname{sgn}(\det \mathbf{K})\, \frac{ \sum_{u=1}^{n} C_{ij}^{uu} \sigma_{W_{u}}}{\sqrt{\left( \sum_{u=1}^{n} C_{ii}^{uu} \sigma_{W_{u}}\right)\left( \sum_{u=1}^{n} C_{jj}^{uu} \sigma_{W_{u}}\right)}}
+\end{aligned}
+\label{eq:rho_ij_nbyn}
+\end{equation}
+
+where the cofactor terms $C_{ij}^{uu}$ are the polynomials in the causal parameters given by equation~(\ref{eq:cofactor_poly}).
+% This is the appendix's central result: rho_ij, for an arbitrary n-node
+% network, is a ratio of polynomials in A's entries and the noise
+% variances -- the general existence claim that Appendices C/D make
+% concrete for n=2 and n=3.
+
+
+%%%%%%%%%%%%
+
+
+
+\bibliographystyle{apacite}
+\bibliography{appendix_b}
+
+\end{document}

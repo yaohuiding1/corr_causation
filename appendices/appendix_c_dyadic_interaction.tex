@@ -1,0 +1,339 @@
+\documentclass{article}
+
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=2.54cm,right=2.54cm,marginparwidth=1.75cm]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{comment}
+\usepackage{xcolor}
+\usepackage[natbibapa]{apacite}
+\usepackage{xr-hyper} % resolve cross-reference to Appendix B (eq:cov_yt_A_vec1), clickable
+% 1st arg: path to the .aux, relative to this source dir (appendices/), for reading labels.
+% 3rd arg: path to the target PDF, relative to THIS pdf's own location (appendices/build/),
+% since both compiled PDFs live in the same build/ folder -- hence no "build/" prefix here.
+\externaldocument{../build/appendices/appendix_b_nxn_network_solution/appendix_b_nxn_network_solution}[appendix_b_nxn_network_solution.pdf]
+
+\setlength{\parindent}{0pt}
+
+%\title{Appendix C: Analytic Relationship between Correlation and Causation for Dyadic Interaction}
+
+%\author{Yaohui Ding}
+
+\begin{document}
+
+%\maketitle
+
+\section*{Appendix C: Analytic Relationship between Correlation and Causation for Dyadic Interaction}
+\phantomsection\label{app:appC}
+\renewcommand{\theequation}{C-\arabic{equation}}
+\setcounter{equation}{0}
+
+% Concrete n=2 case of Appendix B's general A/Sigma_Y/Sigma_W setup.
+Consider a $2 \times2$ network with the following architecture.
+\begin{equation}
+\begin{aligned}
+\mathbf{A}=
+\begin{bmatrix}
+a_{11} & a_{12} \\
+a_{21} & a_{22}
+\end{bmatrix}, \quad
+\mathbf{\Sigma_\mathbf{Y}}=
+\begin{bmatrix}
+\sigma_{11} & \sigma_{12} \\
+\sigma_{21} & \sigma_{22}
+\end{bmatrix}, \quad
+\mathbf{\Sigma_\mathbf{W}}=
+\begin{bmatrix}
+\sigma_{W_1} & 0 \\
+0 & \sigma_{W_2}
+\end{bmatrix}
+\end{aligned}
+\end{equation}
+
+
+%%
+Recall from equation \ref{eq:cov_yt_A_vec1} that we have $\operatorname{vec} \mathbf{\Sigma_Y} =- {(\mathbf{I} \otimes \mathbf{A} + \mathbf{A} \otimes \mathbf{I})}^{-1} \operatorname{vec} \mathbf{\Sigma}_\mathbf{W}$. Or equivalently,
+\begin{equation}
+ {(\mathbf{I} \otimes \mathbf{A} + \mathbf{A} \otimes \mathbf{I})} \operatorname{vec} \mathbf{\Sigma_Y} =-  \operatorname{vec} \mathbf{\Sigma}_\mathbf{W}
+\label{eq:lya_vec_full}
+\end{equation}
+
+
+% Goal: L2/D2 let us drop the redundant sigma_12=sigma_21 equation, cutting
+% the 4x4 system down to the 3x3 K matrix built below.
+Let us use the half-vectorization technique \citep{MagnusNeudecker1999} to reduce the dimensionality of this vector-valued equation. Half-vectorization and full vectorization of symmetric  $2 \times 2 $ (or $N \times N $) matrices are related to each other via the elimination $\mathbf{L_2}$ (or $\mathbf{L_n}$ ) and duplication $\mathbf{D_2}$ (or $\mathbf{D_n}$) matrices, which are defined as the followings.
+% the duplication matrix D2
+\begin{equation}
+\begin{aligned}
+\mathbf{D_2}=
+\begin{bmatrix}
+1 &0 &0 \\
+0 &1 &0 \\
+0 &1 &0\\
+0 &0 &1 \\
+\end{bmatrix}, \quad
+\mathbf{L_2}=
+\begin{bmatrix}
+1 &0 &0 &0 \\
+0 &1 &0  &0\\
+0 &0 &0 &1\\
+\end{bmatrix}
+\end{aligned}
+\end{equation}
+
+
+
+Half and full vectorization of $\Sigma_\mathbf{Y}$ yield
+\begin{equation}
+\begin{aligned}
+\operatorname{vech}(\boldsymbol{\Sigma}_\mathbf{Y})=
+\begin{bmatrix}
+\sigma_{11}\\
+\sigma_{21} \\
+\sigma_{22}
+\end{bmatrix} \quad\text{and}\quad
+\operatorname{vec}(\boldsymbol{\Sigma}_\mathbf{Y})=
+\begin{bmatrix}
+\sigma_{11}\\
+\sigma_{21} \\
+\sigma_{12} \\
+\sigma_{22}
+\end{bmatrix}
+\end{aligned}
+\end{equation}
+
+
+Furthermore,
+\begin{equation}
+\operatorname{vec}(\boldsymbol{\Sigma}_\mathbf{Y})=\mathbf{D_2}\operatorname{vech}(\boldsymbol{\Sigma}_\mathbf{Y})=
+\begin{bmatrix}
+1 &0 &0 \\
+0 &1 &0 \\
+0 &1 &0\\
+0 &0 &1 \\
+\end{bmatrix}
+\begin{bmatrix}
+\sigma_{11}\\
+\sigma_{21} \\
+\sigma_{22}
+\end{bmatrix}=
+\begin{bmatrix}
+\sigma_{11}\\
+\sigma_{21} \\
+\sigma_{21} \\
+\sigma_{22}
+\end{bmatrix}=
+\begin{bmatrix}
+\sigma_{11}\\
+\sigma_{21} \\
+\sigma_{12} \\
+\sigma_{22}
+\end{bmatrix}
+\end{equation}
+
+
+% verify that L2*vec(sigma_y) equals to vech(sigma_y)
+\begin{equation}   \operatorname{vech}(\boldsymbol{\Sigma}_\mathbf{Y})=\mathbf{L_2}\operatorname{vec}(\boldsymbol{\Sigma}_\mathbf{Y})=
+\begin{bmatrix}
+1 &0 &0 &0 \\
+0 &1 &0  &0\\
+0 &0 &0 &1\\
+\end{bmatrix}
+\begin{bmatrix}
+\sigma_{11}\\
+\sigma_{21} \\
+\sigma_{12} \\
+\sigma_{22}
+\end{bmatrix}=
+\begin{bmatrix}
+\sigma_{11}\\
+\sigma_{21} \\
+\sigma_{22}
+\end{bmatrix}
+\end{equation}
+
+
+
+It can be shown that $\mathbf{L_2} \mathbf{D_2} = \mathbf{I}$. However, $\mathbf{D_2}$ is only a \emph{right} inverse of $\mathbf{L_2}$ here, since the reverse product $\mathbf{D_2}\mathbf{L_2}\neq\mathbf{I}$ (it is an oblique projection
+onto the symmetric subspace, not the identity). The derivation below uses
+$\mathbf{L_2}\mathbf{D_2}=\mathbf{I}$ only.
+% This is the actual half-vectorization step: insert D2*vech in place of
+% vec, so the equation is now stated in terms of the reduced 3-vector
+% vech(Sigma_Y) instead of the redundant 4-vector vec(Sigma_Y).
+Applying the half-vectorization technique to equation \ref{eq:lya_vec_full}, we get
+\begin{equation}
+(\mathbf{I} \otimes \mathbf{A} + \mathbf{A} \otimes \mathbf{I}) \mathbf{D_2} \operatorname{vech}(\boldsymbol{\Sigma}_\mathbf{Y}) = -\mathbf{D_2} \operatorname{vech}(\mathbf{\Sigma}_\mathbf{W})
+\label{eq:lya_vec_half}
+\end{equation}
+
+Multiplying both sides of equation \ref{eq:lya_vec_half} above by $\mathbf{L_2}$, we get.
+\begin{equation}
+\mathbf{L_2}(\mathbf{I} \otimes \mathbf{A} + \mathbf{A} \otimes \mathbf{I}) \mathbf{D_2} \operatorname{vech}(\boldsymbol{\Sigma}_\mathbf{Y}) = -\mathbf{L_2} \mathbf{D_2} \operatorname{vech}(\mathbf{\Sigma}_\mathbf{W})
+=-\operatorname{vech}(\mathbf{\Sigma}_\mathbf{W})
+\label{eq:ly_halfvec1}
+\end{equation}
+
+Note, left-multiplying by the non-square, non-invertible $\mathbf{L_2}$ is not in general a lossless transformation, since it discards one of the four scalar equations
+(the $\sigma_{12}$ row). It is lossless here because both $\boldsymbol{\Sigma}_\mathbf{Y}$ and $\mathbf{\Sigma}_\mathbf{W}$ are symmetric. For a general $N\times N$ network, equation
+\ref{eq:ly_halfvec1} generalizes \citep{MagnusNeudecker1999} to
+
+\begin{equation}
+\mathbf{L_n} (\mathbf{I} \otimes \mathbf{A} + \mathbf{A} \otimes \mathbf{I}) \mathbf{D_n} \operatorname{vech}(\boldsymbol{\Sigma}_\mathbf{Y}) =-\operatorname{vech}(\mathbf{\Sigma}_\mathbf{W})
+\label{eq:ly_halfvec1_nbyn}
+\end{equation}
+
+% Distinct claim from Appendix B's: that result showed the FULL Kronecker
+% sum (I(x)A+A(x)I) is invertible; this half-vec-reduced K needs its own
+% invertibility argument (cited separately), since sandwiching between
+% Ln/Dn doesn't automatically preserve invertibility.
+It can be shown that $\mathbf{L_n}(\mathbf{I} \otimes \mathbf{A} + \mathbf{A} \otimes \mathbf{I}) \mathbf{D_n}$ is always invertible, if matrix $\mathbf{A}$ is Hurwitz stable \citep{Antsaklis1997}. Therefore,
+\begin{equation}
+    \operatorname{vech} (\boldsymbol{\Sigma}_\mathbf{Y})=
+    -\left (\mathbf{L_2}(\mathbf{I} \otimes \mathbf{A} + \mathbf{A} \otimes \mathbf{I}) \mathbf{D_2} \right )^{-1}\operatorname{vech}(\boldsymbol{\Sigma}_\mathbf{W})
+\label{eq:lya_vec_half1}
+\end{equation}
+
+%% part of the vectorized Lyapuno\(\)v equation
+\begin{equation}
+(\mathbf{I} \otimes \mathbf{A} + \mathbf{A} \otimes \mathbf{I})=
+\begin{bmatrix}
+\mathbf{A} & \mathbf{0} \\
+\mathbf{0} & \mathbf{A}
+\end{bmatrix}+
+\begin{bmatrix}
+a_{11}\mathbf{I} & a_{12}\mathbf{I} \\
+a_{21}\mathbf{I} & a_{22}\mathbf{I}
+\end{bmatrix}=
+\begin{bmatrix}
+\mathbf{A}+a_{11}\mathbf{I} & a_{12}\mathbf{I} \\
+a_{21}\mathbf{I} & \mathbf{A}+a_{22}\mathbf{I}
+\end{bmatrix}
+\end{equation}
+
+% denote entries of the matrix with a, b, c, d, etc to simplify the notations
+Let us denote
+\begin{equation}
+\begin{bmatrix}
+\mathbf{A}+a_{11}\mathbf{I} & a_{12}\mathbf{I} \\
+a_{21}\mathbf{I} & \mathbf{A}+a_{22}\mathbf{I}
+\end{bmatrix}=
+\begin{bmatrix}
+2a_{11} &a_{12} &a_{12} &0 \\
+a_{21} &a_{11}+a_{22} &0 &a_{12} \\
+a_{21} &0 &a_{11}+a_{22} &a_{12}\\
+0 &a_{21} &a_{21} &2a_{22} \\
+\end{bmatrix}=
+\begin{bmatrix}
+a &b &b &0 \\
+c &d &0 &b \\
+c &0 &d &b\\
+0 &c &c &e \\
+\end{bmatrix}
+\end{equation}
+
+% a,b,c,d,e are pure notational shorthand for the rest of this derivation --
+% no new assumptions, just fewer subscripts to carry through the algebra.
+where $a=2a_{11}$, $b=a_{12}$, $c=a_{21}$, $d=a_{11}+a_{22}$, and $e=2a_{22}$. Therefore,
+
+\begin{equation}
+\mathbf{L_2}(\mathbf{I} \otimes \mathbf{A} + \mathbf{A} \otimes \mathbf{I}) \mathbf{D_2}=
+\begin{bmatrix}
+1 &0 &0 &0 \\
+0 &1 &0  &0\\
+0 &0 &0 &1\\
+\end{bmatrix}
+\begin{bmatrix}
+a &b &b &0 \\
+c &d &0 &b \\
+c &0 &d &b\\
+0 &c &c &e \\
+\end{bmatrix}
+\begin{bmatrix}
+1 &0 &0 \\
+0 &1 &0 \\
+0 &1 &0\\
+0 &0 &1 \\
+\end{bmatrix}=
+\begin{bmatrix}
+a &2b &0 \\
+c &d &b \\
+0 &2c &e\\
+\end{bmatrix}=\mathbf{K}
+\end{equation}
+
+% This 3x3 K is the concrete n=2 instance of lyap_halfvec.m's K = L(I(x)A
+% + A(x)I)D. |K| and K^{-1} below are its literal determinant/inverse.
+The determinant of $\mathbf{K}$ is, $|\mathbf{K}|=ade-2abc-2bce$. The inverse of $\mathbf{K}$ is,
+\begin{equation}
+\mathbf{K}^{-1}=
+{\begin{bmatrix}
+a &2b &0 \\
+c &d &b \\
+0 &2c &e\\
+\end{bmatrix}}^{-1}=\frac{1}{|\mathbf{K}|}
+{
+\begin{bmatrix}
+de-2bc &-2be &2b^2 \\
+-ce &ae &-ab \\
+2c^2 &-2ac &ad-2bc\\
+\end{bmatrix}
+}
+\end{equation}
+
+Therefore, the analytic solution to equation \ref{eq:lya_vec_half1} is
+\begin{equation}
+\begin{aligned}
+\operatorname{vech} \boldsymbol{\Sigma}_\mathbf{Y} &=
+-(\mathbf{L_2}(\mathbf{I} \otimes \mathbf{A} + \mathbf{A} \otimes \mathbf{I})\mathbf{D_2})^{-1} \operatorname{vech} \boldsymbol{\Sigma}_\mathbf{W}
+=-\frac{1}{|\mathbf{K}|}
+{
+\begin{bmatrix}
+de-2bc &-2be &2b^2 \\
+-ce &ae &-ab \\
+2c^2 &-2ac &ad-2bc\\
+\end{bmatrix}
+}
+\begin{bmatrix}
+\sigma_{W_1}\\
+0 \\
+\sigma_{W_2}
+\end{bmatrix}
+\end{aligned}
+\end{equation}
+
+Or equivalently,
+\begin{align}
+\sigma_{21} &= -\frac{1}{|\mathbf{K}|} \{ -ce\sigma_{W_1}-ab\sigma_{W_2} \}
+= \frac{1}{|\mathbf{K}|} \{ 2a_{21}a_{22}\sigma_{W_1}+2a_{11}a_{12}\sigma_{W_2} \} \\
+\sigma_{11} &= -\frac{1}{|\mathbf{K}|} \{ (de-2bc)\sigma_{W_1}+2b^2 \sigma_{W_2} \}= -\frac{1}{|\mathbf{K}|} \{ \left (2(a_{11}+a_{22})a_{22}-2a_{12}a_{21} \right)\sigma_{W_1}+2a_{12}^2 \sigma_{W_2} \}  \\
+\sigma_{22} &= -\frac{1}{|\mathbf{K}|} \{(ad-2bc)\sigma_{W_2}  +2c^2\sigma_{W_1} \}
+=-\frac{1}{|\mathbf{K}|} \{ \left ( 2(a_{11}+a_{22})a_{11}- 2 a_{12}a_{21} \right)\sigma_{W_2} +2 a_{21}^2\sigma_{W_1} \}
+\end{align}
+
+% Rewriting |K| via tr(A), det(A) is what lets the Hurwitz assumption
+% (tr<0, det>0) directly fix its sign below.
+The determinant of $\mathbf{K}$ is
+$|\mathbf{K}|=ade-2abc-2bce=4(a_{11}+a_{22})(a_{11}a_{22}-a_{12}a_{21})
+=4\,\mathrm{tr}(\mathbf{A})\det(\mathbf{A})$, using $a_{11}+a_{22}=\mathrm{tr}(\mathbf{A})$
+and $a_{11}a_{22}-a_{12}a_{21}=\det(\mathbf{A})$. Since $\mathbf{A}$ is Hurwitz,
+$\mathrm{tr}(\mathbf{A})<0$ and $\det(\mathbf{A})>0$, so $|\mathbf{K}|<0$.
+
+% Final result: the closed-form dyad correlation formula, cross-referenced
+% from the main manuscript's early Results section (eq:rho21_dyad) --
+% verified to match lyap_halfvec.m's symbolic/numeric output exactly.
+Substituting $\sigma_{21}$, $\sigma_{11}$, and $\sigma_{22}$ into the definition of $\rho_{21}$, we get.
+\begin{equation}
+\begin{aligned}
+ \rho_{21} &=\frac{\sigma_{21}}{\sqrt{\sigma_{11}}\sqrt{\sigma_{22}}} \\
+  & =\frac{ 2 \frac{1}{|\mathbf{K}|} \{ a_{21} a_{22} \sigma_{W_1}+ a_{11} a_{12}\sigma_{W_2} \} }
+  {\sqrt{-2 \frac{1}{|\mathbf{K}|} \{ \left ((a_{11}+a_{22})a_{22}-a_{12}a_{21} \right)\sigma_{W_1}+a_{12}^2 \sigma_{W_2} \}} \sqrt{-2 \frac{1}{|\mathbf{K}|} \{ \left ( (a_{11}+a_{22})a_{11}- a_{12}a_{21} \right)\sigma_{W_2} + a_{21}^2\sigma_{W_1} \} }} \\
+  &= \operatorname{sgn}(\det \mathbf{K}) \ \frac{a_{21} a_{22} \sigma_{W_1}+ a_{11} a_{12}\sigma_{W_2}}{ \sqrt{ \{ \left (a_{11} a_{22} +a_{22}^2-a_{12}a_{21} \right)\sigma_{W_1}+a_{12}^2 \sigma_{W_2} \} \{ \left (  a_{11}a_{22} + a_{11}^2 - a_{12}a_{21} \right)\sigma_{W_2} + a_{21}^2\sigma_{W_1}  \} }} \\
+  &=- \frac{a_{21} a_{22} \sigma_{W_1}+ a_{11} a_{12}\sigma_{W_2}}{ \sqrt{ \{ \left (a_{11} a_{22} +a_{22}^2-a_{12}a_{21} \right)\sigma_{W_1}+a_{12}^2 \sigma_{W_2} \} \{ \left (  a_{11}a_{22} + a_{11}^2 - a_{12}a_{21} \right)\sigma_{W_2} + a_{21}^2\sigma_{W_1}  \} }}
+\end{aligned}
+\label{eq:rho12_0}
+\end{equation}
+
+\bibliographystyle{apacite}
+\bibliography{appendix_c}
+
+\end{document}

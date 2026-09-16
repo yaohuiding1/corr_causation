@@ -1,0 +1,2117 @@
+\documentclass{article}
+
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=2.54cm,right=2.54cm,marginparwidth=1.75cm]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{comment}
+\usepackage{xcolor}
+\usepackage{cancel} % for \cancel{} diagonal strikethrough (reducibility subsection)
+\renewcommand{\CancelColor}{\color{red}} % make \cancel{} strikethrough lines red
+\usepackage[natbibapa]{apacite}
+\usepackage{xr-hyper} % resolve cross-reference to Appendix C (eq:ly_halfvec1_nbyn), clickable
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, calc}
+\input{../scripts/plot_figure1/fig1_network_diagram_macros.tex} % \selfloop macro, network-topology figures
+% 1st arg: path to the .aux, relative to this source dir (appendices/), for reading labels.
+% 3rd arg: path to the target PDF, relative to THIS pdf's own location (appendices/build/),
+% since both compiled PDFs live in the same build/ folder -- hence no "build/" prefix here.
+\externaldocument{../build/appendices/appendix_c_dyadic_interaction/appendix_c_dyadic_interaction}[appendix_c_dyadic_interaction.pdf]
+
+\setlength{\parindent}{0pt}
+
+%\title{Appendix D: Analytic Relationship between Correlation and Causation for Triadic Interaction}
+
+%\author{Yaohui Ding}
+
+\begin{document}
+
+%\maketitle
+
+\section*{Appendix D: Analytic Relationship between Correlation and Causation for $3 \times 3$ Networks}
+\phantomsection\label{app:appD}
+
+\renewcommand{\theequation}{\textbf{D}-\arabic{equation}}
+\setcounter{equation}{0}
+
+\renewcommand{\thefigure}{\textbf{D}-\arabic{figure}}
+\setcounter{figure}{0}
+
+
+\subsection*{A confounder network topology}
+
+In the following, let us solve a special case of a $3 \times 3$ network analytically to show that confounder-induced (spurious) correlation can arise, due to the influence of a third variable (or process), between two variables that are not causally linked to each other.
+
+\begin{figure}[H]
+\centering
+
+\def\figscale{1}
+
+\begin{minipage}[c]{0.23\textwidth}
+\centering
+
+\def\a{1.2 cm}
+\def\nodeSize{0.7}
+\def\selfLoopR{0.5*\nodeSize cm}
+
+\begin{tikzpicture}[
+    scale=\figscale,
+    >={Stealth[length=3mm,width=2mm]},
+    every node/.style={
+        circle,
+        draw,
+        minimum size=\nodeSize cm,
+    }
+]
+
+\node (1) at (-\a,0) {1};
+\node (2) at (\a,0) {2};
+\node (3) at (0,{sqrt(3)*\a}) {3};
+
+\draw[->] (3) to[bend right=12] (1);
+\draw[->] (3) to[bend left=12] (2);
+
+\selfloop{1}{1}
+\selfloop{2}{2}
+\selfloop{3}{3}
+
+\end{tikzpicture}
+
+\end{minipage}%
+\hspace{0\textwidth}%
+\begin{minipage}[c]{0.23\textwidth}
+\raggedright
+
+\[
+\mathbf{A}=
+\begin{bmatrix}
+a_{11} & 0 & a_{13} \\
+0 & a_{22} & a_{23} \\
+0 & 0 & a_{33}
+\end{bmatrix}
+\]
+
+\end{minipage}%
+\hspace{0.005\textwidth}%
+\begin{minipage}[c]{0.25\textwidth}
+\raggedright
+
+\[
+\mathbf{\Sigma_Y}=
+\begin{bmatrix}
+\sigma_{11} & \sigma_{12} & \sigma_{13} \\
+\sigma_{21} & \sigma_{22} & \sigma_{23} \\
+\sigma_{31} & \sigma_{32} & \sigma_{33}
+\end{bmatrix}
+\]
+
+\end{minipage}%
+\hspace{0.005\textwidth}%
+\begin{minipage}[c]{0.27\textwidth}
+\raggedright
+
+\[
+\mathbf{\Sigma_W}=
+\begin{bmatrix}
+\sigma_{W_1} & 0 & 0 \\
+0 & \sigma_{W_2} & 0 \\
+0 & 0 & \sigma_{W_3}
+\end{bmatrix}
+\]
+
+\end{minipage}%
+
+\caption{A confounder network topology and its associated matrices.}
+\label{fig:network3by3_confounder}
+\end{figure}
+
+% vector-valued Lyapunov equation
+% Concrete n=3 instance of Appendix C's general half-vec equation
+% (eq:ly_halfvec1_nbyn), with L3/D3 in place of L2/D2.
+From equation \ref{eq:ly_halfvec1_nbyn}, we have the following analytic relationship between entries of $\mathbf{\Sigma_Y}$ and $A$.
+\begin{equation}
+    vech (\boldsymbol{\Sigma}_\mathbf{Y})=
+    -(\mathbf{L_3}(\mathbf{I} \otimes \mathbf{A} + \mathbf{A} \otimes \mathbf{I}) \mathbf{D_3})^{-1}vech(\boldsymbol{\Sigma}_\mathbf{W})
+\label{eq:lyapunov_33_confounder}
+\end{equation}
+
+The elimination matrix $\mathbf{L_3}$ is,
+\begin{equation}
+\mathbf{L_3}=
+\begin{bmatrix}
+\left[ \begin{array}{ccc}
+1 &0 &0 \\
+0 &1 &0 \\
+0 &0 &1 \\
+\end{array} \right]
+\left[ \begin{array}{ccc}
+0 &0 &0 \\
+0 &0 &0 \\
+0 &0 &0 \\
+\end{array} \right]
+\left[ \begin{array}{ccc}
+0 &0 &0 \\
+0 &0 &0 \\
+0 &0 &0 \\
+\end{array} \right] \\[15pt]
+\left[ \begin{array}{ccc}
+0 &0 &0 \\
+0 &0 &0 \\
+0 &0 &0 \\
+\end{array} \right]
+\left[ \begin{array}{ccc}
+0 &1 &0 \\
+0 &0 &1 \\
+0 &0 &0 \\
+\end{array} \right]
+\left[ \begin{array}{ccc}
+0 &0 &0 \\
+0 &0 &0 \\
+0 &0 &1 \\
+\end{array} \right]
+\end{bmatrix}=
+\begin{bmatrix}
+&\mathbf{I} &\mathbf{0} &\mathbf{0} \\
+&\mathbf{0} &\mathbf{L_{22}} &\mathbf{L_{23}}
+\end{bmatrix}
+\end{equation}
+
+% duplication matrix D_3
+The duplication matrix $\mathbf{D_3}$ is,
+\begin{equation}
+\mathbf{D_3}=
+\begin{bmatrix}
+\left[ \begin{array}{ccc}
+1 &0 &0 \\
+0 &1 &0 \\
+0 &0 &1 \\
+\end{array} \right]
+\left[ \begin{array}{ccc}
+0 &0 &0 \\
+0 &0 &0 \\
+0 &0 &0 \\
+\end{array} \right] \\[15pt]
+\left[ \begin{array}{ccc}
+0 &1 &0 \\
+0 &0 &0 \\
+0 &0 &0 \\
+\end{array} \right] 
+\left[ \begin{array}{ccc}
+0 &0 &0 \\
+1 &0 &0 \\
+0 &1 &0 \\
+\end{array} \right] \\[15pt]
+\left[ \begin{array}{ccc}
+0 &0 &1 \\
+0 &0 &0 \\
+0 &0 &0 \\
+\end{array} \right]
+\left[ \begin{array}{ccc}
+0 &0 &0 \\
+0 &1 &0 \\
+0 &0 &1 \\
+\end{array} \right]
+\end{bmatrix}=
+\begin{bmatrix}
+&\mathbf{D_{11}} &\mathbf{0}  \\
+&\mathbf{D_{21}} &\mathbf{D_{22}}  \\
+&\mathbf{D_{31}} &\mathbf{D_{32}}
+\end{bmatrix}
+\end{equation}
+
+Let us denote,
+%% part of the vectorized Lyapunov equation
+\begin{equation}
+\begin{aligned}
+\mathbf{T}=
+\mathbf{I} \otimes \mathbf{A} + \mathbf{A} \otimes \mathbf{I} &=
+\begin{bmatrix}
+\mathbf{A} & \mathbf{0} & \mathbf{0} \\
+\mathbf{0} & \mathbf{A} & \mathbf{0} \\
+\mathbf{0} & \mathbf{0} & \mathbf{A}
+\end{bmatrix}+
+\begin{bmatrix}
+a_{11}\mathbf{I} & \mathbf{0} & a_{13}\mathbf{I} \\
+\mathbf{0} & a_{22}\mathbf{I} & a_{23}\mathbf{I} \\
+\mathbf{0} & \mathbf{0} & a_{33}\mathbf{I}
+\end{bmatrix} \\
+\\
+&=
+\begin{bmatrix}
+\mathbf{A}+a_{11}\mathbf{I} & \mathbf{0} & a_{13}\mathbf{I} \\
+\mathbf{0} & \mathbf{A}+a_{22}\mathbf{I} & a_{23}\mathbf{I} \\
+\mathbf{0} & \mathbf{0} & \mathbf{A}+a_{33}\mathbf{I}
+\end{bmatrix}
+\end{aligned}
+\end{equation}
+
+
+% verified
+Thus,
+\begin{equation}
+\begin{aligned}
+\mathbf{L_3}\mathbf{T} &=
+\begin{bmatrix}
+&\mathbf{I} &\mathbf{0} &\mathbf{0} \\
+&\mathbf{0} &\mathbf{L_{22}} &\mathbf{L_{23}}
+\end{bmatrix}
+\begin{bmatrix}
+\mathbf{A}+a_{11}\mathbf{I} & \mathbf{0} & a_{13}\mathbf{I} \\
+\mathbf{0} & \mathbf{A}+a_{22}\mathbf{I} & a_{23}\mathbf{I} \\
+\mathbf{0} & \mathbf{0} & \mathbf{A}+a_{33}\mathbf{I}
+\end{bmatrix} \\
+&=
+\begin{bmatrix}
+&\mathbf{A}+a_{11}\mathbf{I} &\mathbf{0} &a_{13}\mathbf{I} \\
+&\mathbf{0} &\mathbf{L_{22}}(\mathbf{A}+a_{22}\mathbf{I}) &a_{23} \mathbf{L_{22}}+  \mathbf{L_{23}}(\mathbf{A}+a_{33}\mathbf{I})
+\end{bmatrix} \\
+&=
+\begin{bmatrix}
+2a_{11} &0 &a_{13} &0 &0 &0 &a_{13} &0 &0\\
+0 &a_{11}+a_{22} &a_{23} &0 &0 &0 &0 &a_{13} &0\\
+0 &0 &a_{11}+a_{33} &0 &0 &0 &0 &0 &a_{13}\\
+0 &0 &0 &0 &2a_{22} &a_{23} &0 &a_{23} &0\\
+0 &0 &0 &0 &0 &a_{22}+a_{33} &0 &0 &a_{23}\\
+0 &0 &0 &0 &0 &0 &0 &0 &2a_{33}\\
+\end{bmatrix}
+\end{aligned}
+\end{equation}
+
+
+ % verified
+\begin{equation}
+\begin{aligned}
+\mathbf{L_3}\mathbf{T} \mathbf{D_3} &=
+\begin{bmatrix}
+2a_{11} &0 &a_{13} &0 &0 &0 &a_{13} &0 &0\\
+0 &a_{11}+a_{22} &a_{23} &0 &0 &0 &0 &a_{13} &0\\
+0 &0 &a_{11}+a_{33} &0 &0 &0 &0 &0 &a_{13}\\
+0 &0 &0 &0 &2a_{22} &a_{23} &0 &a_{23} &0\\
+0 &0 &0 &0 &0 &a_{22}+a_{33} &0 &0 &a_{23}\\
+0 &0 &0 &0 &0 &0 &0 &0 &2a_{33}\\
+\end{bmatrix}
+\begin{bmatrix}
+&\mathbf{D_{11}} &\mathbf{0}  \\
+&\mathbf{D_{21}} &\mathbf{D_{22}}  \\
+&\mathbf{D_{31}} &\mathbf{D_{32}} 
+\end{bmatrix} \\
+&=
+\begin{bmatrix}
+2a_{11} &0 &2a_{13} &0 &0 &0 \\
+0 &a_{11}+a_{22} &a_{23} &0 &a_{13} &0 \\
+0 &0 &a_{11}+a_{33} &0 &0 &a_{13} \\
+0 &0 &0 &2a_{22} &2 a_{23} &0 \\
+0 &0 &0 &0 &a_{22}+a_{33} &a_{23} \\
+0 &0 &0 &0 &0 &2a_{33} \\
+\end{bmatrix}
+\end{aligned}
+\end{equation}
+
+
+ % verified
+Let us denote
+\begin{equation}
+\begin{aligned}
+\mathbf{K}= { (\mathbf{L_3}\mathbf{T} \mathbf{D_3}) }^T
+&=
+\begin{bmatrix}
+2a_{11} &0 &2a_{13} &0 &0 &0 \\
+0 &a_{11}+a_{22} &a_{23} &0 &a_{13} &0 \\
+0 &0 &a_{11}+a_{33} &0 &0 &a_{13} \\
+0 &0 &0 &2a_{22} &2 a_{23} &0 \\
+0 &0 &0 &0 &a_{22}+a_{33} &a_{23} \\
+0 &0 &0 &0 &0 &2a_{33} \\
+\end{bmatrix} ^T \\
+&=
+\begin{bmatrix}
+2a_{11} &0 &0 &0 &0 &0 \\
+0 &a_{11}+a_{22} &0 &0 &0 &0 \\
+2 a_{13} &a_{23} &a_{11}+a_{33} &0 &0 &0 \\
+0 &0 &0 &2 a_{22} &0 &0 \\
+0 &a_{13} &0 &2 a_{23} &a_{22}+a_{33} &0 \\
+0 &0 &a_{13} &0 &a_{23} &2a_{33} \\
+\end{bmatrix} \\
+& =
+\begin{bmatrix}
+a &0 &0 &0 &0 &0 \\
+0 &d &0 &0 &0 &0 \\
+2b &c &e &0 &0 &0 \\
+0 &0 &0 &f &0 &0 \\
+0 &b &0 &2c &g &0 \\
+0 &0 &b &0 &c &h \\
+\end{bmatrix}=
+\left[ 
+\begin{array}{cc}
+\mathbf{E} & \mathbf{0} \\
+\mathbf{F} & \mathbf{G}
+\end{array}
+\right]
+\end{aligned}
+\label{eq:K_definition}
+\end{equation}
+
+Where we let $a=2a_{11}, b=a_{13}, c=a_{23}, d=a_{11}+a_{22}, e=a_{11}+a_{33}, f=2a_{22},g=a_{22}+a_{33}, h=2a_{33}$.
+% K is block LOWER-triangular here specifically because confounder's A is
+% upper-triangular (a_21=a_31=a_32=0); this is what makes the E/F/G
+% block-inverse shortcut below applicable -- it won't generally apply
+% as-is to topologies with a different sparsity pattern in A.
+%% identity for inverting block matrices here...
+It can be shown that the following identity holds for matrices with certain block structure, if $\mathbf{E}$ and $\mathbf{G}$ are invertible \citep{MagnusNeudecker1999}.
+\begin{equation}
+\mathbf{K}^{-1}=
+    \begin{bmatrix}
+        \mathbf{E} & \mathbf{0} \\
+        \mathbf{F} & \mathbf{G}
+    \end{bmatrix}^{-1}
+    =
+    \begin{bmatrix}
+        \mathbf{E}^{-1} & \mathbf{0} \\
+        -\mathbf{G}^{-1} \mathbf{F} \mathbf{E}^{-1}  & \mathbf{G}^{-1}
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        \mathbf{E}^{-1} & \mathbf{0} \\
+        \mathbf{H}  & \mathbf{G}^{-1}
+    \end{bmatrix}
+    \label{eq:block_matrix_inverse2}
+\end{equation}
+
+As a direct check,
+\begin{equation}
+\begin{aligned}
+\begin{bmatrix}
+\mathbf{E} & \mathbf{0} \\
+\mathbf{F} & \mathbf{G}
+\end{bmatrix}
+\begin{bmatrix}
+\mathbf{E}^{-1} & \mathbf{0} \\
+-\mathbf{G}^{-1}\mathbf{F}\mathbf{E}^{-1} & \mathbf{G}^{-1}
+\end{bmatrix}
+&=
+\begin{bmatrix}
+\mathbf{E}\mathbf{E}^{-1} & \mathbf{0} \\
+\mathbf{F}\mathbf{E}^{-1}-\mathbf{G}\mathbf{G}^{-1}\mathbf{F}\mathbf{E}^{-1} & \mathbf{G}\mathbf{G}^{-1}
+\end{bmatrix} \\
+&=
+\begin{bmatrix}
+\mathbf{I} & \mathbf{0} \\
+\mathbf{F}\mathbf{E}^{-1}-\mathbf{F}\mathbf{E}^{-1} & \mathbf{I}
+\end{bmatrix}
+=
+\begin{bmatrix}
+\mathbf{I} & \mathbf{0} \\
+\mathbf{0} & \mathbf{I}
+\end{bmatrix}
+=\mathbf{I}
+\end{aligned}
+\label{eq:block_matrix_inverse_check}
+\end{equation}
+
+%% inverting block E
+% The inverse of E is 
+\begin{equation}
+    \mathbf{E}^{-1}=
+    \begin{bmatrix}
+a &0 &0  \\
+0 &d &0  \\
+2b &c &e  \\
+\end{bmatrix}^{-1}
+=(ade)^{-1}
+    \begin{bmatrix}
+        de &0 &0 \\
+        0 &ae &0 \\
+        -2bd &-ac & ad
+    \end{bmatrix}
+=(adefgh)^{-1}
+    \begin{bmatrix}
+        defgh &0 &0 \\
+        0 &aefgh &0 \\
+        -2bdfgh &-acfgh & adfgh
+    \end{bmatrix}
+\end{equation}
+
+%% inverting block G
+% The inverse of $\mathbf{G}$ is 
+\begin{equation}
+    \mathbf{G}^{-1}=
+    \begin{bmatrix}
+f &0 &0 \\
+2c &g &0 \\
+0 &c &h \\
+\end{bmatrix}^{-1}
+= (fgh)^{-1} \begin{bmatrix}
+        gh  &0  &0 \\
+        -2ch  &fh   &0\\
+        2c^2 &-cf &fg
+    \end{bmatrix}
+=(adefgh)^{-1}
+\begin{bmatrix}
+        adegh  &0  &0 \\
+        -2adech  &adefh   &0\\
+        2adec^2 &-adecf &adefg
+    \end{bmatrix}
+\end{equation}
+
+Thus,
+\begin{equation}
+\begin{aligned} 
+   \mathbf{H} = -\mathbf{G}^{-1} \mathbf{F} \mathbf{E}^{-1} &= - 
+ (fgh)^{-1} \begin{bmatrix}
+        gh  &0  &0 \\
+        -2ch  &fh   &0\\
+        2c^2 &-cf &fg
+    \end{bmatrix}
+\begin{bmatrix}
+    0 &0 &0 \\
+    0 &b &0 \\
+    0 &0 &b 
+\end{bmatrix}
+(ade)^{-1}
+    \begin{bmatrix}
+        de &0 &0 \\
+        0 &ae &0 \\
+        -2bd &-ac & ad
+    \end{bmatrix} \\
+&=-(adefgh)^{-1}
+\begin{bmatrix}
+0 &0 &0 \\
+0 &bfh &0 \\
+0 &-bcf & bfg
+\end{bmatrix} 
+\begin{bmatrix}
+        de &0 &0 \\
+        0 &ae &0 \\
+        -2bd &-ac & ad
+    \end{bmatrix} \\
+&=(adefgh)^{-1}
+\begin{bmatrix}
+0 & 0 & 0 \\
+0 & -abefh &0 \\
+2b^2 dfg & abcef+abcfg &-abdfg
+\end{bmatrix}
+\end{aligned}
+\end{equation}
+
+
+
+Let us denote $|\mathbf{K}|=adefgh$. Therefore,
+\begin{equation}
+\begin{aligned}
+\mathbf{K}^{-1}& =
+\begin{bmatrix}
+        \mathbf{E}^{-1} & \mathbf{0} \\
+        \mathbf{H}  & \mathbf{G}^{-1}
+\end{bmatrix} \\
+& =
+\frac{1}{|\mathbf{K}|}
+\begin{bmatrix}
+defgh &0 &0 &0 &0 &0 \\
+0 &aefgh &0 &0 &0 &0 \\
+-2bdfgh &-acfgh & adfgh &0 &0 &0 \\
+0 & 0 & 0 &adegh  &0  &0 \\
+0 & -abefh &0 &-2adech  &adefh   &0\\
+2b^2 dfg & abcef+abcfg &-abdfg &2adec^2 &-adecf &adefg
+\end{bmatrix}
+\end{aligned}
+\end{equation}
+
+Because ${ (\mathbf{L_3}\mathbf{T} \mathbf{D_3}) }^T =\mathbf{K}$ (\ref{eq:K_definition}), we have
+\begin{equation}
+\begin{aligned}
+\{ (\mathbf{L_3}\mathbf{T} \mathbf{D_3})^T \}^{-1} &=\mathbf{K}^{-1} =\{ (\mathbf{L_3}\mathbf{T} \mathbf{D_3})^{-1} \}^{T}
+\end{aligned}
+\end{equation}
+
+
+Therefore,
+\begin{equation}
+\begin{aligned}
+{ (\mathbf{L_3}\mathbf{T} \mathbf{D_3}) }^{-1}&=(\mathbf{K}^{-1})^T \\
+&=\frac{1}{|\mathbf{K}|}
+\begin{bmatrix}
+defgh &0 &-2bdfgh &0 &0 &2b^2 dfg \\
+0 &aefgh &-acfgh &0 &-abefh &abcef+abcfg \\
+0 &0 & adfgh &0 &0 &-abdfg \\
+0 & 0 & 0 &adegh  &-2adech  &2adec^2 \\
+0 &0 &0 &0  &adefh   &-adecf\\
+0 &0  &0 &0 &0 &adefg
+\end{bmatrix}
+\end{aligned}
+\end{equation}
+
+
+Recall from equation \ref{eq:lyapunov_33_confounder}, we have
+\begin{equation}
+\begin{aligned}
+vech (\boldsymbol{\Sigma}_\mathbf{Y})&=-(\mathbf{L_3}(\mathbf{I} \otimes \mathbf{A} + \mathbf{A} \otimes \mathbf{I}) \mathbf{D_3})^{-1}vech(\boldsymbol{\Sigma}_\mathbf{W}) \\
+&=-
+\frac{1}{|\mathbf{K}|}
+\begin{bmatrix}
+defgh &0 &-2bdfgh &0 &0 &2b^2 dfg \\
+0 &aefgh &-acfgh &0 &-abefh &abcef+abcfg \\
+0 &0 & adfgh &0 &0 &-abdfg \\
+0 & 0 & 0 &adegh  &-2adech  &2adec^2 \\
+0 &0 &0 &0  &adefh   &-adecf\\
+0 &0  &0 &0 &0 &adefg
+\end{bmatrix}
+\begin{bmatrix}
+\sigma_{W_{1}}\\
+0 \\
+0 \\
+\sigma_{W_{2}}\\
+0 \\
+\sigma_{W_{3}}
+\end{bmatrix}
+\end{aligned}
+\end{equation}
+
+
+\begin{equation}
+\begin{aligned}
+% sigma_11
+\sigma_{11}&=-\frac{1}{|\mathbf{K}|} \{ defgh \}\sigma_{W_{1}} -\frac{1}{|\mathbf{K}|} \{ 2b^2 dfg \} \sigma_{W_{3}}\\
+% sigma_22
+\sigma_{22}&=-\frac{1}{|\mathbf{K}|} \{ adegh \}\sigma_{W_{2}} -\frac{1}{|\mathbf{K}|} \{ 2c^2ade \} \sigma_{W_{3}}\\
+% sigma_33
+\sigma_{33}&=-\frac{1}{|\mathbf{K}|} \{ adefg \} \sigma_{W_{3}}\\
+% sigma_21
+\sigma_{21}&=-\frac{1}{|\mathbf{K}|} \{ abcef+abcfg \} \sigma_{W_{3}}\\
+% sigma_31
+\sigma_{31}&=-\frac{1}{|\mathbf{K}|} \{ -abdfg \} \sigma_{W_{3}}\\
+% sigma_32
+\sigma_{32}&=-\frac{1}{|\mathbf{K}|} \{ -adecf \} \sigma_{W_{3}}\\
+\end{aligned}
+\end{equation}
+
+
+
+Substituting $a=2a_{11}, b=a_{13}, c=a_{23}, d=a_{11}+a_{22}, e=a_{11}+a_{33}, f=2a_{22},g=a_{22}+a_{33}, h=2a_{33}$ into the equations above, we get.
+The leading common factor $-1/|\mathbf{K}|$ has been omitted from the
+covariance entries in equations
+(\ref{eq:sigma11_confounder})--(\ref{eq:sigma32_confounder}) below: each
+$\sigma_{ij}$ equals $-1/|\mathbf{K}|$ times the bracketed sum shown.
+% sigma_11 through sigma_32 -- one align block so the "=" signs line up across
+% all six equations, while each still gets its own equation number (D-19..D-24)
+\begin{align}
+\sigma_{11}= \Bigl\{ & 4{a_{11}}^2{a_{22}}^2a_{33}+4{a_{11}}^2a_{22}{a_{33}}^2+4a_{11}{a_{22}}^3a_{33} \nonumber \\
++&8a_{11}{a_{22}}^2{a_{33}}^2+4a_{11}a_{22}{a_{33}}^3+4{a_{22}}^3{a_{33}}^2+4{a_{22}}^2{a_{33}}^3 \Bigr\}\sigma_{W_{1}} \nonumber \\
++&\Bigl\{4{a_{13}}^2{a_{22}}^3+4a_{11}{a_{13}}^2{a_{22}}^2+4{a_{13}}^2{a_{22}}^2a_{33}+4a_{11}{a_{13}}^2a_{22}a_{33}\Bigr\} \sigma_{W_{3}} \label{eq:sigma11_confounder} \\[12pt]
+\sigma_{22}= \Bigl\{ & 4{a_{11}}^3a_{22}a_{33}+4{a_{11}}^3{a_{33}}^2+4{a_{11}}^2{a_{22}}^2a_{33} \nonumber \\
++&8{a_{11}}^2a_{22}{a_{33}}^2+4{a_{11}}^2{a_{33}}^3+4a_{11}{a_{22}}^2{a_{33}}^2+4a_{11}a_{22}{a_{33}}^3 \Bigr\}\sigma_{W_{2}} \nonumber \\
++&\Bigl\{4{a_{11}}^3{a_{23}}^2+4{a_{11}}^2a_{22}{a_{23}}^2+4{a_{11}}^2{a_{23}}^2a_{33}+4a_{11}a_{22}{a_{23}}^2a_{33} \Bigr\} \sigma_{W_{3}} \label{eq:sigma22_confounder} \\[12pt]
+\sigma_{33}= \Bigl\{ & 4{a_{11}}^3{a_{22}}^2+4{a_{11}}^3a_{22}a_{33}+4{a_{11}}^2{a_{22}}^3 \nonumber \\
++&8{a_{11}}^2{a_{22}}^2a_{33}+4{a_{11}}^2a_{22}{a_{33}}^2+4a_{11}{a_{22}}^3a_{33}+4a_{11}{a_{22}}^2{a_{33}}^2 \Bigr\} \sigma_{W_{3}} \label{eq:sigma33_confounder} \\[12pt]
+\sigma_{21}= \Bigl\{ & 4a_{13}a_{23}{a_{11}}^2a_{22}+4a_{13}a_{23}a_{11}{a_{22}}^2+8a_{13}a_{23}a_{33}a_{11}a_{22} \Bigr\} \sigma_{W_{3}} \label{eq:sigma21_confounder} \\[12pt]
+\sigma_{31}= \Bigl\{ & -4a_{13}{a_{11}}^2{a_{22}}^2-4a_{13}a_{33}{a_{11}}^2a_{22}-4a_{13}a_{11}{a_{22}}^3-4a_{13}a_{33}a_{11}{a_{22}}^2 \Bigr\} \sigma_{W_{3}} \label{eq:sigma31_confounder} \\[12pt]
+\sigma_{32}= \Bigl\{ & -4a_{23}{a_{11}}^3a_{22}-4a_{23}{a_{11}}^2{a_{22}}^2-4a_{23}a_{33}{a_{11}}^2a_{22}-4a_{23}a_{33}a_{11}{a_{22}}^2 \Bigr\} \sigma_{W_{3}} \label{eq:sigma32_confounder}
+\end{align}
+
+The determinant of $\mathbf{K}$ is,
+\begin{equation}
+\begin{aligned}
+|\mathbf{K}| &= adefgh \\
+&= (2a_{11})(a_{11}+a_{22})(a_{11}+a_{33})(2a_{22})(a_{22}+a_{33})(2a_{33}) \\
+&= 8 a_{11} a_{22}^{2} a_{33}^{3} + 8 a_{11} a_{22}^{3} a_{33}^{2} + 8 a_{11}^{2} a_{22} a_{33}^{3} + 8 a_{11}^{2} a_{22}^{3} a_{33} + 8 a_{11}^{3} a_{22} a_{33}^{2} + 8 a_{11}^{3} a_{22}^{2} a_{33} + 16 a_{11}^{2} a_{22}^{2} a_{33}^{2}
+\end{aligned}
+\label{eq:network3by3_detK_confounder}
+\end{equation}
+
+% Headline result of this section, cross-referenced from the main text as
+% eq:rho21_confounder -- the confounder-induced spurious correlation
+% between nodes 1 and 2, as a function of the causal parameters and noise.
+Let us assume $a_{11}=a_{22}=a_{33}$. Therefore, $a=d=e=f=g=h=2a_{11}$ (see equation \ref{eq:K_definition}). It can be shown that $|\mathbf{K}|=adefgh=(2a_{11})^6$ is greater than 0. Therefore,
+\begin{equation}
+\begin{aligned}
+\rho_{21}&=\frac{\sigma_{21}}{\sqrt{\sigma_{11}} \sqrt{\sigma_{22}}} \\[8pt]
+&= \frac{ -\frac{1}{|\mathbf{K}|} \{ abcef+abcfg \} \sigma_{W_{3}} }{ \sqrt{-\frac{1}{|\mathbf{K}|} \{ defgh \}\sigma_{W_{1}} -\frac{1}{|\mathbf{K}|} \{ 2b^2 dfg \} \sigma_{W_{3}}} \sqrt{-\frac{1}{|\mathbf{K}|} \{ adegh \}\sigma_{W_{2}} -\frac{1}{|\mathbf{K}|} \{ 2c^2ade \} \sigma_{W_{3}}} } \\[8pt]
+&=-\frac{ \{ abcef+abcfg \} \sigma_{W_{3}} }{ \sqrt{ \{ defgh \sigma_{W_{1}} + 2b^2 dfg \sigma_{W_{3}} \} \{  adegh \sigma_{W_{2}} + 2c^2ade \sigma_{W_{3}} \} }} \\[8pt]
+&=\frac{ \{ bc+bc \} \sigma_{W_{3}} }{ \sqrt{ \{ gh \sigma_{W_{1}} + 2b^2 \sigma_{W_{3}} \} \{ gh \sigma_{W_{2}} + 2c^2 \sigma_{W_{3}} \} }} \\[8pt]
+&=\frac{ 2a_{13} a_{23} \sigma_{W_{3}} }{ \sqrt{ \{ 4 a_{11}^2  \sigma_{W_{1}} + 2 a_{13}^2 \sigma_{W_{3}} \} \{ 4 a_{11}^2 \sigma_{W_{2}} + 2a_{23}^2 \sigma_{W_{3}} \} }} \\[8pt]
+&=\frac{ a_{13} a_{23} \sigma_{W_{3}} }{ \sqrt{ \{ 2 a_{11}^2  \sigma_{W_{1}} +  a_{13}^2 \sigma_{W_{3}} \} \{ 2 a_{11}^2 \sigma_{W_{2}} + a_{23}^2 \sigma_{W_{3}} \} }} \\
+\end{aligned}
+\label{eq:d26_rho21_confounder}
+\end{equation}
+
+
+\subsection*{A fully connected network topology}
+% A is fully dense here (no zero pattern), so K is not block-triangular
+% and the confounder section's hand block-inverse trick doesn't apply --
+% hence relying directly on lyap_halfvec.m below instead.
+In this appendix, we will use the half-vectorization technique to derive an analytic relationship between entries of $\mathbf{\Sigma_Y}$ and $A$ for a $ 3 \times 3 $ network with the following architecture.
+
+\begin{figure}[H]
+\centering
+
+\def\figscale{1}
+
+\begin{minipage}[c]{0.23\textwidth}
+\centering
+
+\def\a{1.2 cm}
+\def\nodeSize{0.7}
+\def\selfLoopR{0.5*\nodeSize cm}
+
+\begin{tikzpicture}[
+    scale=\figscale,
+    >={Stealth[length=3mm,width=2mm]},
+    every node/.style={
+        circle,
+        draw,
+        minimum size=\nodeSize cm,
+    }
+]
+
+\node (1) at (-\a,0) {1};
+\node (2) at (\a,0) {2};
+\node (3) at (0,{sqrt(3)*\a}) {3};
+
+\draw[->] (1) to[bend left=12] (2);
+\draw[->] (2) to[bend left=12] (1);
+\draw[->] (1) to[bend left=12] (3);
+\draw[->] (3) to[bend left=12] (1);
+\draw[->] (2) to[bend left=12] (3);
+\draw[->] (3) to[bend left=12] (2);
+
+\selfloop{1}{1}
+\selfloop{2}{2}
+\selfloop{3}{3}
+
+\end{tikzpicture}
+
+\end{minipage}%
+\hspace{0\textwidth}%
+\begin{minipage}[c]{0.23\textwidth}
+\raggedright
+
+\[
+\mathbf{A}=
+\begin{bmatrix}
+a_{11} & a_{12} & a_{13} \\
+a_{21} & a_{22} & a_{23} \\
+a_{31} & a_{32} & a_{33}
+\end{bmatrix}
+\]
+
+\end{minipage}%
+\hspace{0.005\textwidth}%
+\begin{minipage}[c]{0.25\textwidth}
+\raggedright
+
+\[
+\mathbf{\Sigma_Y}=
+\begin{bmatrix}
+\sigma_{11} & \sigma_{12} & \sigma_{13} \\
+\sigma_{21} & \sigma_{22} & \sigma_{23} \\
+\sigma_{31} & \sigma_{32} & \sigma_{33}
+\end{bmatrix}
+\]
+
+\end{minipage}%
+\hspace{0.005\textwidth}%
+\begin{minipage}[c]{0.27\textwidth}
+\raggedright
+
+\[
+\mathbf{\Sigma_W}=
+\begin{bmatrix}
+\sigma_{W_1} & 0 & 0 \\
+0 & \sigma_{W_2} & 0 \\
+0 & 0 & \sigma_{W_3}
+\end{bmatrix}
+\]
+
+\end{minipage}%
+
+\caption{A fully connected network topology and its associated matrices.}
+\label{fig:network3by3_full}
+\end{figure}
+
+
+% vector-valued Lyapunov equation
+From equation \ref{eq:ly_halfvec1_nbyn}, we have the following analytic relationship between entries of $\mathbf{\Sigma_Y}$ and $A$.
+\begin{equation}
+    vech (\boldsymbol{\Sigma}_\mathbf{Y})=
+    -(\mathbf{L_3}(\mathbf{I} \otimes \mathbf{A} + \mathbf{A} \otimes \mathbf{I}) \mathbf{D_3})^{-1}vech(\boldsymbol{\Sigma}_\mathbf{W})
+    \label{eq:lyapunov_33}
+\end{equation}
+
+
+\begin{comment}
+Let us denote, 
+%% part of the vectorized Lyapunov equation
+\begin{equation}
+\begin{aligned}
+\mathbf{T}=
+\mathbf{I} \otimes \mathbf{A} + \mathbf{A} \otimes \mathbf{I} &=
+\begin{bmatrix}
+\mathbf{A} & \mathbf{0} & \mathbf{0} \\
+\mathbf{0} & \mathbf{A} & \mathbf{0} \\
+\mathbf{0} & \mathbf{0} & \mathbf{A}
+\end{bmatrix}+
+\begin{bmatrix}
+a_{11}\mathbf{I} & a_{12}\mathbf{I} & a_{13}\mathbf{I}\\
+a_{21}\mathbf{I} & a_{22}\mathbf{I} & a_{23}\mathbf{I} \\
+a_{31}\mathbf{I} & a_{32}\mathbf{I} & a_{33}\mathbf{I}
+\end{bmatrix} \\
+&=
+\begin{bmatrix}
+\mathbf{A}+a_{11}\mathbf{I} & a_{12}\mathbf{I} & a_{13}\mathbf{I}\\
+a_{21}\mathbf{I} & \mathbf{A}+a_{22}\mathbf{I} & a_{23}\mathbf{I}\\
+a_{31}\mathbf{I} & a_{32}\mathbf{I} & \mathbf{A}+a_{33}\mathbf{I}
+\end{bmatrix}
+\end{aligned}
+\end{equation}
+
+Thus, 
+\begin{equation}
+\begin{aligned}
+\mathbf{L_3}\mathbf{T} &=
+\begin{bmatrix}
+&\mathbf{I} &\mathbf{0} &\mathbf{0} \\
+&\mathbf{0} &\mathbf{L_{22}} &\mathbf{L_{23}}
+\end{bmatrix}
+\begin{bmatrix}
+\mathbf{A}+a_{11}\mathbf{I} & a_{12}\mathbf{I} & a_{13}\mathbf{I}\\
+a_{21}\mathbf{I} & \mathbf{A}+a_{22}\mathbf{I} & a_{23}\mathbf{I}\\
+a_{31}\mathbf{I} & a_{32}\mathbf{I} & \mathbf{A}+a_{33}\mathbf{I}
+\end{bmatrix} \\
+&=
+\begin{bmatrix}
+&\mathbf{A}+a_{11}\mathbf{I} &a_{12}\mathbf{I} & a_{13}\mathbf{I} \\
+&a_{21}\mathbf{L_{22}}+a_{31}\mathbf{L_{23}} &\mathbf{L_{22}}(\mathbf{A}+a_{22}\mathbf{I})+a_{32}\mathbf{L_{23}} &a_{23}\mathbf{L_{22}}+\mathbf{L_{23}}(\mathbf{A}+a_{33}\mathbf{I})
+\end{bmatrix} \\
+&=
+\begin{bmatrix}
+2a_{11} &0 &0 &a_{12} &0 &0 &a_{13} &0 &0\\
+a_{21} &a_{11}+a_{22} &a_{23} &0 &a_{12} &0 &0 &a_{13} &0\\
+a_{31} &a_{32} &a_{11}+a_{33} &0 &0 &a_{12} &0 &0 &a_{13}\\
+0 &a_{21} &0 &a_{21} &2a_{22} &a_{23} &0 &a_{23} &0\\
+0 &0 &a_{21} &a_{31} &a_{32} &a_{22}+a_{33} &0 &0 &a_{23}\\
+0 &0 &a_{31} &0 &0 &a_{32} &a_{31} &a_{32} &2a_{33}\\
+\end{bmatrix}
+\end{aligned}
+\label{eq:L3_T}
+\end{equation}
+
+
+And, 
+\begin{equation}
+\begin{aligned} 
+\mathbf{L_3}\mathbf{T} \mathbf{D_3} &=
+\begin{bmatrix}
+2a_{11} &0 &0 &a_{12} &0 &0 &a_{13} &0 &0\\
+a_{21} &a_{11}+a_{22} &a_{23} &0 &a_{12} &0 &0 &a_{13} &0\\
+a_{31} &a_{32} &a_{11}+a_{33} &0 &0 &a_{12} &0 &0 &a_{13}\\
+0 &a_{21} &0 &a_{21} &2a_{22} &a_{23} &0 &a_{23} &0\\
+0 &0 &a_{21} &a_{31} &a_{32} &a_{22}+a_{33} &0 &0 &a_{23}\\
+0 &0 &a_{31} &0 &0 &a_{32} &a_{31} &a_{32} &2a_{33}\\
+\end{bmatrix}
+\begin{bmatrix}
+&\mathbf{D_{11}} &\mathbf{0}  \\
+&\mathbf{D_{21}} &\mathbf{D_{22}}  \\
+&\mathbf{D_{31}} &\mathbf{D_{32}} 
+\end{bmatrix} \\
+&=
+\begin{bmatrix}
+2a_{11} &0 &0 &0 &0 &0 \\
+a_{21} &a_{11}+a_{22} &a_{23} &0 &0 &0 \\
+a_{31} &a_{32} &a_{11}+a_{33} &0 &0 &0 \\
+0 &2a_{21}+a_{23} &0 &2a_{22} &2a_{23} &0 \\
+0 &a_{31} &a_{23}+a_{21} &a_{32} &a_{22}+a_{33} &a_{23} \\
+0 &a_{32} &2a_{33}+a_{31} &0 &2a_{32} &2a_{33} \\
+\end{bmatrix}
+\end{aligned}
+\label{eq:L3_T_D3}
+\end{equation}
+\end{comment}
+
+
+We use our in-house MATLAB solver \texttt{lyap\_halfvec.m} to solve equation \ref{eq:lyapunov_33} for this fully connected $3\times3$ network. The solver first forms the Kronecker sum of $\mathbf{A}$ and $\mathbf{I}$ ($\mathbf{I}\otimes\mathbf{A}+\mathbf{A}\otimes\mathbf{I}$) and then applies the elimination ($\mathbf{L_3}$) and duplication ($\mathbf{D_3}$) matrices to reduce it to $\mathbf{K}=\mathbf{L_3}(\mathbf{I}\otimes\mathbf{A}+\mathbf{A}\otimes\mathbf{I})\mathbf{D_3}$; it then solves the linear system $\mathbf{K}\,\mathrm{vech}(\boldsymbol{\Sigma}_\mathbf{Y}) = -\mathrm{vech}(\boldsymbol{\Sigma}_\mathbf{W})$ directly via symbolic Gaussian elimination, rather than forming $\mathbf{K}^{-1}$ explicitly, to obtain the closed-form entries of $\boldsymbol{\Sigma}_\mathbf{Y}$ as functions of the entries of $\mathbf{A}$ and $\boldsymbol{\Sigma}_\mathbf{W}$. The code implementing this solver is available in our GitHub repository (\texttt{https://github.com/yaohuiding1/corr\_causation}).
+
+The determinant of $\mathbf{K}$ for this network is
+% detK
+\begin{equation}
+\begin{aligned}
+|\mathbf{K}| = & 8 a_{11} a_{22}^{2} a_{33}^{3} + 8 a_{11} a_{22}^{3} a_{33}^{2} + 8 a_{11}^{2} a_{22} a_{33}^{3} + 8 a_{11}^{2} a_{22}^{3} a_{33} + 8 a_{11}^{3} a_{22} a_{33}^{2} + 8 a_{11}^{3} a_{22}^{2} a_{33} + 16 a_{11}^{2} a_{22}^{2} a_{33}^{2} \\
+-&8 a_{12}^{2} a_{23}^{2} a_{31}^{2} - 8 a_{13}^{2} a_{21}^{2} a_{32}^{2} - 8 a_{11} a_{12} a_{21} a_{33}^{3} - 8 a_{11} a_{13} a_{22}^{3} a_{31} - 8 a_{12} a_{21} a_{22} a_{33}^{3} - 8 a_{11}^{3} a_{22} a_{23} a_{32} \\
+-&8 a_{13} a_{22}^{3} a_{31} a_{33} - 8 a_{11}^{3} a_{23} a_{32} a_{33} + 8 a_{11} a_{12}^{2} a_{21}^{2} a_{33} + 8 a_{11} a_{13}^{2} a_{22} a_{31}^{2} - 8 a_{11}^{2} a_{12} a_{21} a_{33}^{2} - 8 a_{11}^{2} a_{13} a_{22}^{2} a_{31} \\
++&8 a_{11} a_{22} a_{23}^{2} a_{32}^{2} - 8 a_{12} a_{21} a_{22}^{2} a_{33}^{2} - 8 a_{11}^{2} a_{22}^{2} a_{23} a_{32} + 8 a_{12}^{2} a_{21}^{2} a_{22} a_{33} + 8 a_{11} a_{23}^{2} a_{32}^{2} a_{33} - 8 a_{13} a_{22}^{2} a_{31} a_{33}^{2} \\
+-&8 a_{11}^{2} a_{23} a_{32} a_{33}^{2} + 8 a_{13}^{2} a_{22} a_{31}^{2} a_{33} - 8 a_{11} a_{12} a_{13} a_{21}^{2} a_{32} - 8 a_{11} a_{12} a_{13} a_{23} a_{31}^{2} - 8 a_{11} a_{12}^{2} a_{21} a_{23} a_{31} \\
+-&16 a_{11} a_{12} a_{21} a_{22} a_{33}^{2} - 16 a_{11} a_{12} a_{21} a_{22}^{2} a_{33} + 8 a_{11} a_{12} a_{22}^{2} a_{23} a_{31} + 8 a_{11} a_{13} a_{21} a_{22}^{2} a_{32} + 8 a_{12} a_{13} a_{21} a_{22}^{2} a_{31} \\
+-&16 a_{11}^{2} a_{12} a_{21} a_{22} a_{33} + 8 a_{11}^{2} a_{12} a_{21} a_{23} a_{32} + 8 a_{11}^{2} a_{12} a_{22} a_{23} a_{31} + 8 a_{11}^{2} a_{13} a_{21} a_{22} a_{32} + 8 a_{11} a_{13} a_{21} a_{23} a_{32}^{2} \\
+-&8 a_{12} a_{13} a_{21}^{2} a_{22} a_{32} + 8 a_{12} a_{13} a_{22} a_{23} a_{31}^{2} - 8 a_{11} a_{13}^{2} a_{21} a_{31} a_{32} + 8 a_{11} a_{12} a_{23}^{2} a_{31} a_{32} - 8 a_{12}^{2} a_{21} a_{22} a_{23} a_{31} \\
++&8 a_{11} a_{12} a_{23} a_{31} a_{33}^{2} + 8 a_{11} a_{13} a_{21} a_{32} a_{33}^{2} - 16 a_{11} a_{13} a_{22} a_{31} a_{33}^{2} - 16 a_{11} a_{13} a_{22}^{2} a_{31} a_{33} + 8 a_{12} a_{13} a_{21} a_{31} a_{33}^{2} \\
++&8 a_{11}^{2} a_{12} a_{23} a_{31} a_{33} + 8 a_{11}^{2} a_{13} a_{21} a_{32} a_{33} - 16 a_{11}^{2} a_{13} a_{22} a_{31} a_{33} + 8 a_{11}^{2} a_{13} a_{23} a_{31} a_{32} + 8 a_{12} a_{13} a_{21}^{2} a_{32} a_{33} \\
+-&8 a_{13} a_{21} a_{22} a_{23} a_{32}^{2} - 8 a_{12} a_{13} a_{23} a_{31}^{2} a_{33} + 8 a_{13}^{2} a_{21} a_{22} a_{31} a_{32} - 8 a_{12} a_{22} a_{23}^{2} a_{31} a_{32} + 8 a_{12}^{2} a_{21} a_{23} a_{31} a_{33} \\
+-&16 a_{11} a_{22} a_{23} a_{32} a_{33}^{2} - 16 a_{11} a_{22}^{2} a_{23} a_{32} a_{33} + 8 a_{12} a_{21} a_{23} a_{32} a_{33}^{2} + 8 a_{12} a_{22} a_{23} a_{31} a_{33}^{2} + 8 a_{12} a_{22}^{2} a_{23} a_{31} a_{33} \\
++&8 a_{13} a_{21} a_{22} a_{32} a_{33}^{2} + 8 a_{13} a_{21} a_{22}^{2} a_{32} a_{33} + 8 a_{13} a_{22}^{2} a_{23} a_{31} a_{32} - 16 a_{11}^{2} a_{22} a_{23} a_{32} a_{33} - 8 a_{13} a_{21} a_{23} a_{32}^{2} a_{33} \\
++&8 a_{11} a_{12} a_{21} a_{22} a_{23} a_{32} + 8 a_{11} a_{12} a_{22} a_{23} a_{31} a_{33} + 8 a_{11} a_{13} a_{21} a_{22} a_{32} a_{33} - 16 a_{12} a_{13} a_{21} a_{23} a_{31} a_{32} \\
+-&8 a_{13}^{2} a_{21} a_{31} a_{32} a_{33} - 8 a_{12} a_{23}^{2} a_{31} a_{32} a_{33} + 8 a_{11} a_{12} a_{13} a_{21} a_{22} a_{31} + 8 a_{11} a_{12} a_{13} a_{21} a_{31} a_{33} \\
++&8 a_{11} a_{13} a_{23} a_{31} a_{32} a_{33} + 8 a_{12} a_{21} a_{22} a_{23} a_{32} a_{33} + 8 a_{13} a_{22} a_{23} a_{31} a_{32} a_{33}
+\end{aligned}
+\label{eq:network3by3_detK}
+\end{equation}
+
+The formulae for $\sigma_{11}$, $\sigma_{22}$, and $\sigma_{33}$ are presented below, with the common factor $-1/|\mathbf{K}|$ (\ref{eq:network3by3_detK}) factored out for readability; each entry equals $-1/|\mathbf{K}|$ times the expression shown.
+
+% sigma_11 --
+\begin{equation}
+\begin{aligned}
+ \sigma_{11} =  \mathbf{\Sigma}_{\textbf{W}_{1}} \Bigl\{ & 4 a_{11}^{2} a_{22}^{2} a_{33} + 4 a_{23}^{2} a_{32}^{2} a_{22} + 4 a_{12}^{2} a_{21}^{2} a_{33} + 4 a_{22}^{3} a_{33}^{2} + 4 a_{22}^{3} a_{11} a_{33} - 4 a_{33}^{3} a_{12} a_{21} - 8 a_{22}^{2} a_{23} a_{32} a_{33} \\
++ & 4 a_{11}^{2} a_{33}^{2} a_{22} + 4 a_{32}^{2} a_{23}^{2} a_{33} + 4 a_{13}^{2} a_{31}^{2} a_{22} + 4 a_{33}^{3} a_{22}^{2} + 4 a_{33}^{3} a_{11} a_{22} - 4 a_{22}^{3} a_{13} a_{31} - 8 a_{33}^{2} a_{32} a_{23} a_{22} \\
+-& 4 a_{22}^{2} a_{11} a_{23} a_{32} - 4 a_{11}^{2} a_{23} a_{32} a_{22} - 4 a_{33}^{2} a_{11} a_{12} a_{21} + 4 a_{22}^{2} a_{12} a_{23} a_{31} - 4 a_{33}^{2} a_{12} a_{21} a_{22} + 4 a_{33}^{2} a_{12} a_{23} a_{31} \\
+-& 4 a_{33}^{2} a_{11} a_{32} a_{23} - 4 a_{11}^{2} a_{32} a_{23} a_{33} - 4 a_{22}^{2} a_{11} a_{13} a_{31} + 4 a_{33}^{2} a_{13} a_{32} a_{21} - 4 a_{22}^{2} a_{13} a_{31} a_{33} + 4 a_{22}^{2} a_{13} a_{32} a_{21} \\
+-& 4 a_{22}^{2} a_{12} a_{21} a_{33} - 4 a_{12}^{2} a_{21} a_{23} a_{31} + 4 a_{23}^{2} a_{12} a_{31} a_{32} - 4 a_{21}^{2} a_{12} a_{13} a_{32} - 8 a_{11} a_{12} a_{21} a_{22} a_{33} + 4 a_{13} a_{21} a_{22} a_{32} a_{33} \\
+-& 4 a_{33}^{2} a_{13} a_{31} a_{22} - 4 a_{13}^{2} a_{31} a_{32} a_{21} + 4 a_{32}^{2} a_{13} a_{21} a_{23} - 4 a_{31}^{2} a_{13} a_{12} a_{23} - 8 a_{11} a_{13} a_{31} a_{33} a_{22} + 4 a_{12} a_{31} a_{33} a_{23} a_{22} \\
+- & 4 a_{12} a_{21} a_{23} a_{32} a_{33} + 4 a_{11} a_{12} a_{21} a_{23} a_{32} + 4 a_{12} a_{13} a_{21} a_{22} a_{31} + 4 a_{11} a_{12} a_{22} a_{23} a_{31} + 4 a_{11} a_{12} a_{23} a_{31} a_{33} \\
+-& 4 a_{13} a_{31} a_{32} a_{23} a_{22} + 4 a_{11} a_{13} a_{31} a_{32} a_{23} + 4 a_{13} a_{12} a_{31} a_{33} a_{21} + 4 a_{11} a_{13} a_{33} a_{32} a_{21} + 4 a_{11} a_{13} a_{32} a_{21} a_{22} \\
++& 8 a_{11} a_{22}^{2} a_{33}^{2} - 8 a_{11} a_{22} a_{33} a_{23} a_{32}\Bigr\} \\
+& \qquad \qquad \qquad \qquad \qquad \qquad \qquad + \\
+ \mathbf{\Sigma}_{\textbf{W}_{2}} \Bigl\{&4 a_{12}^{2} a_{11} a_{22} a_{33} - 4 a_{12}^{2} a_{11} a_{23} a_{32} + 4 a_{12}^{2} a_{33}^{2} a_{11} + 4 a_{13}^{2} a_{32}^{2} a_{11} - 4 a_{12}^{3} a_{21} a_{33} + 4 a_{12}^{2} a_{33}^{3} \\
++& 4 a_{12}^{3} a_{23} a_{31} + 4 a_{12}^{2} a_{13} a_{21} a_{32} - 4 a_{12}^{2} a_{13} a_{22} a_{31} + 4 a_{12}^{2} a_{33}^{2} a_{22} + 4 a_{13}^{2} a_{32}^{2} a_{22} + 4 a_{13}^{2} a_{32}^{2} a_{33} \\
+-& 8 a_{33}^{2} a_{12} a_{13} a_{32} - 8 a_{12} a_{13} a_{22} a_{32} a_{33} - 8 a_{11} a_{12} a_{13} a_{32} a_{33}\Bigr\} \\
+& \qquad \qquad \qquad \qquad \qquad \qquad \qquad + \\
+\mathbf{\Sigma}_{\textbf{W}_{3}} \Bigl\{&4 a_{13}^{2} a_{11} a_{33} a_{22} - 4 a_{13}^{2} a_{11} a_{32} a_{23} + 4 a_{13}^{2} a_{22}^{2} a_{11} + 4 a_{12}^{2} a_{23}^{2} a_{11} - 4 a_{13}^{3} a_{31} a_{22} + 4 a_{13}^{2} a_{22}^{3} \\
++& 4 a_{13}^{3} a_{32} a_{21} + 4 a_{13}^{2} a_{12} a_{31} a_{23} - 4 a_{13}^{2} a_{12} a_{33} a_{21} + 4 a_{13}^{2} a_{22}^{2} a_{33} + 4 a_{12}^{2} a_{23}^{2} a_{33} + 4 a_{12}^{2} a_{23}^{2} a_{22} \\
+-& 8 a_{22}^{2} a_{13} a_{12} a_{23} - 8 a_{13} a_{12} a_{33} a_{23} a_{22} - 8 a_{11} a_{13} a_{12} a_{23} a_{22}\Bigr\}
+\end{aligned}
+\label{eq:network3by3_sigma11}
+\end{equation}
+
+
+% sigma_22 -- generated via i,j,k -> 2,1,3 substitution into the general
+% permutation-symmetric sigma_ii template (archive/network_topologies/topo_3node_full.tex)
+\begin{equation}
+\begin{aligned}
+ \sigma_{22} =  \mathbf{\Sigma}_{\textbf{W}_{2}} \Bigl\{ & 4 a_{22}^{2} a_{11}^{2} a_{33} + 4 a_{13}^{2} a_{31}^{2} a_{11} + 4 a_{21}^{2} a_{12}^{2} a_{33} + 4 a_{11}^{3} a_{33}^{2} + 4 a_{11}^{3} a_{22} a_{33} - 4 a_{33}^{3} a_{21} a_{12} - 8 a_{11}^{2} a_{13} a_{31} a_{33} \\
++&4 a_{22}^{2} a_{33}^{2} a_{11} + 4 a_{31}^{2} a_{13}^{2} a_{33} + 4 a_{23}^{2} a_{32}^{2} a_{11} + 4 a_{33}^{3} a_{11}^{2} + 4 a_{33}^{3} a_{22} a_{11} - 4 a_{11}^{3} a_{23} a_{32} - 8 a_{33}^{2} a_{31} a_{13} a_{11} \\
+-&4 a_{11}^{2} a_{22} a_{13} a_{31} - 4 a_{22}^{2} a_{13} a_{31} a_{11} - 4 a_{33}^{2} a_{22} a_{21} a_{12} + 4 a_{11}^{2} a_{21} a_{13} a_{32} - 4 a_{33}^{2} a_{21} a_{12} a_{11} + 4 a_{33}^{2} a_{21} a_{13} a_{32} \\
+-&4 a_{33}^{2} a_{22} a_{31} a_{13} - 4 a_{22}^{2} a_{31} a_{13} a_{33} - 4 a_{11}^{2} a_{22} a_{23} a_{32} + 4 a_{33}^{2} a_{23} a_{31} a_{12} - 4 a_{11}^{2} a_{23} a_{32} a_{33} + 4 a_{11}^{2} a_{23} a_{31} a_{12} \\
+-&4 a_{11}^{2} a_{21} a_{12} a_{33} - 4 a_{21}^{2} a_{12} a_{13} a_{32} + 4 a_{13}^{2} a_{21} a_{32} a_{31} - 4 a_{12}^{2} a_{21} a_{23} a_{31} - 8 a_{22} a_{21} a_{12} a_{11} a_{33} + 4 a_{23} a_{12} a_{11} a_{31} a_{33} \\
+-&4 a_{33}^{2} a_{23} a_{32} a_{11} - 4 a_{23}^{2} a_{32} a_{31} a_{12} + 4 a_{31}^{2} a_{23} a_{12} a_{13} - 4 a_{32}^{2} a_{23} a_{21} a_{13} - 8 a_{22} a_{23} a_{32} a_{33} a_{11} + 4 a_{21} a_{32} a_{33} a_{13} a_{11} \\
+-&4 a_{21} a_{12} a_{13} a_{31} a_{33} + 4 a_{22} a_{21} a_{12} a_{13} a_{31} +4 a_{21} a_{23} a_{12} a_{11} a_{32} + 4 a_{22} a_{21} a_{11} a_{13} a_{32} + 4 a_{22} a_{21} a_{13} a_{32} a_{33} \\
+-&4 a_{23} a_{32} a_{31}a_{13} a_{11} + 4 a_{22} a_{23} a_{32} a_{31} a_{13} + 4 a_{23} a_{21} a_{32} a_{33} a_{12} + 4 a_{22} a_{23} a_{33} a_{31} a_{12} + 4 a_{22} a_{23} a_{31} a_{12} a_{11} \\
++&8 a_{22} a_{11}^{2} a_{33}^{2} - 8 a_{22} a_{11} a_{33} a_{13} a_{31}\Bigr\} \\
+& \qquad \qquad \qquad \qquad \qquad \qquad \qquad + \\
+\mathbf{\Sigma}_{\textbf{W}_{1}} \Bigl\{&4 a_{21}^{2} a_{22} a_{11} a_{33} - 4 a_{21}^{2} a_{22} a_{13} a_{31} + 4 a_{21}^{2} a_{33}^{2} a_{22} + 4 a_{23}^{2} a_{31}^{2} a_{22} - 4 a_{21}^{3} a_{12} a_{33} + 4 a_{21}^{2} a_{33}^{3} \\
++&4 a_{21}^{3} a_{13} a_{32} + 4 a_{21}^{2} a_{23} a_{12} a_{31} - 4 a_{21}^{2} a_{23} a_{11} a_{32} + 4 a_{21}^{2} a_{33}^{2} a_{11} + 4 a_{23}^{2} a_{31}^{2} a_{11} + 4 a_{23}^{2} a_{31}^{2} a_{33} \\
+-&8 a_{33}^{2} a_{21} a_{23} a_{31} - 8 a_{21} a_{23} a_{11} a_{31} a_{33} - 8 a_{22} a_{21} a_{23} a_{31} a_{33}\Bigr\} \\
+& \qquad \qquad \qquad \qquad \qquad \qquad \qquad + \\
+\mathbf{\Sigma}_{\textbf{W}_{3}} \Bigl\{&4 a_{23}^{2} a_{22} a_{33} a_{11} - 4 a_{23}^{2} a_{22} a_{31} a_{13} + 4 a_{23}^{2} a_{11}^{2} a_{22} +4 a_{21}^{2} a_{13}^{2} a_{22} - 4 a_{23}^{3} a_{32} a_{11} + 4 a_{23}^{2} a_{11}^{3} \\
++&4 a_{23}^{3} a_{31} a_{12} + 4 a_{23}^{2} a_{21} a_{32} a_{13} - 4 a_{23}^{2} a_{21} a_{33} a_{12} + 4 a_{23}^{2} a_{11}^{2} a_{33} + 4 a_{21}^{2} a_{13}^{2} a_{33} + 4 a_{21}^{2} a_{13}^{2} a_{11} \\
+-&8 a_{11}^{2} a_{23} a_{21} a_{13} - 8 a_{23} a_{21} a_{33} a_{13} a_{11} - 8 a_{22} a_{23} a_{21} a_{13} a_{11}\Bigr\}
+\end{aligned}
+\label{eq:network3by3_sigma22}
+\end{equation}
+
+% sigma_33 -- generated via i,j,k -> 3,1,2 substitution into the general
+% permutation-symmetric sigma_ii template (archive/network_topologies/topo_3node_full.tex)
+\begin{equation}
+\begin{aligned}
+ \sigma_{33} =  \mathbf{\Sigma}_{\textbf{W}_{3}} \Bigl\{ & 4 a_{33}^{2} a_{11}^{2} a_{22} + 4 a_{12}^{2} a_{21}^{2} a_{11} + 4 a_{31}^{2} a_{13}^{2} a_{22} + 4 a_{11}^{3} a_{22}^{2} + 4 a_{11}^{3} a_{33} a_{22} - 4 a_{22}^{3} a_{31} a_{13} - 8 a_{11}^{2} a_{12} a_{21} a_{22} \\
++&4 a_{33}^{2} a_{22}^{2} a_{11} + 4 a_{21}^{2} a_{12}^{2} a_{22} + 4 a_{32}^{2} a_{23}^{2} a_{11} + 4 a_{22}^{3} a_{11}^{2} + 4 a_{22}^{3} a_{33} a_{11} - 4 a_{11}^{3} a_{32} a_{23} - 8 a_{22}^{2} a_{21} a_{12} a_{11} \\
+-&4 a_{11}^{2} a_{33} a_{12} a_{21} - 4 a_{33}^{2} a_{12} a_{21} a_{11} - 4 a_{22}^{2} a_{33} a_{31} a_{13} + 4 a_{11}^{2} a_{31} a_{12} a_{23} - 4 a_{22}^{2} a_{31} a_{13} a_{11} + 4 a_{22}^{2} a_{31} a_{12} a_{23} \\
+-&4 a_{22}^{2} a_{33} a_{21} a_{12} - 4 a_{33}^{2} a_{21} a_{12} a_{22} - 4 a_{11}^{2} a_{33} a_{32} a_{23} + 4 a_{22}^{2} a_{32} a_{21} a_{13} - 4 a_{11}^{2} a_{32} a_{23} a_{22} + 4 a_{11}^{2} a_{32} a_{21} a_{13} \\
+-&4 a_{11}^{2} a_{31} a_{13} a_{22} - 4 a_{31}^{2} a_{13} a_{12} a_{23} + 4 a_{12}^{2} a_{31} a_{23} a_{21} - 4 a_{13}^{2} a_{31} a_{32} a_{21} - 8 a_{33} a_{31} a_{13} a_{11} a_{22} + 4 a_{32} a_{13} a_{11} a_{21} a_{22} \\
+-&4 a_{22}^{2} a_{32} a_{23} a_{11} - 4 a_{32}^{2} a_{23} a_{21} a_{13} + 4 a_{21}^{2} a_{32} a_{13} a_{12} - 4 a_{23}^{2} a_{32} a_{31} a_{12} - 8 a_{33} a_{32} a_{23} a_{22} a_{11} + 4 a_{31} a_{23} a_{22} a_{12} a_{11} \\
+-&4 a_{31} a_{13} a_{12} a_{21} a_{22} + 4 a_{33} a_{31} a_{13} a_{12} a_{21} +4 a_{31} a_{32} a_{13} a_{11} a_{23} + 4 a_{33} a_{31} a_{11} a_{12} a_{23} + 4 a_{33} a_{31} a_{12} a_{23} a_{22} \\
+-&4 a_{32} a_{23} a_{21}a_{12} a_{11} + 4 a_{33} a_{32} a_{23} a_{21} a_{12} + 4 a_{32} a_{31} a_{23} a_{22} a_{13} + 4 a_{33} a_{32} a_{22} a_{21} a_{13} + 4 a_{33} a_{32} a_{21} a_{13} a_{11} \\
++&8 a_{33} a_{11}^{2} a_{22}^{2} - 8 a_{33} a_{11} a_{22} a_{12} a_{21}\Bigr\} \\
+& \qquad \qquad \qquad \qquad \qquad \qquad \qquad + \\
+\mathbf{\Sigma}_{\textbf{W}_{1}} \Bigl\{&4 a_{31}^{2} a_{33} a_{11} a_{22} - 4 a_{31}^{2} a_{33} a_{12} a_{21} + 4 a_{31}^{2} a_{22}^{2} a_{33} + 4 a_{32}^{2} a_{21}^{2} a_{33} - 4 a_{31}^{3} a_{13} a_{22} + 4 a_{31}^{2} a_{22}^{3} \\
++&4 a_{31}^{3} a_{12} a_{23} + 4 a_{31}^{2} a_{32} a_{13} a_{21} - 4 a_{31}^{2} a_{32} a_{11} a_{23} + 4 a_{31}^{2} a_{22}^{2} a_{11} + 4 a_{32}^{2} a_{21}^{2} a_{11} + 4 a_{32}^{2} a_{21}^{2} a_{22} \\
+-&8 a_{22}^{2} a_{31} a_{32} a_{21} - 8 a_{31} a_{32} a_{11} a_{21} a_{22} - 8 a_{33} a_{31} a_{32} a_{21} a_{22}\Bigr\} \\
+& \qquad \qquad \qquad \qquad \qquad \qquad \qquad + \\
+\mathbf{\Sigma}_{\textbf{W}_{2}} \Bigl\{&4 a_{32}^{2} a_{33} a_{22} a_{11} - 4 a_{32}^{2} a_{33} a_{21} a_{12} + 4 a_{32}^{2} a_{11}^{2} a_{33} +4 a_{31}^{2} a_{12}^{2} a_{33} - 4 a_{32}^{3} a_{23} a_{11} + 4 a_{32}^{2} a_{11}^{3} \\
++&4 a_{32}^{3} a_{21} a_{13} + 4 a_{32}^{2} a_{31} a_{23} a_{12} - 4 a_{32}^{2} a_{31} a_{22} a_{13} + 4 a_{32}^{2} a_{11}^{2} a_{22} + 4 a_{31}^{2} a_{12}^{2} a_{22} + 4 a_{31}^{2} a_{12}^{2} a_{11} \\
+-&8 a_{11}^{2} a_{32} a_{31} a_{12} - 8 a_{32} a_{31} a_{22} a_{12} a_{11} - 8 a_{33} a_{32} a_{31} a_{12} a_{11}\Bigr\}
+\end{aligned}
+\label{eq:network3by3_sigma33}
+\end{equation}
+
+\newpage
+% a general formula
+The fully connected $3 \times 3$ network topology is invariant under $j \leftrightarrow k$ (for fixed $i$), i.e., swapping the labels of these two nodes leaves the topology unchanged. Recognizing this structural (reflective) symmetry in equations \ref{eq:network3by3_sigma11}, \ref{eq:network3by3_sigma22}, and \ref{eq:network3by3_sigma33}, we arrive at a general formula for $\sigma_{ii}$, where $\{i,j,k \}=\{1,2,3\}$.
+% color code for sigma_ii: role i = blue, role j = green, role k = red
+% (this is the abstract i,j,k template itself, kept unsubstituted to show the
+% permutation symmetry directly -- see sigma_11/22/33 above for concrete instances)
+\newcommand{\cidx}[1]{%
+  \def\temp{#1}%
+  \def\ii{i}\def\jj{j}\def\kk{k}%
+  \ifx\temp\ii \textcolor{blue}{i}\else
+  \ifx\temp\jj \textcolor{green!60!black}{j}\else
+  \ifx\temp\kk \textcolor{red}{k}\else
+  #1%
+  \fi\fi\fi
+}
+\newcommand{\idx}[2]{\cidx{#1}\cidx{#2}}
+
+\begin{equation}
+\begin{aligned}
+ \sigma_{\idx{i}{i}} = \mathbf{\Sigma}_{\textbf{W}_{\cidx{i}}} \Bigl\{& 4 a_{\idx{i}{i}}^{2} a_{\idx{j}{j}}^{2} a_{\idx{k}{k}}  + 4  a_{\idx{j}{k}}^{2} a_{\idx{k}{j}}^{2} a_{\idx{j}{j}} + 4 a_{\idx{i}{j}}^{2} a_{\idx{j}{i}}^{2} a_{\idx{k}{k}}  + 4 a_{\idx{j}{j}}^{3} a_{\idx{k}{k}}^{2}+ 4 a_{\idx{j}{j}}^{3}  a_{\idx{i}{i}} a_{\idx{k}{k}} - 4 a_{\idx{k}{k}}^{3} a_{\idx{i}{j}} a_{\idx{j}{i}}  -  8 a_{\idx{j}{j}}^{2} a_{\idx{j}{k}} a_{\idx{k}{j}} a_{\idx{k}{k}}  \\
++ & 4 a_{\idx{i}{i}}^{2} a_{\idx{k}{k}}^{2} a_{\idx{j}{j}} + 4 a_{\idx{k}{j}}^{2} a_{\idx{j}{k}}^{2}  a_{\idx{k}{k}}+ 4 a_{\idx{i}{k}}^{2} a_{\idx{k}{i}}^{2}  a_{\idx{j}{j}} + 4 a_{\idx{k}{k}}^{3} a_{\idx{j}{j}}^{2}  + 4 a_{\idx{k}{k}}^{3} a_{\idx{i}{i}} a_{\idx{j}{j}}  - 4 a_{\idx{j}{j}}^{3} a_{\idx{i}{k}}  a_{\idx{k}{i}} -  8 a_{\idx{k}{k}}^{2} a_{\idx{k}{j}} a_{\idx{j}{k}} a_{\idx{j}{j}} \\
+\\
+- & 4 a_{\idx{j}{j}}^{2} a_{\idx{i}{i}} a_{\idx{j}{k}} a_{\idx{k}{j}} - 4 a_{\idx{i}{i}}^{2} a_{\idx{j}{k}} a_{\idx{k}{j}} a_{\idx{j}{j}} - \ 4 a_{\idx{k}{k}}^{2} a_{\idx{i}{i}} a_{\idx{i}{j}} a_{\idx{j}{i}}  +  4 a_{\idx{j}{j}}^{2} a_{\idx{i}{j}}  a_{\idx{j}{k}} a_{\idx{k}{i}} - 4 a_{\idx{k}{k}}^{2} a_{\idx{i}{j}} a_{\idx{j}{i}} a_{\idx{j}{j}}  +  4 a_{\idx{k}{k}}^{2} a_{\idx{i}{j}} a_{\idx{j}{k}} a_{\idx{k}{i}} \\
+- & 4 a_{\idx{k}{k}}^{2} a_{\idx{i}{i}} a_{\idx{k}{j}} a_{\idx{j}{k}} - 4 a_{\idx{i}{i}}^{2} a_{\idx{k}{j}} a_{\idx{j}{k}} a_{\idx{k}{k}} - 4 a_{\idx{j}{j}}^{2} a_{\idx{i}{i}} a_{\idx{i}{k}}  a_{\idx{k}{i}}  + 4 a_{\idx{k}{k}}^{2} a_{\idx{i}{k}} a_{\idx{k}{j}}  a_{\idx{j}{i}}  - 4 a_{\idx{j}{j}}^{2} a_{\idx{i}{k}}  a_{\idx{k}{i}} a_{\idx{k}{k}} + 4 a_{\idx{j}{j}}^{2} a_{\idx{i}{k}} a_{\idx{k}{j}} a_{\idx{j}{i}} \\
+\\
+- & 4 a_{\idx{j}{j}}^{2}  a_{\idx{i}{j}} a_{\idx{j}{i}} a_{\idx{k}{k}} - 4 a_{\idx{i}{j}}^{2} a_{\idx{j}{i}} a_{\idx{j}{k}} a_{\idx{k}{i}} \ + 4 a_{\idx{j}{k}}^{2}  a_{\idx{i}{j}} a_{\idx{k}{i}} a_{\idx{k}{j}} - 4 a_{\idx{j}{i}}^{2} a_{\idx{i}{j}} a_{\idx{i}{k}} a_{\idx{k}{j}} - 8 a_{\idx{i}{i}} a_{\idx{i}{j}} a_{\idx{j}{i}} a_{\idx{j}{j}} a_{\idx{k}{k}} + 4 a_{\idx{i}{k}} a_{\idx{j}{i}} a_{\idx{j}{j}} a_{\idx{k}{j}} a_{\idx{k}{k}}\\
+- & 4 a_{\idx{k}{k}}^{2}  a_{\idx{i}{k}} a_{\idx{k}{i}} a_{\idx{j}{j}}   - 4 a_{\idx{i}{k}}^{2} a_{\idx{k}{i}} a_{\idx{k}{j}} a_{\idx{j}{i}} + 4 a_{\idx{k}{j}}^{2} a_{\idx{i}{k}} a_{\idx{j}{i}} a_{\idx{j}{k}}  - 4 a_{\idx{k}{i}}^{2} a_{\idx{i}{k}} a_{\idx{i}{j}} a_{\idx{j}{k}}   - 8 a_{\idx{i}{i}} a_{\idx{i}{k}} a_{\idx{k}{i}}  a_{\idx{k}{k}}  a_{\idx{j}{j}} + 4 a_{\idx{i}{j}} a_{\idx{k}{i}} a_{\idx{k}{k}} a_{\idx{j}{k}} a_{\idx{j}{j}} \\
+\\
+- & 4 a_{\idx{i}{j}} a_{\idx{j}{i}} a_{\idx{j}{k}} a_{\idx{k}{j}} a_{\idx{k}{k}} + 4 a_{\idx{i}{i}} a_{\idx{i}{j}} a_{\idx{j}{i}} a_{\idx{j}{k}} a_{\idx{k}{j}} +4 a_{\idx{i}{j}} a_{\idx{i}{k}} a_{\idx{j}{i}} a_{\idx{j}{j}} a_{\idx{k}{i}} \ + 4 a_{\idx{i}{i}} a_{\idx{i}{j}} a_{\idx{j}{j}} a_{\idx{j}{k}} a_{\idx{k}{i}} + 4 a_{\idx{i}{i}} a_{\idx{i}{j}} a_{\idx{j}{k}} a_{\idx{k}{i}} a_{\idx{k}{k}}  \\
+- &4 a_{\idx{i}{k}} a_{\idx{k}{i}} a_{\idx{k}{j}}a_{\idx{j}{k}} a_{\idx{j}{j}}   + 4 a_{\idx{i}{i}} a_{\idx{i}{k}} a_{\idx{k}{i}} a_{\idx{k}{j}} a_{\idx{j}{k}}   + 4 a_{\idx{i}{k}} a_{\idx{i}{j}} a_{\idx{k}{i}} a_{\idx{k}{k}} a_{\idx{j}{i}}   + 4 a_{\idx{i}{i}} a_{\idx{i}{k}} a_{\idx{k}{k}} a_{\idx{k}{j}} a_{\idx{j}{i}}   + 4 a_{\idx{i}{i}} a_{\idx{i}{k}} a_{\idx{k}{j}} a_{\idx{j}{i}} a_{\idx{j}{j}}  \\
+\\
++ & 8 a_{\idx{i}{i}} a_{\idx{j}{j}}^{2} a_{\idx{k}{k}}^{2} - 8 a_{\idx{i}{i}} a_{\idx{j}{j}} a_{\idx{k}{k}} a_{\idx{j}{k}} a_{\idx{k}{j}}  \Bigr\} \quad \textbf{+} \\
+\\
+\mathbf{\Sigma}_{\textbf{W}_{\cidx{j}}} \Bigl\{ & 4 a_{\idx{i}{j}}^{2}  a_{\idx{i}{i}} a_{\idx{j}{j}} a_{\idx{k}{k}} - 4 a_{\idx{i}{j}}^{2}  a_{\idx{i}{i}} a_{\idx{j}{k}} a_{\idx{k}{j}} + 4 a_{\idx{i}{j}}^{2} a_{\idx{k}{k}}^{2} a_{\idx{i}{i}}   + 4 a_{\idx{i}{k}}^{2} a_{\idx{k}{j}}^{2} a_{\idx{i}{i}}   - 4 a_{\idx{i}{j}}^{3} a_{\idx{j}{i}} a_{\idx{k}{k}} + 4 a_{\idx{i}{j}}^{2} a_{\idx{k}{k}}^{3} + 4 a_{\idx{i}{j}}^{3} a_{\idx{j}{k}} a_{\idx{k}{i}} \\
+\mathbf{\Sigma}_{\textbf{W}_{\cidx{k}}} \Bigl\{ & 4 a_{\idx{i}{k}}^{2} a_{\idx{i}{i}}  a_{\idx{k}{k}} a_{\idx{j}{j}} - 4 a_{\idx{i}{k}}^{2} a_{\idx{i}{i}} a_{\idx{k}{j}}  a_{\idx{j}{k}} + 4 a_{\idx{i}{k}}^{2} a_{\idx{j}{j}}^{2} a_{\idx{i}{i}}   +4  a_{\idx{i}{j}}^{2} a_{\idx{j}{k}}^{2} a_{\idx{i}{i}}- 4 a_{\idx{i}{k}}^{3} a_{\idx{k}{i}} a_{\idx{j}{j}}  + 4 a_{\idx{i}{k}}^{2} a_{\idx{j}{j}}^{3} + 4 a_{\idx{i}{k}}^{3} a_{\idx{k}{j}} a_{\idx{j}{i}}  \\
+\\
++ & 4 a_{\idx{i}{j}}^{2} a_{\idx{i}{k}} a_{\idx{j}{i}} a_{\idx{k}{j}} - 4 a_{\idx{i}{j}}^{2} a_{\idx{i}{k}} a_{\idx{j}{j}} a_{\idx{k}{i}} + 4 a_{\idx{i}{j}}^{2} a_{\idx{k}{k}}^{2} a_{\idx{j}{j}} + 4 a_{\idx{i}{k}}^{2} a_{\idx{k}{j}}^{2} a_{\idx{j}{j}}  + 4 a_{\idx{i}{k}}^{2} a_{\idx{k}{j}}^{2} a_{\idx{k}{k}} -8 a_{\idx{k}{k}}^{2} a_{\idx{i}{j}} a_{\idx{i}{k}} a_{\idx{k}{j}}   \\
++ & 4  a_{\idx{i}{k}}^{2} a_{\idx{i}{j}} a_{\idx{k}{i}} a_{\idx{j}{k}}  - 4 a_{\idx{i}{k}}^{2} a_{\idx{i}{j}} a_{\idx{k}{k}} a_{\idx{j}{i}}  + 4 a_{\idx{i}{k}}^{2} a_{\idx{j}{j}}^{2} a_{\idx{k}{k}} + 4 a_{\idx{i}{j}}^{2} a_{\idx{j}{k}}^{2} a_{\idx{k}{k}} + 4 a_{\idx{i}{j}}^{2} a_{\idx{j}{k}}^{2} a_{\idx{j}{j}} - 8  a_{\idx{j}{j}}^{2} a_{\idx{i}{k}} a_{\idx{i}{j}}  a_{\idx{j}{k}}    \\
+\\
+ - & 8 a_{\idx{i}{j}} a_{\idx{i}{k}} a_{\idx{j}{j}} a_{\idx{k}{j}} a_{\idx{k}{k}} - 8 a_{\idx{i}{i}} a_{\idx{i}{j}} a_{\idx{i}{k}} a_{\idx{k}{j}} a_{\idx{k}{k}} \Bigr\} \\
+ - & 8 a_{\idx{i}{k}} a_{\idx{i}{j}} a_{\idx{k}{k}} a_{\idx{j}{k}} a_{\idx{j}{j}}   - 8 a_{\idx{i}{i}} a_{\idx{i}{k}} a_{\idx{i}{j}} a_{\idx{j}{k}} a_{\idx{j}{j}}  \Bigr\}
+\end{aligned}
+\label{eq:network3by3_sigma_ii}
+\end{equation}
+
+%%%% formulas for sigma_ij
+The formulae for $\sigma_{21}$, $\sigma_{31}$, and $\sigma_{32}$ are presented below, with the common factor $-1/|\mathbf{K}|$ (\ref{eq:network3by3_detK}) factored out for readability; each entry equals $-1/|\mathbf{K}|$ times the expression shown.
+
+% sigma_21
+\begin{equation}
+\begin{aligned}
+\sigma_{21} =  \mathbf{\Sigma}_{\textbf{W}_{2}} \Bigl\{ & -4 a_{33}^{3} a_{11} a_{12} - 4 a_{11}^{2} a_{33}^{2} a_{12} - 4 a_{13}^{2} a_{32}^{2} a_{21} - 4 a_{11}^{2} a_{22} a_{33} a_{12} + 4 a_{11}^{2} a_{12} a_{23} a_{32} + 4 a_{11}^{2} a_{13} a_{32} a_{33} \\
+-&4 a_{33}^{2} a_{11} a_{22} a_{12} + 4 a_{33}^{2} a_{11} a_{13} a_{32} + 4 a_{33}^{2} a_{12} a_{13} a_{31} + 4 a_{12}^{2} a_{11} a_{33} a_{21} - 4a_{12}^{2} a_{11} a_{23} a_{31} \\
+-&4 a_{13}^{2} a_{11} a_{31} a_{32} - 4 a_{13}^{2} a_{31} a_{32} a_{33} + 4 a_{32}^{2} a_{11} a_{13} a_{23} + 4 a_{11} a_{22} a_{12} a_{13} a_{31} - 4 a_{11} a_{12}a_{21} a_{13} a_{32} \\
++&4 a_{11} a_{12} a_{13} a_{31} a_{33} + 4 a_{22} a_{12} a_{13} a_{31} a_{33} + 4 a_{12} a_{21} a_{13} a_{32} a_{33} - 4 a_{12} a_{13} a_{23} a_{31} a_{32}\Bigr\} \\
+& \qquad \qquad \qquad \qquad \qquad \qquad \qquad + \\
+\mathbf{\Sigma}_{\textbf{W}_{1}} \Bigl\{& -4 a_{33}^{3} a_{22} a_{21} - 4 a_{22}^{2} a_{33}^{2} a_{21} - 4 a_{23}^{2} a_{31}^{2} a_{12} - 4 a_{22}^{2} a_{11} a_{33} a_{21} + 4 a_{22}^{2} a_{21} a_{13} a_{31} + 4 a_{22}^{2} a_{23} a_{31} a_{33} \\
+-&4 a_{33}^{2} a_{22} a_{11} a_{21} + 4 a_{33}^{2} a_{22} a_{23} a_{31} + 4 a_{33}^{2} a_{21} a_{23} a_{32} + 4 a_{21}^{2} a_{22} a_{33} a_{12} - 4 a_{21}^{2} a_{22} a_{13} a_{32} \\
+-&4 a_{23}^{2} a_{22} a_{32} a_{31} - 4 a_{23}^{2} a_{32} a_{31} a_{33} + 4 a_{31}^{2} a_{22} a_{23} a_{13} + 4 a_{22} a_{11} a_{21} a_{23} a_{32} - 4 a_{22} a_{21} a_{12} a_{23} a_{31} \\
++&4 a_{22} a_{21} a_{23} a_{32} a_{33} + 4 a_{11} a_{21} a_{23} a_{32} a_{33} + 4 a_{21} a_{12} a_{23} a_{31} a_{33} - 4 a_{21} a_{23} a_{13} a_{32} a_{31}\Bigr\} \\
+& \qquad \qquad \qquad \qquad \qquad \qquad \qquad + \\
+\mathbf{\Sigma}_{\textbf{W}_{3}} \Bigl\{& -4a_{22}^{2} a_{13}^{2} a_{21} + 4 a_{22}^{2} a_{11} a_{23} a_{13} - 4 a_{23}^{2} a_{22} a_{11} a_{12} - 4 a_{23}^{2} a_{11} a_{33} a_{12} - 4 a_{23}^{2} a_{11} a_{13} a_{32} + 4 a_{23}^{2} a_{12} a_{13} a_{31} \\
+-&4 a_{11}^{2} a_{23}^{2} a_{12} + 4 a_{11}^{2} a_{22} a_{13} a_{23} - 4 a_{13}^{2} a_{11} a_{22} a_{21} - 4 a_{13}^{2} a_{22} a_{33} a_{21} - 4 a_{13}^{2} a_{22} a_{23} a_{31} + 4 a_{13}^{2} a_{21} a_{23} a_{32} \\
++&4 a_{22} a_{21} a_{12} a_{23} a_{13} + 4 a_{11} a_{12} a_{21} a_{13} a_{23} + 8 a_{22} a_{11} a_{23} a_{13} a_{33}\Bigr\}
+\end{aligned}
+\label{eq:network3by3_sigma21}
+\end{equation}
+
+
+% sigma_31
+\begin{equation}
+\begin{aligned}
+\sigma_{31} =  \mathbf{\Sigma}_{\textbf{W}_{3}} \Bigl\{ & -4 a_{22}^{3} a_{11} a_{13} - 4 a_{11}^{2} a_{22}^{2} a_{13} - 4 a_{12}^{2} a_{23}^{2} a_{31} - 4 a_{11}^{2} a_{33} a_{22} a_{13} + 4 a_{11}^{2} a_{13} a_{32} a_{23} + 4 a_{11}^{2} a_{12} a_{23} a_{22} \\
+-&4 a_{22}^{2} a_{11} a_{33} a_{13} + 4 a_{22}^{2} a_{11} a_{12} a_{23} + 4 a_{22}^{2} a_{13} a_{12} a_{21} + 4 a_{13}^{2} a_{11} a_{22} a_{31} - 4a_{13}^{2} a_{11} a_{32} a_{21} \\
+-&4 a_{12}^{2} a_{11} a_{21} a_{23} - 4 a_{12}^{2} a_{21} a_{23} a_{22} + 4 a_{23}^{2} a_{11} a_{12} a_{32} + 4 a_{11} a_{33} a_{13} a_{12} a_{21} - 4 a_{11} a_{13}a_{31} a_{12} a_{23} \\
++&4 a_{11} a_{13} a_{12} a_{21} a_{22} + 4 a_{33} a_{13} a_{12} a_{21} a_{22} + 4 a_{13} a_{31} a_{12} a_{23} a_{22} - 4 a_{13} a_{12} a_{32} a_{21} a_{23}\Bigr\} \\
+& \qquad \qquad \qquad \qquad \qquad \qquad \qquad + \\
+\mathbf{\Sigma}_{\textbf{W}_{1}} \Bigl\{& -4 a_{22}^{3} a_{33} a_{31} - 4 a_{33}^{2} a_{22}^{2} a_{31} - 4 a_{32}^{2} a_{21}^{2} a_{13} - 4 a_{33}^{2} a_{11} a_{22} a_{31} + 4 a_{33}^{2} a_{31} a_{12} a_{21} + 4 a_{33}^{2} a_{32} a_{21} a_{22} \\
+-&4 a_{22}^{2} a_{33} a_{11} a_{31} + 4 a_{22}^{2} a_{33} a_{32} a_{21} + 4 a_{22}^{2} a_{31} a_{32} a_{23} + 4 a_{31}^{2} a_{33} a_{22} a_{13} - 4 a_{31}^{2} a_{33} a_{12} a_{23} \\
+-&4 a_{32}^{2} a_{33} a_{23} a_{21} - 4 a_{32}^{2} a_{23} a_{21} a_{22} + 4 a_{21}^{2} a_{33} a_{32} a_{12} + 4 a_{33} a_{11} a_{31} a_{32} a_{23} - 4 a_{33} a_{31} a_{13} a_{32} a_{21} \\
++&4 a_{33} a_{31} a_{32} a_{23} a_{22} + 4 a_{11} a_{31} a_{32} a_{23} a_{22} + 4 a_{31} a_{13} a_{32} a_{21} a_{22} - 4 a_{31} a_{32} a_{12} a_{23} a_{21}\Bigr\} \\
+& \qquad \qquad \qquad \qquad \qquad \qquad \qquad + \\
+\mathbf{\Sigma}_{\textbf{W}_{2}} \Bigl\{& -4a_{33}^{2} a_{12}^{2} a_{31} + 4 a_{33}^{2} a_{11} a_{32} a_{12} - 4 a_{32}^{2} a_{33} a_{11} a_{13} - 4 a_{32}^{2} a_{11} a_{22} a_{13} - 4 a_{32}^{2} a_{11} a_{12} a_{23} + 4 a_{32}^{2} a_{13} a_{12} a_{21} \\
+-&4 a_{11}^{2} a_{32}^{2} a_{13} + 4 a_{11}^{2} a_{33} a_{12} a_{32} - 4 a_{12}^{2} a_{11} a_{33} a_{31} - 4 a_{12}^{2} a_{33} a_{22} a_{31} - 4 a_{12}^{2} a_{33} a_{32} a_{21} + 4 a_{12}^{2} a_{31} a_{32} a_{23} \\
++&4 a_{33} a_{31} a_{13} a_{32} a_{12} + 4 a_{11} a_{13} a_{31} a_{12} a_{32} + 8 a_{33} a_{11} a_{32} a_{12} a_{22}\Bigr\}
+\end{aligned}
+\label{eq:network3by3_sigma31}
+\end{equation}
+
+% sigma_32
+\begin{equation}
+\begin{aligned}
+\sigma_{32} =  \mathbf{\Sigma}_{\textbf{W}_{3}} \Bigl\{ & -4 a_{11}^{3} a_{22} a_{23} - 4 a_{22}^{2} a_{11}^{2} a_{23} - 4 a_{21}^{2} a_{13}^{2} a_{32} - 4 a_{22}^{2} a_{33} a_{11} a_{23} + 4 a_{22}^{2} a_{23} a_{31} a_{13} + 4 a_{22}^{2} a_{21} a_{13} a_{11} \\
+-&4 a_{11}^{2} a_{22} a_{33} a_{23} + 4 a_{11}^{2} a_{22} a_{21} a_{13} + 4 a_{11}^{2} a_{23} a_{21} a_{12} + 4 a_{23}^{2} a_{22} a_{11} a_{32} - 4a_{23}^{2} a_{22} a_{31} a_{12} \\
+-&4 a_{21}^{2} a_{22} a_{12} a_{13} - 4 a_{21}^{2} a_{12} a_{13} a_{11} + 4 a_{13}^{2} a_{22} a_{21} a_{31} + 4 a_{22} a_{33} a_{23} a_{21} a_{12} - 4 a_{22} a_{23}a_{32} a_{21} a_{13} \\
++&4 a_{22} a_{23} a_{21} a_{12} a_{11} + 4 a_{33} a_{23} a_{21} a_{12} a_{11} + 4 a_{23} a_{32} a_{21} a_{13} a_{11} - 4 a_{23} a_{21} a_{31} a_{12} a_{13}\Bigr\} \\
+& \qquad \qquad \qquad \qquad \qquad \qquad \qquad + \\
+\mathbf{\Sigma}_{\textbf{W}_{2}} \Bigl\{& -4 a_{11}^{3} a_{33} a_{32} - 4 a_{33}^{2} a_{11}^{2} a_{32} - 4 a_{31}^{2} a_{12}^{2} a_{23} - 4 a_{33}^{2} a_{22} a_{11} a_{32} + 4 a_{33}^{2} a_{32} a_{21} a_{12} + 4 a_{33}^{2} a_{31} a_{12} a_{11} \\
+-&4 a_{11}^{2} a_{33} a_{22} a_{32} + 4 a_{11}^{2} a_{33} a_{31} a_{12} + 4 a_{11}^{2} a_{32} a_{31} a_{13} + 4 a_{32}^{2} a_{33} a_{11} a_{23} - 4 a_{32}^{2} a_{33} a_{21} a_{13} \\
+-&4 a_{31}^{2} a_{33} a_{13} a_{12} - 4 a_{31}^{2} a_{13} a_{12} a_{11} + 4 a_{12}^{2} a_{33} a_{31} a_{21} + 4 a_{33} a_{22} a_{32} a_{31} a_{13} - 4 a_{33} a_{32} a_{23} a_{31} a_{12} \\
++&4 a_{33} a_{32} a_{31} a_{13} a_{11} + 4 a_{22} a_{32} a_{31} a_{13} a_{11} + 4 a_{32} a_{23} a_{31} a_{12} a_{11} - 4 a_{32} a_{31} a_{21} a_{13} a_{12}\Bigr\} \\
+& \qquad \qquad \qquad \qquad \qquad \qquad \qquad + \\
+\mathbf{\Sigma}_{\textbf{W}_{1}} \Bigl\{& -4a_{33}^{2} a_{21}^{2} a_{32} + 4 a_{33}^{2} a_{22} a_{31} a_{21} - 4 a_{31}^{2} a_{33} a_{22} a_{23} - 4 a_{31}^{2} a_{22} a_{11} a_{23} - 4 a_{31}^{2} a_{22} a_{21} a_{13} + 4 a_{31}^{2} a_{23} a_{21} a_{12} \\
+-&4 a_{22}^{2} a_{31}^{2} a_{23} + 4 a_{22}^{2} a_{33} a_{21} a_{31} - 4 a_{21}^{2} a_{22} a_{33} a_{32} - 4 a_{21}^{2} a_{33} a_{11} a_{32} - 4 a_{21}^{2} a_{33} a_{31} a_{12} + 4 a_{21}^{2} a_{32} a_{31} a_{13} \\
++&4 a_{33} a_{32} a_{23} a_{31} a_{21} + 4 a_{22} a_{23} a_{32} a_{21} a_{31} + 8 a_{33} a_{22} a_{31} a_{21} a_{11}\Bigr\}
+\end{aligned}
+\label{eq:network3by3_sigma32}
+\end{equation}
+
+
+% a general formula for sigma_ij
+Recognizing the reflective symmetry in $\mathbf{\Sigma}_Y$, i.e., $\sigma_{ij}=\sigma_{ji}$ for any $\mathbf{A}$ regardless of the network's topology, equations \ref{eq:network3by3_sigma21}, \ref{eq:network3by3_sigma31}, and \ref{eq:network3by3_sigma32} remain invariant under $i \leftrightarrow j$ for fixed $k$. Therefore, we arrive at a general formula for $\sigma_{ij}$, where $\{i,j,k \}=\{1,2,3\}$.
+
+% NOTE: commented out for now -- kept in source for potential future reuse
+% (significant effort went into this rearranged version; see also D-37 below)
+% formula for sigma_ij (plain, no color coding)
+% \begin{equation}
+% \begin{aligned}
+% \sigma_{ij} =  \mathbf{\Sigma}_{\textbf{W}_i} \Bigl\{ & 4   a_{kk}^{3} a_{ii} a_{ij} + 4 a_{ii}^{2} a_{kk}^{2} a_{ij} +4  a_{ik}^{2} a_{kj}^{2} a_{ji}   + 4 a_{ii}^{2} a_{jj} a_{kk} a_{ij} - 4 a_{ii}^{2} a_{ij} a_{jk}   a_{kj} -4 a_{ii}^{2} a_{ik} a_{kj} a_{kk} \\ 
+% +& 4 a_{kk}^{2} a_{ii} a_{jj} a_{ij} - 4 a_{kk}^{2} a_{ii} a_{ik} a_{kj}  - 4 a_{kk}^{2} a_{ij} a_{ik} a_{ki} -4 a_{ij}^{2} a_{ii} a_{kk} a_{ji} + 4 a_{ij}^{2} a_{ii} a_{jk}  a_{ki} \\
+% + & 4 a_{ik}^{2} a_{ii} a_{ki} a_{kj} +4 a_{ik}^{2} a_{ki} a_{kj}  a_{kk} - 4 a_{kj}^{2} a_{ii} a_{ik} a_{jk} - 4 a_{ii} a_{jj} a_{ij} a_{ik} a_{ki} + 4 a_{ii} a_{ij} a_{ji} a_{ik} a_{kj} \\
+% -& 4 a_{ii} a_{ij}  a_{ik} a_{ki} a_{kk} - 4 a_{jj} a_{ij} a_{ik} a_{ki} a_{kk} - 4 a_{ij} a_{ji} a_{ik} a_{kj} a_{kk} +4 a_{ij} a_{ik} a_{jk}   a_{ki} a_{kj}  \Bigr\} +\\
+% \mathbf{\Sigma}_{\textbf{W}_j} \Bigl\{&4 a_{kk}^{3} a_{jj} a_{ji} +4 a_{jj}^{2} a_{kk}^{2} a_{ji} + 4 a_{jk}^{2}  a_{ki}^{2} a_{ij}   + 4 a_{jj}^{2}  a_{ii} a_{kk} a_{ji} - 4 a_{jj}^{2} a_{ji} a_{ik} a_{ki}- 4 a_{jj}^{2} a_{jk} a_{ki} a_{kk} \\ 
+% +& 4 a_{kk}^{2} a_{jj} a_{ii} a_{ji} - 4 a_{kk}^{2} a_{jj} a_{jk} a_{ki}  - 4 a_{kk}^{2} a_{ji} a_{jk} a_{kj} - 4 a_{ji}^{2} a_{jj} a_{kk}  a_{ij} +  4a_{ji}^{2} a_{jj}  a_{ik} a_{kj} \\
+%  +& 4 a_{jk}^{2} a_{jj}  a_{kj} a_{ki} + 4 a_{jk}^{2} a_{kj} a_{ki} a_{kk} -  4 a_{ki}^{2} a_{jj} a_{jk} a_{ik}- 4 a_{jj} a_{ii} a_{ji} a_{jk} a_{kj} +  4 a_{jj} a_{ji}a_{ij} a_{jk} a_{ki}  \\
+%  -& 4 a_{jj} a_{ji} a_{jk} a_{kj} a_{kk} -4 a_{ii} a_{ji} a_{jk}  a_{kj} a_{kk} - 4 a_{ji} a_{ij} a_{jk} a_{ki} a_{kk}  + 4 a_{ji} a_{jk} a_{ik} a_{kj} a_{ki}\Bigr\} +\\
+% \mathbf{\Sigma}_{\textbf{W}_k} \Bigl\{& 4a_{ii}^{2} a_{jk}^{2} a_{ij} - 4 a_{ii}^{2} a_{jj} a_{ik} a_{jk} + 4 a_{ik}^{2} a_{ii} a_{jj} a_{ji} +4 a_{ik}^{2} a_{jj} a_{kk} a_{ji} + 4 a_{ik}^{2} a_{jj} a_{jk} a_{ki} - 4 a_{ik}^{2} a_{ji} a_{jk} a_{kj}  \\
+% +& 4 a_{jj}^{2} a_{ik}^{2} a_{ji} - 4 a_{jj}^{2} a_{ii} a_{jk}  a_{ik} + 4 a_{jk}^{2} a_{jj} a_{ii} a_{ij} + 4 a_{jk}^{2} a_{ii} a_{kk} a_{ij} + 4 a_{jk}^{2} a_{ii} a_{ik} a_{kj} - 4 a_{jk}^{2} a_{ij} a_{ik} a_{ki}  \\
+% -& 4 a_{ii} a_{ij} a_{ji} a_{ik} a_{jk} -4 a_{jj} a_{ji} a_{ij} a_{jk}  a_{ik} - 8 a_{ii} a_{jj} a_{ik} a_{jk} a_{kk}\Bigr\}
+% \end{aligned}
+% \label{eq:network3by3_sigma_ij_plain}
+% \end{equation}
+
+
+% formula for sigma_ij, rearranged to visually pair sigma_W_i and sigma_W_j terms
+% (analogous to how D-32 pairs sigma_W_j and sigma_W_k), following the reflective
+% (i<->j) symmetry of this formula -- sigma_W_k is internally self-paired under i<->j
+\begin{equation}
+\begin{aligned}
+\sigma_{\idx{i}{j}} = \mathbf{\Sigma}_{\textbf{W}_{\cidx{i}}} \Bigl\{ & -4 a_{\idx{k}{k}}^{3} a_{\idx{i}{i}} a_{\idx{i}{j}} - 4 a_{\idx{i}{i}}^{2} a_{\idx{k}{k}}^{2} a_{\idx{i}{j}} - 4 a_{\idx{i}{k}}^{2} a_{\idx{k}{j}}^{2} a_{\idx{j}{i}} - 4 a_{\idx{i}{i}}^{2} a_{\idx{j}{j}} a_{\idx{k}{k}} a_{\idx{i}{j}} + 4 a_{\idx{i}{i}}^{2} a_{\idx{i}{j}} a_{\idx{j}{k}} a_{\idx{k}{j}} + 4 a_{\idx{i}{i}}^{2} a_{\idx{i}{k}} a_{\idx{k}{j}} a_{\idx{k}{k}} \\
+\mathbf{\Sigma}_{\textbf{W}_{\cidx{j}}} \Bigl\{ & -4 a_{\idx{k}{k}}^{3} a_{\idx{j}{j}} a_{\idx{j}{i}} - 4 a_{\idx{j}{j}}^{2} a_{\idx{k}{k}}^{2} a_{\idx{j}{i}} - 4 a_{\idx{j}{k}}^{2} a_{\idx{k}{i}}^{2} a_{\idx{i}{j}} - 4 a_{\idx{j}{j}}^{2} a_{\idx{i}{i}} a_{\idx{k}{k}} a_{\idx{j}{i}} + 4 a_{\idx{j}{j}}^{2} a_{\idx{j}{i}} a_{\idx{i}{k}} a_{\idx{k}{i}} + 4 a_{\idx{j}{j}}^{2} a_{\idx{j}{k}} a_{\idx{k}{i}} a_{\idx{k}{k}} \\
+\\
+- & 4 a_{\idx{k}{k}}^{2} a_{\idx{i}{i}} a_{\idx{j}{j}} a_{\idx{i}{j}} + 4 a_{\idx{k}{k}}^{2} a_{\idx{i}{i}} a_{\idx{i}{k}} a_{\idx{k}{j}} + 4 a_{\idx{k}{k}}^{2} a_{\idx{i}{j}} a_{\idx{i}{k}} a_{\idx{k}{i}} + 4 a_{\idx{i}{j}}^{2} a_{\idx{i}{i}} a_{\idx{k}{k}} a_{\idx{j}{i}} - 4 a_{\idx{i}{j}}^{2} a_{\idx{i}{i}} a_{\idx{j}{k}} a_{\idx{k}{i}}\\
+- & 4 a_{\idx{k}{k}}^{2} a_{\idx{j}{j}} a_{\idx{i}{i}} a_{\idx{j}{i}} + 4 a_{\idx{k}{k}}^{2} a_{\idx{j}{j}} a_{\idx{j}{k}} a_{\idx{k}{i}} + 4 a_{\idx{k}{k}}^{2} a_{\idx{j}{i}} a_{\idx{j}{k}} a_{\idx{k}{j}} + 4 a_{\idx{j}{i}}^{2} a_{\idx{j}{j}} a_{\idx{k}{k}} a_{\idx{i}{j}} - 4a_{\idx{j}{i}}^{2} a_{\idx{j}{j}} a_{\idx{i}{k}} a_{\idx{k}{j}}\\
+\\
+- & 4 a_{\idx{i}{k}}^{2} a_{\idx{i}{i}} a_{\idx{k}{i}} a_{\idx{k}{j}} - 4 a_{\idx{i}{k}}^{2} a_{\idx{k}{i}} a_{\idx{k}{j}} a_{\idx{k}{k}} + 4 a_{\idx{k}{j}}^{2} a_{\idx{i}{i}} a_{\idx{i}{k}} a_{\idx{j}{k}} + 4 a_{\idx{i}{i}} a_{\idx{j}{j}} a_{\idx{i}{j}} a_{\idx{i}{k}} a_{\idx{k}{i}} - 4 a_{\idx{i}{i}} a_{\idx{i}{j}} a_{\idx{j}{i}} a_{\idx{i}{k}} a_{\idx{k}{j}}\\
+- & 4 a_{\idx{j}{k}}^{2} a_{\idx{j}{j}} a_{\idx{k}{j}} a_{\idx{k}{i}} - 4 a_{\idx{j}{k}}^{2} a_{\idx{k}{j}} a_{\idx{k}{i}} a_{\idx{k}{k}} + 4 a_{\idx{k}{i}}^{2} a_{\idx{j}{j}} a_{\idx{j}{k}} a_{\idx{i}{k}} + 4 a_{\idx{j}{j}} a_{\idx{i}{i}} a_{\idx{j}{i}} a_{\idx{j}{k}} a_{\idx{k}{j}} - 4 a_{\idx{j}{j}} a_{\idx{j}{i}}a_{\idx{i}{j}} a_{\idx{j}{k}} a_{\idx{k}{i}}\\
+\\
++ & 4 a_{\idx{i}{i}} a_{\idx{i}{j}} a_{\idx{i}{k}} a_{\idx{k}{i}} a_{\idx{k}{k}} + 4 a_{\idx{j}{j}} a_{\idx{i}{j}} a_{\idx{i}{k}} a_{\idx{k}{i}} a_{\idx{k}{k}} + 4 a_{\idx{i}{j}} a_{\idx{j}{i}} a_{\idx{i}{k}} a_{\idx{k}{j}} a_{\idx{k}{k}} - 4 a_{\idx{i}{j}} a_{\idx{i}{k}} a_{\idx{j}{k}} a_{\idx{k}{i}} a_{\idx{k}{j}}\Bigr\} \\
++ & 4 a_{\idx{j}{j}} a_{\idx{j}{i}} a_{\idx{j}{k}} a_{\idx{k}{j}} a_{\idx{k}{k}} + 4 a_{\idx{i}{i}} a_{\idx{j}{i}} a_{\idx{j}{k}} a_{\idx{k}{j}} a_{\idx{k}{k}} + 4 a_{\idx{j}{i}} a_{\idx{i}{j}} a_{\idx{j}{k}} a_{\idx{k}{i}} a_{\idx{k}{k}} - 4 a_{\idx{j}{i}} a_{\idx{j}{k}} a_{\idx{i}{k}} a_{\idx{k}{j}} a_{\idx{k}{i}}\Bigr\} \quad \textbf{+} \\
+\\
+\mathbf{\Sigma}_{\textbf{W}_{\cidx{k}}} \Bigl\{& -4a_{\idx{i}{i}}^{2} a_{\idx{j}{k}}^{2} a_{\idx{i}{j}} + 4 a_{\idx{i}{i}}^{2} a_{\idx{j}{j}} a_{\idx{i}{k}} a_{\idx{j}{k}} - 4 a_{\idx{i}{k}}^{2} a_{\idx{i}{i}} a_{\idx{j}{j}} a_{\idx{j}{i}} - 4 a_{\idx{i}{k}}^{2} a_{\idx{j}{j}} a_{\idx{k}{k}} a_{\idx{j}{i}} - 4 a_{\idx{i}{k}}^{2} a_{\idx{j}{j}} a_{\idx{j}{k}} a_{\idx{k}{i}} + 4 a_{\idx{i}{k}}^{2} a_{\idx{j}{i}} a_{\idx{j}{k}} a_{\idx{k}{j}} \\
+- & 4 a_{\idx{j}{j}}^{2} a_{\idx{i}{k}}^{2} a_{\idx{j}{i}} + 4 a_{\idx{j}{j}}^{2} a_{\idx{i}{i}} a_{\idx{j}{k}} a_{\idx{i}{k}} - 4 a_{\idx{j}{k}}^{2} a_{\idx{j}{j}} a_{\idx{i}{i}} a_{\idx{i}{j}} - 4 a_{\idx{j}{k}}^{2} a_{\idx{i}{i}} a_{\idx{k}{k}} a_{\idx{i}{j}} - 4 a_{\idx{j}{k}}^{2} a_{\idx{i}{i}} a_{\idx{i}{k}} a_{\idx{k}{j}} + 4 a_{\idx{j}{k}}^{2} a_{\idx{i}{j}} a_{\idx{i}{k}} a_{\idx{k}{i}}\\
+\\
++ & 4 a_{\idx{i}{i}} a_{\idx{i}{j}} a_{\idx{j}{i}} a_{\idx{i}{k}} a_{\idx{j}{k}} + 4 a_{\idx{j}{j}} a_{\idx{j}{i}} a_{\idx{i}{j}} a_{\idx{j}{k}} a_{\idx{i}{k}} + 8 a_{\idx{i}{i}} a_{\idx{j}{j}} a_{\idx{i}{k}} a_{\idx{j}{k}} a_{\idx{k}{k}}\Bigr\}
+\end{aligned}
+\label{eq:network3by3_sigma_ij_v2}
+\end{equation}
+
+
+
+\newpage
+As a check on these formulae, we show that they can be used to recover the confounder topology's formulae derived independently in section one. Crossing out every term containing $a_{12}$, $a_{21}$, $a_{31}$, or $a_{32}$ in equation \ref{eq:network3by3_detK} leaves
+% old language, too wordy and takes up a lot of space. 
+\begin{comment}
+The confounder topology (see
+\ref{eq:network3by3_confounder}) is a special case of the fully connected
+$3\times3$ network (\ref{eq:network3by3_full}), with $a_{12}=a_{21}=a_{31}=a_{32}=0$. Here we show that setting these entries to zero in each ``master''
+formula from section two allows us to recover the corresponding confounder-topology formula derived independently in section one. 
+\end{comment}
+\begin{equation}
+\begin{aligned}
+|\mathbf{K}| = & \textcolor{blue}{8 a_{11} a_{22}^{2} a_{33}^{3} + 8 a_{11} a_{22}^{3} a_{33}^{2} + 8 a_{11}^{2} a_{22} a_{33}^{3} + 8 a_{11}^{2} a_{22}^{3} a_{33} + 8 a_{11}^{3} a_{22} a_{33}^{2} + 8 a_{11}^{3} a_{22}^{2} a_{33} + 16 a_{11}^{2} a_{22}^{2} a_{33}^{2}} \\
+-& 8 \cancel{a_{12}^{2}} a_{23}^{2} a_{31}^{2} - 8 a_{13}^{2} \cancel{a_{21}^{2}} a_{32}^{2} - 8 a_{11} \cancel{a_{12}} a_{21} a_{33}^{3} - 8 a_{11} a_{13} a_{22}^{3} \cancel{a_{31}} - 8 \cancel{a_{12}} a_{21} a_{22} a_{33}^{3} - 8 a_{11}^{3} a_{22} a_{23} \cancel{a_{32}} \\
+-& 8 a_{13} a_{22}^{3} \cancel{a_{31}} a_{33} - 8 a_{11}^{3} a_{23} \cancel{a_{32}} a_{33} + 8 a_{11} \cancel{a_{12}^{2}} a_{21}^{2} a_{33} + 8 a_{11} a_{13}^{2} a_{22} \cancel{a_{31}^{2}} - 8 a_{11}^{2} \cancel{a_{12}} a_{21} a_{33}^{2} - 8 a_{11}^{2} a_{13} a_{22}^{2} \cancel{a_{31}} \\
++& 8 a_{11} a_{22} a_{23}^{2} \cancel{a_{32}^{2}} - 8 \cancel{a_{12}} a_{21} a_{22}^{2} a_{33}^{2} - 8 a_{11}^{2} a_{22}^{2} a_{23} \cancel{a_{32}} + 8 \cancel{a_{12}^{2}} a_{21}^{2} a_{22} a_{33} + 8 a_{11} a_{23}^{2} \cancel{a_{32}^{2}} a_{33} - 8 a_{13} a_{22}^{2} \cancel{a_{31}} a_{33}^{2} \\
+-& 8 a_{11}^{2} a_{23} \cancel{a_{32}} a_{33}^{2} + 8 a_{13}^{2} a_{22} \cancel{a_{31}^{2}} a_{33} - 8 a_{11} \cancel{a_{12}} a_{13} a_{21}^{2} a_{32} - 8 a_{11} \cancel{a_{12}} a_{13} a_{23} a_{31}^{2} - 8 a_{11} \cancel{a_{12}^{2}} a_{21} a_{23} a_{31} \\
+-& 16 a_{11} \cancel{a_{12}} a_{21} a_{22} a_{33}^{2} - 16 a_{11} \cancel{a_{12}} a_{21} a_{22}^{2} a_{33} + 8 a_{11} \cancel{a_{12}} a_{22}^{2} a_{23} a_{31} + 8 a_{11} a_{13} \cancel{a_{21}} a_{22}^{2} a_{32} + 8 \cancel{a_{12}} a_{13} a_{21} a_{22}^{2} a_{31} \\
+-& 16 a_{11}^{2} \cancel{a_{12}} a_{21} a_{22} a_{33} + 8 a_{11}^{2} \cancel{a_{12}} a_{21} a_{23} a_{32} + 8 a_{11}^{2} \cancel{a_{12}} a_{22} a_{23} a_{31} + 8 a_{11}^{2} a_{13} \cancel{a_{21}} a_{22} a_{32} + 8 a_{11} a_{13} \cancel{a_{21}} a_{23} a_{32}^{2} \\
+-& 8 \cancel{a_{12}} a_{13} a_{21}^{2} a_{22} a_{32} + 8 \cancel{a_{12}} a_{13} a_{22} a_{23} a_{31}^{2} - 8 a_{11} a_{13}^{2} \cancel{a_{21}} a_{31} a_{32} + 8 a_{11} \cancel{a_{12}} a_{23}^{2} a_{31} a_{32} - 8 \cancel{a_{12}^{2}} a_{21} a_{22} a_{23} a_{31} \\
++& 8 a_{11} \cancel{a_{12}} a_{23} a_{31} a_{33}^{2} + 8 a_{11} a_{13} \cancel{a_{21}} a_{32} a_{33}^{2} - 16 a_{11} a_{13} a_{22} \cancel{a_{31}} a_{33}^{2} - 16 a_{11} a_{13} a_{22}^{2} \cancel{a_{31}} a_{33} + 8 \cancel{a_{12}} a_{13} a_{21} a_{31} a_{33}^{2} \\
++& 8 a_{11}^{2} \cancel{a_{12}} a_{23} a_{31} a_{33} + 8 a_{11}^{2} a_{13} \cancel{a_{21}} a_{32} a_{33} - 16 a_{11}^{2} a_{13} a_{22} \cancel{a_{31}} a_{33} + 8 a_{11}^{2} a_{13} a_{23} \cancel{a_{31}} a_{32} + 8 \cancel{a_{12}} a_{13} a_{21}^{2} a_{32} a_{33} \\
+-& 8 a_{13} \cancel{a_{21}} a_{22} a_{23} a_{32}^{2} - 8 \cancel{a_{12}} a_{13} a_{23} a_{31}^{2} a_{33} + 8 a_{13}^{2} \cancel{a_{21}} a_{22} a_{31} a_{32} - 8 \cancel{a_{12}} a_{22} a_{23}^{2} a_{31} a_{32} + 8 \cancel{a_{12}^{2}} a_{21} a_{23} a_{31} a_{33} \\
+-& 16 a_{11} a_{22} a_{23} \cancel{a_{32}} a_{33}^{2} - 16 a_{11} a_{22}^{2} a_{23} \cancel{a_{32}} a_{33} + 8 \cancel{a_{12}} a_{21} a_{23} a_{32} a_{33}^{2} + 8 \cancel{a_{12}} a_{22} a_{23} a_{31} a_{33}^{2} + 8 \cancel{a_{12}} a_{22}^{2} a_{23} a_{31} a_{33} \\
++& 8 a_{13} \cancel{a_{21}} a_{22} a_{32} a_{33}^{2} + 8 a_{13} \cancel{a_{21}} a_{22}^{2} a_{32} a_{33} + 8 a_{13} a_{22}^{2} a_{23} \cancel{a_{31}} a_{32} - 16 a_{11}^{2} a_{22} a_{23} \cancel{a_{32}} a_{33} - 8 a_{13} \cancel{a_{21}} a_{23} a_{32}^{2} a_{33} \\
++& 8 a_{11} \cancel{a_{12}} a_{21} a_{22} a_{23} a_{32} + 8 a_{11} \cancel{a_{12}} a_{22} a_{23} a_{31} a_{33} + 8 a_{11} a_{13} \cancel{a_{21}} a_{22} a_{32} a_{33} - 16 \cancel{a_{12}} a_{13} a_{21} a_{23} a_{31} a_{32} \\
+-& 8 a_{13}^{2} \cancel{a_{21}} a_{31} a_{32} a_{33} - 8 \cancel{a_{12}} a_{23}^{2} a_{31} a_{32} a_{33} + 8 a_{11} \cancel{a_{12}} a_{13} a_{21} a_{22} a_{31} + 8 a_{11} \cancel{a_{12}} a_{13} a_{21} a_{31} a_{33} \\
++& 8 a_{11} a_{13} a_{23} \cancel{a_{31}} a_{32} a_{33} + 8 \cancel{a_{12}} a_{21} a_{22} a_{23} a_{32} a_{33} + 8 a_{13} a_{22} a_{23} \cancel{a_{31}} a_{32} a_{33}
+\end{aligned}
+\end{equation}
+which matches exactly the third line of equation \ref{eq:network3by3_detK_confounder}, i.e., $|\mathbf{K}| = 8 a_{11} a_{22}^{2} a_{33}^{3} + 8 a_{11} a_{22}^{3} a_{33}^{2} + 8 a_{11}^{2} a_{22} a_{33}^{3} + 8 a_{11}^{2} a_{22}^{3} a_{33} + 8 a_{11}^{3} a_{22} a_{33}^{2} + 8 a_{11}^{3} a_{22}^{2} a_{33} + 16 a_{11}^{2} a_{22}^{2} a_{33}^{2}$. 
+Crossing out every term containing $a_{12}$, $a_{21}$, $a_{31}$, or $a_{32}$ in equation \ref{eq:network3by3_sigma11} leaves
+\begin{equation}
+\begin{aligned}
+ \sigma_{11} =  \mathbf{\Sigma}_{\textbf{W}_{1}} \Bigl\{ & \textcolor{blue}{4 a_{11}^{2} a_{22}^{2} a_{33}} + 4 a_{23}^{2} \cancel{a_{32}^{2}} a_{22} + 4 \cancel{a_{12}^{2}} a_{21}^{2} a_{33} + \textcolor{blue}{4 a_{22}^{3} a_{33}^{2}} + \textcolor{blue}{4 a_{22}^{3} a_{11} a_{33}} - 4 a_{33}^{3} \cancel{a_{12}} a_{21} - 8 a_{22}^{2} a_{23} \cancel{a_{32}} a_{33} \\
++ & \textcolor{blue}{4 a_{11}^{2} a_{33}^{2} a_{22}} + 4 \cancel{a_{32}^{2}} a_{23}^{2} a_{33} + 4 a_{13}^{2} \cancel{a_{31}^{2}} a_{22} + \textcolor{blue}{4 a_{33}^{3} a_{22}^{2}} + \textcolor{blue}{4 a_{33}^{3} a_{11} a_{22}} - 4 a_{22}^{3} a_{13} \cancel{a_{31}} - 8 a_{33}^{2} \cancel{a_{32}} a_{23} a_{22} \\
+-& 4 a_{22}^{2} a_{11} a_{23} \cancel{a_{32}} - 4 a_{11}^{2} a_{23} \cancel{a_{32}} a_{22} - 4 a_{33}^{2} a_{11} \cancel{a_{12}} a_{21} + 4 a_{22}^{2} \cancel{a_{12}} a_{23} a_{31} - 4 a_{33}^{2} \cancel{a_{12}} a_{21} a_{22} + 4 a_{33}^{2} \cancel{a_{12}} a_{23} a_{31} \\
+-& 4 a_{33}^{2} a_{11} \cancel{a_{32}} a_{23} - 4 a_{11}^{2} \cancel{a_{32}} a_{23} a_{33} - 4 a_{22}^{2} a_{11} a_{13} \cancel{a_{31}} + 4 a_{33}^{2} a_{13} \cancel{a_{32}} a_{21} - 4 a_{22}^{2} a_{13} \cancel{a_{31}} a_{33} + 4 a_{22}^{2} a_{13} \cancel{a_{32}} a_{21} \\
+-& 4 a_{22}^{2} \cancel{a_{12}} a_{21} a_{33} - 4 \cancel{a_{12}^{2}} a_{21} a_{23} a_{31} + 4 a_{23}^{2} \cancel{a_{12}} a_{31} a_{32} - 4 \cancel{a_{21}^{2}} a_{12} a_{13} a_{32} - 8 a_{11} \cancel{a_{12}} a_{21} a_{22} a_{33} + 4 a_{13} \cancel{a_{21}} a_{22} a_{32} a_{33} \\
+-& 4 a_{33}^{2} a_{13} \cancel{a_{31}} a_{22} - 4 a_{13}^{2} \cancel{a_{31}} a_{32} a_{21} + 4 \cancel{a_{32}^{2}} a_{13} a_{21} a_{23} - 4 \cancel{a_{31}^{2}} a_{13} a_{12} a_{23} - 8 a_{11} a_{13} \cancel{a_{31}} a_{33} a_{22} + 4 \cancel{a_{12}} a_{31} a_{33} a_{23} a_{22} \\
+- & 4 \cancel{a_{12}} a_{21} a_{23} a_{32} a_{33} + 4 a_{11} \cancel{a_{12}} a_{21} a_{23} a_{32} + 4 \cancel{a_{12}} a_{13} a_{21} a_{22} a_{31} + 4 a_{11} \cancel{a_{12}} a_{22} a_{23} a_{31} + 4 a_{11} \cancel{a_{12}} a_{23} a_{31} a_{33} \\
+-& 4 a_{13} \cancel{a_{31}} a_{32} a_{23} a_{22} + 4 a_{11} a_{13} \cancel{a_{31}} a_{32} a_{23} + 4 a_{13} \cancel{a_{12}} a_{31} a_{33} a_{21} + 4 a_{11} a_{13} a_{33} \cancel{a_{32}} a_{21} + 4 a_{11} a_{13} \cancel{a_{32}} a_{21} a_{22} \\
++& \textcolor{blue}{8 a_{11} a_{22}^{2} a_{33}^{2}} - 8 a_{11} a_{22} a_{33} a_{23} \cancel{a_{32}}\Bigr\} + \\
+ \mathbf{\Sigma}_{\textbf{W}_{2}} \Bigl\{& 4 \cancel{a_{12}^{2}} a_{11} a_{22} a_{33} - 4 \cancel{a_{12}^{2}} a_{11} a_{23} a_{32} + 4 \cancel{a_{12}^{2}} a_{33}^{2} a_{11} + 4 a_{13}^{2} \cancel{a_{32}^{2}} a_{11} - 4 \cancel{a_{12}^{3}} a_{21} a_{33} + 4 \cancel{a_{12}^{2}} a_{33}^{3} \\
++& 4 \cancel{a_{12}^{3}} a_{23} a_{31} + 4 \cancel{a_{12}^{2}} a_{13} a_{21} a_{32} - 4 \cancel{a_{12}^{2}} a_{13} a_{22} a_{31} + 4 \cancel{a_{12}^{2}} a_{33}^{2} a_{22} + 4 a_{13}^{2} \cancel{a_{32}^{2}} a_{22} + 4 a_{13}^{2} \cancel{a_{32}^{2}} a_{33} \\
+-& 8 a_{33}^{2} \cancel{a_{12}} a_{13} a_{32} - 8 \cancel{a_{12}} a_{13} a_{22} a_{32} a_{33} - 8 a_{11} \cancel{a_{12}} a_{13} a_{32} a_{33}\Bigr\} + \\
+\mathbf{\Sigma}_{\textbf{W}_{3}} \Bigl\{& \textcolor{blue}{4 a_{13}^{2} a_{11} a_{33} a_{22}} - 4 a_{13}^{2} a_{11} \cancel{a_{32}} a_{23} + \textcolor{blue}{4 a_{13}^{2} a_{22}^{2} a_{11}} + 4 \cancel{a_{12}^{2}} a_{23}^{2} a_{11} - 4 a_{13}^{3} \cancel{a_{31}} a_{22} + \textcolor{blue}{4 a_{13}^{2} a_{22}^{3}} \\
++& 4 a_{13}^{3} \cancel{a_{32}} a_{21} + 4 a_{13}^{2} \cancel{a_{12}} a_{31} a_{23} - 4 a_{13}^{2} \cancel{a_{12}} a_{33} a_{21} + \textcolor{blue}{4 a_{13}^{2} a_{22}^{2} a_{33}} + 4 \cancel{a_{12}^{2}} a_{23}^{2} a_{33} + 4 \cancel{a_{12}^{2}} a_{23}^{2} a_{22} \\
+-& 8 a_{22}^{2} a_{13} \cancel{a_{12}} a_{23} - 8 a_{13} \cancel{a_{12}} a_{33} a_{23} a_{22} - 8 a_{11} a_{13} \cancel{a_{12}} a_{23} a_{22}\Bigr\}
+\end{aligned}
+\end{equation}
+which is exactly $\sigma_{11}$ of equation \ref{eq:sigma11_confounder} above, up to the common factor $-1/|\mathbf{K}|$ that has been factored out:
+\begin{align*}
+\sigma_{11}= \Bigl\{ & 4{a_{11}}^2{a_{22}}^2a_{33}+4{a_{11}}^2a_{22}{a_{33}}^2+4a_{11}{a_{22}}^3a_{33} \\
++&8a_{11}{a_{22}}^2{a_{33}}^2+4a_{11}a_{22}{a_{33}}^3+4{a_{22}}^3{a_{33}}^2+4{a_{22}}^2{a_{33}}^3 \Bigr\}\sigma_{W_{1}} \\
++&\Bigl\{4{a_{13}}^2{a_{22}}^3+4a_{11}{a_{13}}^2{a_{22}}^2+4{a_{13}}^2{a_{22}}^2a_{33}+4a_{11}{a_{13}}^2a_{22}a_{33}\Bigr\} \sigma_{W_{3}}
+\end{align*}
+Likewise, crossing out every term containing $a_{12}$, $a_{21}$, $a_{31}$, or $a_{32}$
+in equation \ref{eq:network3by3_sigma22} leaves
+\begin{equation}
+\begin{aligned}
+ \sigma_{22} =  \mathbf{\Sigma}_{\textbf{W}_{2}} \Bigl\{ & \textcolor{blue}{4 a_{22}^{2} a_{11}^{2} a_{33}} + 4 a_{13}^{2} \cancel{a_{31}^{2}} a_{11} + 4 \cancel{a_{21}^{2}} a_{12}^{2} a_{33} + \textcolor{blue}{4 a_{11}^{3} a_{33}^{2}} + \textcolor{blue}{4 a_{11}^{3} a_{22} a_{33}} - 4 a_{33}^{3} \cancel{a_{21}} a_{12} - 8 a_{11}^{2} a_{13} \cancel{a_{31}} a_{33} \\
++& \textcolor{blue}{4 a_{22}^{2} a_{33}^{2} a_{11}} + 4 \cancel{a_{31}^{2}} a_{13}^{2} a_{33} + 4 a_{23}^{2} \cancel{a_{32}^{2}} a_{11} + \textcolor{blue}{4 a_{33}^{3} a_{11}^{2}} + \textcolor{blue}{4 a_{33}^{3} a_{22} a_{11}} - 4 a_{11}^{3} a_{23} \cancel{a_{32}} - 8 a_{33}^{2} \cancel{a_{31}} a_{13} a_{11} \\
+-& 4 a_{11}^{2} a_{22} a_{13} \cancel{a_{31}} - 4 a_{22}^{2} a_{13} \cancel{a_{31}} a_{11} - 4 a_{33}^{2} a_{22} \cancel{a_{21}} a_{12} + 4 a_{11}^{2} \cancel{a_{21}} a_{13} a_{32} - 4 a_{33}^{2} \cancel{a_{21}} a_{12} a_{11} + 4 a_{33}^{2} \cancel{a_{21}} a_{13} a_{32} \\
+-& 4 a_{33}^{2} a_{22} \cancel{a_{31}} a_{13} - 4 a_{22}^{2} \cancel{a_{31}} a_{13} a_{33} - 4 a_{11}^{2} a_{22} a_{23} \cancel{a_{32}} + 4 a_{33}^{2} a_{23} \cancel{a_{31}} a_{12} - 4 a_{11}^{2} a_{23} \cancel{a_{32}} a_{33} + 4 a_{11}^{2} a_{23} \cancel{a_{31}} a_{12} \\
+-& 4 a_{11}^{2} \cancel{a_{21}} a_{12} a_{33} - 4 \cancel{a_{21}^{2}} a_{12} a_{13} a_{32} + 4 a_{13}^{2} \cancel{a_{21}} a_{32} a_{31} - 4 \cancel{a_{12}^{2}} a_{21} a_{23} a_{31} - 8 a_{22} \cancel{a_{21}} a_{12} a_{11} a_{33} + 4 a_{23} \cancel{a_{12}} a_{11} a_{31} a_{33} \\
+-& 4 a_{33}^{2} a_{23} \cancel{a_{32}} a_{11} - 4 a_{23}^{2} \cancel{a_{32}} a_{31} a_{12} + 4 \cancel{a_{31}^{2}} a_{23} a_{12} a_{13} - 4 \cancel{a_{32}^{2}} a_{23} a_{21} a_{13} - 8 a_{22} a_{23} \cancel{a_{32}} a_{33} a_{11} + 4 \cancel{a_{21}} a_{32} a_{33} a_{13} a_{11} \\
+-& 4 \cancel{a_{21}} a_{12} a_{13} a_{31} a_{33} + 4 a_{22} \cancel{a_{21}} a_{12} a_{13} a_{31} + 4 \cancel{a_{21}} a_{23} a_{12} a_{11} a_{32} + 4 a_{22} \cancel{a_{21}} a_{11} a_{13} a_{32} + 4 a_{22} \cancel{a_{21}} a_{13} a_{32} a_{33} \\
+-& 4 a_{23} \cancel{a_{32}} a_{31}a_{13} a_{11} + 4 a_{22} a_{23} \cancel{a_{32}} a_{31} a_{13} + 4 a_{23} \cancel{a_{21}} a_{32} a_{33} a_{12} + 4 a_{22} a_{23} a_{33} \cancel{a_{31}} a_{12} + 4 a_{22} a_{23} \cancel{a_{31}} a_{12} a_{11} \\
++& \textcolor{blue}{8 a_{22} a_{11}^{2} a_{33}^{2}} - 8 a_{22} a_{11} a_{33} a_{13} \cancel{a_{31}}\Bigr\} + \\
+\mathbf{\Sigma}_{\textbf{W}_{1}} \Bigl\{& 4 \cancel{a_{21}^{2}} a_{22} a_{11} a_{33} - 4 \cancel{a_{21}^{2}} a_{22} a_{13} a_{31} + 4 \cancel{a_{21}^{2}} a_{33}^{2} a_{22} + 4 a_{23}^{2} \cancel{a_{31}^{2}} a_{22} - 4 \cancel{a_{21}^{3}} a_{12} a_{33} + 4 \cancel{a_{21}^{2}} a_{33}^{3} \\
++& 4 \cancel{a_{21}^{3}} a_{13} a_{32} + 4 \cancel{a_{21}^{2}} a_{23} a_{12} a_{31} - 4 \cancel{a_{21}^{2}} a_{23} a_{11} a_{32} + 4 \cancel{a_{21}^{2}} a_{33}^{2} a_{11} + 4 a_{23}^{2} \cancel{a_{31}^{2}} a_{11} + 4 a_{23}^{2} \cancel{a_{31}^{2}} a_{33} \\
+-& 8 a_{33}^{2} \cancel{a_{21}} a_{23} a_{31} - 8 \cancel{a_{21}} a_{23} a_{11} a_{31} a_{33} - 8 a_{22} \cancel{a_{21}} a_{23} a_{31} a_{33}\Bigr\} + \\
+\mathbf{\Sigma}_{\textbf{W}_{3}} \Bigl\{& \textcolor{blue}{4 a_{23}^{2} a_{22} a_{33} a_{11}} - 4 a_{23}^{2} a_{22} \cancel{a_{31}} a_{13} + \textcolor{blue}{4 a_{23}^{2} a_{11}^{2} a_{22}} + 4 \cancel{a_{21}^{2}} a_{13}^{2} a_{22} - 4 a_{23}^{3} \cancel{a_{32}} a_{11} + \textcolor{blue}{4 a_{23}^{2} a_{11}^{3}} \\
++& 4 a_{23}^{3} \cancel{a_{31}} a_{12} + 4 a_{23}^{2} \cancel{a_{21}} a_{32} a_{13} - 4 a_{23}^{2} \cancel{a_{21}} a_{33} a_{12} + \textcolor{blue}{4 a_{23}^{2} a_{11}^{2} a_{33}} + 4 \cancel{a_{21}^{2}} a_{13}^{2} a_{33} + 4 \cancel{a_{21}^{2}} a_{13}^{2} a_{11} \\
+-& 8 a_{11}^{2} a_{23} \cancel{a_{21}} a_{13} - 8 a_{23} \cancel{a_{21}} a_{33} a_{13} a_{11} - 8 a_{22} a_{23} \cancel{a_{21}} a_{13} a_{11}\Bigr\}
+\end{aligned}
+\end{equation}
+which is exactly $\sigma_{22}$ of equation \ref{eq:sigma22_confounder} above, up to the common factor $-1/|\mathbf{K}|$ that has been factored out:
+\begin{align*}
+\sigma_{22}= \Bigl\{ & 4{a_{11}}^3a_{22}a_{33}+4{a_{11}}^3{a_{33}}^2+4{a_{11}}^2{a_{22}}^2a_{33} \\
++&8{a_{11}}^2a_{22}{a_{33}}^2+4{a_{11}}^2{a_{33}}^3+4a_{11}{a_{22}}^2{a_{33}}^2+4a_{11}a_{22}{a_{33}}^3 \Bigr\}\sigma_{W_{2}} \\
++&\Bigl\{4{a_{11}}^3{a_{23}}^2+4{a_{11}}^2a_{22}{a_{23}}^2+4{a_{11}}^2{a_{23}}^2a_{33}+4a_{11}a_{22}{a_{23}}^2a_{33} \Bigr\} \sigma_{W_{3}}
+\end{align*}
+And, crossing out every term containing $a_{12}$, $a_{21}$, $a_{31}$, or $a_{32}$ in equation \ref{eq:network3by3_sigma33} leaves
+\begin{equation}
+\begin{aligned}
+ \sigma_{33} =  \mathbf{\Sigma}_{\textbf{W}_{3}} \Bigl\{ & \textcolor{blue}{4 a_{33}^{2} a_{11}^{2} a_{22}} + 4 \cancel{a_{12}^{2}} a_{21}^{2} a_{11} + 4 \cancel{a_{31}^{2}} a_{13}^{2} a_{22} + \textcolor{blue}{4 a_{11}^{3} a_{22}^{2}} + \textcolor{blue}{4 a_{11}^{3} a_{33} a_{22}} - 4 a_{22}^{3} \cancel{a_{31}} a_{13} - 8 a_{11}^{2} \cancel{a_{12}} a_{21} a_{22} \\
++& \textcolor{blue}{4 a_{33}^{2} a_{22}^{2} a_{11}} + 4 \cancel{a_{21}^{2}} a_{12}^{2} a_{22} + 4 \cancel{a_{32}^{2}} a_{23}^{2} a_{11} + \textcolor{blue}{4 a_{22}^{3} a_{11}^{2}} + \textcolor{blue}{4 a_{22}^{3} a_{33} a_{11}} - 4 a_{11}^{3} \cancel{a_{32}} a_{23} - 8 a_{22}^{2} \cancel{a_{21}} a_{12} a_{11} \\
+-& 4 a_{11}^{2} a_{33} \cancel{a_{12}} a_{21} - 4 a_{33}^{2} \cancel{a_{12}} a_{21} a_{11} - 4 a_{22}^{2} a_{33} \cancel{a_{31}} a_{13} + 4 a_{11}^{2} \cancel{a_{31}} a_{12} a_{23} - 4 a_{22}^{2} \cancel{a_{31}} a_{13} a_{11} + 4 a_{22}^{2} \cancel{a_{31}} a_{12} a_{23} \\
+-& 4 a_{22}^{2} a_{33} \cancel{a_{21}} a_{12} - 4 a_{33}^{2} \cancel{a_{21}} a_{12} a_{22} - 4 a_{11}^{2} a_{33} \cancel{a_{32}} a_{23} + 4 a_{22}^{2} \cancel{a_{32}} a_{21} a_{13} - 4 a_{11}^{2} \cancel{a_{32}} a_{23} a_{22} + 4 a_{11}^{2} \cancel{a_{32}} a_{21} a_{13} \\
+-& 4 a_{11}^{2} \cancel{a_{31}} a_{13} a_{22} - 4 \cancel{a_{31}^{2}} a_{13} a_{12} a_{23} + 4 \cancel{a_{12}^{2}} a_{31} a_{23} a_{21} - 4 a_{13}^{2} \cancel{a_{31}} a_{32} a_{21} - 8 a_{33} \cancel{a_{31}} a_{13} a_{11} a_{22} + 4 \cancel{a_{32}} a_{13} a_{11} a_{21} a_{22} \\
+-& 4 a_{22}^{2} \cancel{a_{32}} a_{23} a_{11} - 4 \cancel{a_{32}^{2}} a_{23} a_{21} a_{13} + 4 \cancel{a_{21}^{2}} a_{32} a_{13} a_{12} - 4 a_{23}^{2} \cancel{a_{32}} a_{31} a_{12} - 8 a_{33} \cancel{a_{32}} a_{23} a_{22} a_{11} + 4 \cancel{a_{31}} a_{23} a_{22} a_{12} a_{11} \\
+-& 4 \cancel{a_{31}} a_{13} a_{12} a_{21} a_{22} + 4 a_{33} \cancel{a_{31}} a_{13} a_{12} a_{21} + 4 \cancel{a_{31}} a_{32} a_{13} a_{11} a_{23} + 4 a_{33} \cancel{a_{31}} a_{11} a_{12} a_{23} + 4 a_{33} \cancel{a_{31}} a_{12} a_{23} a_{22} \\
+-& 4 \cancel{a_{32}} a_{23} a_{21}a_{12} a_{11} + 4 a_{33} \cancel{a_{32}} a_{23} a_{21} a_{12} + 4 \cancel{a_{32}} a_{31} a_{23} a_{22} a_{13} + 4 a_{33} \cancel{a_{32}} a_{22} a_{21} a_{13} + 4 a_{33} \cancel{a_{32}} a_{21} a_{13} a_{11} \\
++& \textcolor{blue}{8 a_{33} a_{11}^{2} a_{22}^{2}} - 8 a_{33} a_{11} a_{22} \cancel{a_{12}} a_{21}\Bigr\} + \\
+\mathbf{\Sigma}_{\textbf{W}_{1}} \Bigl\{& 4 \cancel{a_{31}^{2}} a_{33} a_{11} a_{22} - 4 \cancel{a_{31}^{2}} a_{33} a_{12} a_{21} + 4 \cancel{a_{31}^{2}} a_{22}^{2} a_{33} + 4 \cancel{a_{32}^{2}} a_{21}^{2} a_{33} - 4 \cancel{a_{31}^{3}} a_{13} a_{22} + 4 \cancel{a_{31}^{2}} a_{22}^{3} \\
++& 4 \cancel{a_{31}^{3}} a_{12} a_{23} + 4 \cancel{a_{31}^{2}} a_{32} a_{13} a_{21} - 4 \cancel{a_{31}^{2}} a_{32} a_{11} a_{23} + 4 \cancel{a_{31}^{2}} a_{22}^{2} a_{11} + 4 \cancel{a_{32}^{2}} a_{21}^{2} a_{11} + 4 \cancel{a_{32}^{2}} a_{21}^{2} a_{22} \\
+-& 8 a_{22}^{2} \cancel{a_{31}} a_{32} a_{21} - 8 \cancel{a_{31}} a_{32} a_{11} a_{21} a_{22} - 8 a_{33} \cancel{a_{31}} a_{32} a_{21} a_{22}\Bigr\} + \\
+\mathbf{\Sigma}_{\textbf{W}_{2}} \Bigl\{& 4 \cancel{a_{32}^{2}} a_{33} a_{22} a_{11} - 4 \cancel{a_{32}^{2}} a_{33} a_{21} a_{12} + 4 \cancel{a_{32}^{2}} a_{11}^{2} a_{33} + 4 \cancel{a_{31}^{2}} a_{12}^{2} a_{33} - 4 \cancel{a_{32}^{3}} a_{23} a_{11} + 4 \cancel{a_{32}^{2}} a_{11}^{3} \\
++& 4 \cancel{a_{32}^{3}} a_{21} a_{13} + 4 \cancel{a_{32}^{2}} a_{31} a_{23} a_{12} - 4 \cancel{a_{32}^{2}} a_{31} a_{22} a_{13} + 4 \cancel{a_{32}^{2}} a_{11}^{2} a_{22} + 4 \cancel{a_{31}^{2}} a_{12}^{2} a_{22} + 4 \cancel{a_{31}^{2}} a_{12}^{2} a_{11} \\
+-& 8 a_{11}^{2} \cancel{a_{32}} a_{31} a_{12} - 8 \cancel{a_{32}} a_{31} a_{22} a_{12} a_{11} - 8 a_{33} \cancel{a_{32}} a_{31} a_{12} a_{11}\Bigr\}
+\end{aligned}
+\end{equation}
+which is exactly $\sigma_{33}$ of equation \ref{eq:sigma33_confounder} above, up to the common factor $-1/|\mathbf{K}|$ that has been factored out:
+\begin{align*}
+\sigma_{33}= \Bigl\{ & 4{a_{11}}^3{a_{22}}^2+4{a_{11}}^3a_{22}a_{33}+4{a_{11}}^2{a_{22}}^3 \\
++&8{a_{11}}^2{a_{22}}^2a_{33}+4{a_{11}}^2a_{22}{a_{33}}^2+4a_{11}{a_{22}}^3a_{33}+4a_{11}{a_{22}}^2{a_{33}}^2 \Bigr\} \sigma_{W_{3}}
+\end{align*}
+
+
+
+Finally, we show this for $\sigma_{21}$, $\sigma_{31}$, and $\sigma_{32}$ (equations
+\ref{eq:network3by3_sigma21}, \ref{eq:network3by3_sigma31}, \ref{eq:network3by3_sigma32}).
+Crossing out every term containing $a_{12}$, $a_{21}$, $a_{31}$, or $a_{32}$ in equation \ref{eq:network3by3_sigma21} leaves
+\begin{equation}
+\begin{aligned}
+\sigma_{21} =  \mathbf{\Sigma}_{\textbf{W}_{2}} \Bigl\{ & -4 a_{33}^{3} a_{11} \cancel{a_{12}} - 4 a_{11}^{2} a_{33}^{2} \cancel{a_{12}} - 4 a_{13}^{2} \cancel{a_{32}^{2}} a_{21} - 4 a_{11}^{2} a_{22} a_{33} \cancel{a_{12}} + 4 a_{11}^{2} \cancel{a_{12}} a_{23} a_{32} + 4 a_{11}^{2} a_{13} \cancel{a_{32}} a_{33} \\
+-& 4 a_{33}^{2} a_{11} a_{22} \cancel{a_{12}} + 4 a_{33}^{2} a_{11} a_{13} \cancel{a_{32}} + 4 a_{33}^{2} \cancel{a_{12}} a_{13} a_{31} + 4 \cancel{a_{12}^{2}} a_{11} a_{33} a_{21} - 4\cancel{a_{12}^{2}} a_{11} a_{23} a_{31} \\
+-& 4 a_{13}^{2} a_{11} \cancel{a_{31}} a_{32} - 4 a_{13}^{2} \cancel{a_{31}} a_{32} a_{33} + 4 \cancel{a_{32}^{2}} a_{11} a_{13} a_{23} + 4 a_{11} a_{22} \cancel{a_{12}} a_{13} a_{31} - 4 a_{11} \cancel{a_{12}}a_{21} a_{13} a_{32} \\
++& 4 a_{11} \cancel{a_{12}} a_{13} a_{31} a_{33} + 4 a_{22} \cancel{a_{12}} a_{13} a_{31} a_{33} + 4 \cancel{a_{12}} a_{21} a_{13} a_{32} a_{33} - 4 \cancel{a_{12}} a_{13} a_{23} a_{31} a_{32}\Bigr\} + \\
+\mathbf{\Sigma}_{\textbf{W}_{1}} \Bigl\{& -4 a_{33}^{3} a_{22} \cancel{a_{21}} - 4 a_{22}^{2} a_{33}^{2} \cancel{a_{21}} - 4 a_{23}^{2} \cancel{a_{31}^{2}} a_{12} - 4 a_{22}^{2} a_{11} a_{33} \cancel{a_{21}} + 4 a_{22}^{2} \cancel{a_{21}} a_{13} a_{31} + 4 a_{22}^{2} a_{23} \cancel{a_{31}} a_{33} \\
+-& 4 a_{33}^{2} a_{22} a_{11} \cancel{a_{21}} + 4 a_{33}^{2} a_{22} a_{23} \cancel{a_{31}} + 4 a_{33}^{2} \cancel{a_{21}} a_{23} a_{32} + 4 \cancel{a_{21}^{2}} a_{22} a_{33} a_{12} - 4 \cancel{a_{21}^{2}} a_{22} a_{13} a_{32} \\
+-& 4 a_{23}^{2} a_{22} \cancel{a_{32}} a_{31} - 4 a_{23}^{2} \cancel{a_{32}} a_{31} a_{33} + 4 \cancel{a_{31}^{2}} a_{22} a_{23} a_{13} + 4 a_{22} a_{11} \cancel{a_{21}} a_{23} a_{32} - 4 a_{22} \cancel{a_{21}} a_{12} a_{23} a_{31} \\
++& 4 a_{22} \cancel{a_{21}} a_{23} a_{32} a_{33} + 4 a_{11} \cancel{a_{21}} a_{23} a_{32} a_{33} + 4 \cancel{a_{21}} a_{12} a_{23} a_{31} a_{33} - 4 \cancel{a_{21}} a_{23} a_{13} a_{32} a_{31}\Bigr\} + \\
+\mathbf{\Sigma}_{\textbf{W}_{3}} \Bigl\{& -4a_{22}^{2} a_{13}^{2} \cancel{a_{21}} + \textcolor{blue}{4 a_{22}^{2} a_{11} a_{23} a_{13}} - 4 a_{23}^{2} a_{22} a_{11} \cancel{a_{12}} - 4 a_{23}^{2} a_{11} a_{33} \cancel{a_{12}} - 4 a_{23}^{2} a_{11} a_{13} \cancel{a_{32}} + 4 a_{23}^{2} \cancel{a_{12}} a_{13} a_{31} \\
+-& 4 a_{11}^{2} a_{23}^{2} \cancel{a_{12}} + \textcolor{blue}{4 a_{11}^{2} a_{22} a_{13} a_{23}} - 4 a_{13}^{2} a_{11} a_{22} \cancel{a_{21}} - 4 a_{13}^{2} a_{22} a_{33} \cancel{a_{21}} - 4 a_{13}^{2} a_{22} a_{23} \cancel{a_{31}} + 4 a_{13}^{2} \cancel{a_{21}} a_{23} a_{32} \\
++& 4 a_{22} \cancel{a_{21}} a_{12} a_{23} a_{13} + 4 a_{11} \cancel{a_{12}} a_{21} a_{13} a_{23} + \textcolor{blue}{8 a_{22} a_{11} a_{23} a_{13} a_{33}}\Bigr\}
+\end{aligned}
+\end{equation}
+which is exactly $\sigma_{21}$ of equation \ref{eq:sigma21_confounder} above, up to the common factor $-1/|\mathbf{K}|$ that has been factored out:
+\begin{align*}
+\sigma_{21}= \{ 4a_{13}a_{23}{a_{11}}^2a_{22}+4a_{13}a_{23}a_{11}{a_{22}}^2+8a_{13}a_{23}a_{33}a_{11}a_{22} \} \sigma_{W_{3}}
+\end{align*}
+Likewise, crossing out every term containing $a_{12}$, $a_{21}$, $a_{31}$, or $a_{32}$ in equation \ref{eq:network3by3_sigma31} leaves
+\begin{equation}
+\begin{aligned}
+\sigma_{31} =  \mathbf{\Sigma}_{\textbf{W}_{3}} \Bigl\{ & -\textcolor{blue}{4 a_{22}^{3} a_{11} a_{13}} - \textcolor{blue}{4 a_{11}^{2} a_{22}^{2} a_{13}} - 4 \cancel{a_{12}^{2}} a_{23}^{2} a_{31} - \textcolor{blue}{4 a_{11}^{2} a_{33} a_{22} a_{13}} + 4 a_{11}^{2} a_{13} \cancel{a_{32}} a_{23} + 4 a_{11}^{2} \cancel{a_{12}} a_{23} a_{22} \\
+-& \textcolor{blue}{4 a_{22}^{2} a_{11} a_{33} a_{13}} + 4 a_{22}^{2} a_{11} \cancel{a_{12}} a_{23} + 4 a_{22}^{2} a_{13} \cancel{a_{12}} a_{21} + 4 a_{13}^{2} a_{11} a_{22} \cancel{a_{31}} - 4a_{13}^{2} a_{11} \cancel{a_{32}} a_{21} \\
+-& 4 \cancel{a_{12}^{2}} a_{11} a_{21} a_{23} - 4 \cancel{a_{12}^{2}} a_{21} a_{23} a_{22} + 4 a_{23}^{2} a_{11} \cancel{a_{12}} a_{32} + 4 a_{11} a_{33} a_{13} \cancel{a_{12}} a_{21} - 4 a_{11} a_{13}\cancel{a_{31}} a_{12} a_{23} \\
++& 4 a_{11} a_{13} \cancel{a_{12}} a_{21} a_{22} + 4 a_{33} a_{13} \cancel{a_{12}} a_{21} a_{22} + 4 a_{13} \cancel{a_{31}} a_{12} a_{23} a_{22} - 4 a_{13} \cancel{a_{12}} a_{32} a_{21} a_{23}\Bigr\} + \\
+\mathbf{\Sigma}_{\textbf{W}_{1}} \Bigl\{& -4 a_{22}^{3} a_{33} \cancel{a_{31}} - 4 a_{33}^{2} a_{22}^{2} \cancel{a_{31}} - 4 \cancel{a_{32}^{2}} a_{21}^{2} a_{13} - 4 a_{33}^{2} a_{11} a_{22} \cancel{a_{31}} + 4 a_{33}^{2} \cancel{a_{31}} a_{12} a_{21} + 4 a_{33}^{2} \cancel{a_{32}} a_{21} a_{22} \\
+-& 4 a_{22}^{2} a_{33} a_{11} \cancel{a_{31}} + 4 a_{22}^{2} a_{33} \cancel{a_{32}} a_{21} + 4 a_{22}^{2} \cancel{a_{31}} a_{32} a_{23} + 4 \cancel{a_{31}^{2}} a_{33} a_{22} a_{13} - 4 \cancel{a_{31}^{2}} a_{33} a_{12} a_{23} \\
+-& 4 \cancel{a_{32}^{2}} a_{33} a_{23} a_{21} - 4 \cancel{a_{32}^{2}} a_{23} a_{21} a_{22} + 4 \cancel{a_{21}^{2}} a_{33} a_{32} a_{12} + 4 a_{33} a_{11} \cancel{a_{31}} a_{32} a_{23} - 4 a_{33} \cancel{a_{31}} a_{13} a_{32} a_{21} \\
++& 4 a_{33} \cancel{a_{31}} a_{32} a_{23} a_{22} + 4 a_{11} \cancel{a_{31}} a_{32} a_{23} a_{22} + 4 \cancel{a_{31}} a_{13} a_{32} a_{21} a_{22} - 4 \cancel{a_{31}} a_{32} a_{12} a_{23} a_{21}\Bigr\} + \\
+\mathbf{\Sigma}_{\textbf{W}_{2}} \Bigl\{& -4a_{33}^{2} \cancel{a_{12}^{2}} a_{31} + 4 a_{33}^{2} a_{11} \cancel{a_{32}} a_{12} - 4 \cancel{a_{32}^{2}} a_{33} a_{11} a_{13} - 4 \cancel{a_{32}^{2}} a_{11} a_{22} a_{13} - 4 \cancel{a_{32}^{2}} a_{11} a_{12} a_{23} + 4 \cancel{a_{32}^{2}} a_{13} a_{12} a_{21} \\
+-& 4 a_{11}^{2} \cancel{a_{32}^{2}} a_{13} + 4 a_{11}^{2} a_{33} \cancel{a_{12}} a_{32} - 4 \cancel{a_{12}^{2}} a_{11} a_{33} a_{31} - 4 \cancel{a_{12}^{2}} a_{33} a_{22} a_{31} - 4 \cancel{a_{12}^{2}} a_{33} a_{32} a_{21} + 4 \cancel{a_{12}^{2}} a_{31} a_{32} a_{23} \\
++& 4 a_{33} \cancel{a_{31}} a_{13} a_{32} a_{12} + 4 a_{11} a_{13} \cancel{a_{31}} a_{12} a_{32} + 8 a_{33} a_{11} \cancel{a_{32}} a_{12} a_{22}\Bigr\}
+\end{aligned}
+\end{equation}
+which is exactly $\sigma_{31}$ of equation \ref{eq:sigma31_confounder} above, up to the common factor $-1/|\mathbf{K}|$ that has been factored out:
+\begin{align*}
+\sigma_{31}= \{ -4a_{13}{a_{11}}^2{a_{22}}^2-4a_{13}a_{33}{a_{11}}^2a_{22}-4a_{13}a_{11}{a_{22}}^3-4a_{13}a_{33}a_{11}{a_{22}}^2 \} \sigma_{W_{3}}
+\end{align*}
+And, crossing out every term containing $a_{12}$, $a_{21}$, $a_{31}$, or $a_{32}$ in equation \ref{eq:network3by3_sigma32} leaves
+\begin{equation}
+\begin{aligned}
+\sigma_{32} =  \mathbf{\Sigma}_{\textbf{W}_{3}} \Bigl\{ & -\textcolor{blue}{4 a_{11}^{3} a_{22} a_{23}} - \textcolor{blue}{4 a_{22}^{2} a_{11}^{2} a_{23}} - 4 \cancel{a_{21}^{2}} a_{13}^{2} a_{32} - \textcolor{blue}{4 a_{22}^{2} a_{33} a_{11} a_{23}} + 4 a_{22}^{2} a_{23} \cancel{a_{31}} a_{13} + 4 a_{22}^{2} \cancel{a_{21}} a_{13} a_{11} \\
+-& \textcolor{blue}{4 a_{11}^{2} a_{22} a_{33} a_{23}} + 4 a_{11}^{2} a_{22} \cancel{a_{21}} a_{13} + 4 a_{11}^{2} a_{23} \cancel{a_{21}} a_{12} + 4 a_{23}^{2} a_{22} a_{11} \cancel{a_{32}} - 4a_{23}^{2} a_{22} \cancel{a_{31}} a_{12} \\
+-& 4 \cancel{a_{21}^{2}} a_{22} a_{12} a_{13} - 4 \cancel{a_{21}^{2}} a_{12} a_{13} a_{11} + 4 a_{13}^{2} a_{22} \cancel{a_{21}} a_{31} + 4 a_{22} a_{33} a_{23} \cancel{a_{21}} a_{12} - 4 a_{22} a_{23}\cancel{a_{32}} a_{21} a_{13} \\
++& 4 a_{22} a_{23} \cancel{a_{21}} a_{12} a_{11} + 4 a_{33} a_{23} \cancel{a_{21}} a_{12} a_{11} + 4 a_{23} \cancel{a_{32}} a_{21} a_{13} a_{11} - 4 a_{23} \cancel{a_{21}} a_{31} a_{12} a_{13}\Bigr\} + \\
+\mathbf{\Sigma}_{\textbf{W}_{2}} \Bigl\{& -4 a_{11}^{3} a_{33} \cancel{a_{32}} - 4 a_{33}^{2} a_{11}^{2} \cancel{a_{32}} - 4 \cancel{a_{31}^{2}} a_{12}^{2} a_{23} - 4 a_{33}^{2} a_{22} a_{11} \cancel{a_{32}} + 4 a_{33}^{2} \cancel{a_{32}} a_{21} a_{12} + 4 a_{33}^{2} \cancel{a_{31}} a_{12} a_{11} \\
+-& 4 a_{11}^{2} a_{33} a_{22} \cancel{a_{32}} + 4 a_{11}^{2} a_{33} \cancel{a_{31}} a_{12} + 4 a_{11}^{2} \cancel{a_{32}} a_{31} a_{13} + 4 \cancel{a_{32}^{2}} a_{33} a_{11} a_{23} - 4 \cancel{a_{32}^{2}} a_{33} a_{21} a_{13} \\
+-& 4 \cancel{a_{31}^{2}} a_{33} a_{13} a_{12} - 4 \cancel{a_{31}^{2}} a_{13} a_{12} a_{11} + 4 \cancel{a_{12}^{2}} a_{33} a_{31} a_{21} + 4 a_{33} a_{22} \cancel{a_{32}} a_{31} a_{13} - 4 a_{33} \cancel{a_{32}} a_{23} a_{31} a_{12} \\
++& 4 a_{33} \cancel{a_{32}} a_{31} a_{13} a_{11} + 4 a_{22} \cancel{a_{32}} a_{31} a_{13} a_{11} + 4 \cancel{a_{32}} a_{23} a_{31} a_{12} a_{11} - 4 \cancel{a_{32}} a_{31} a_{21} a_{13} a_{12}\Bigr\} + \\
+\mathbf{\Sigma}_{\textbf{W}_{1}} \Bigl\{& -4a_{33}^{2} \cancel{a_{21}^{2}} a_{32} + 4 a_{33}^{2} a_{22} \cancel{a_{31}} a_{21} - 4 \cancel{a_{31}^{2}} a_{33} a_{22} a_{23} - 4 \cancel{a_{31}^{2}} a_{22} a_{11} a_{23} - 4 \cancel{a_{31}^{2}} a_{22} a_{21} a_{13} + 4 \cancel{a_{31}^{2}} a_{23} a_{21} a_{12} \\
+-& 4 a_{22}^{2} \cancel{a_{31}^{2}} a_{23} + 4 a_{22}^{2} a_{33} \cancel{a_{21}} a_{31} - 4 \cancel{a_{21}^{2}} a_{22} a_{33} a_{32} - 4 \cancel{a_{21}^{2}} a_{33} a_{11} a_{32} - 4 \cancel{a_{21}^{2}} a_{33} a_{31} a_{12} + 4 \cancel{a_{21}^{2}} a_{32} a_{31} a_{13} \\
++& 4 a_{33} \cancel{a_{32}} a_{23} a_{31} a_{21} + 4 a_{22} a_{23} \cancel{a_{32}} a_{21} a_{31} + 8 a_{33} a_{22} \cancel{a_{31}} a_{21} a_{11}\Bigr\}
+\end{aligned}
+\end{equation}
+which is exactly $\sigma_{32}$ of equation \ref{eq:sigma32_confounder} above, up to the common factor $-1/|\mathbf{K}|$ that has been factored out:
+\begin{align*}
+\sigma_{32}= \{ -4a_{23}{a_{11}}^3a_{22}-4a_{23}{a_{11}}^2{a_{22}}^2-4a_{23}a_{33}{a_{11}}^2a_{22}-4a_{23}a_{33}a_{11}{a_{22}}^2 \} \sigma_{W_{3}}
+\end{align*}
+
+
+
+\subsection*{A mediator network topology}
+
+\begin{figure}[H]
+\centering
+
+\def\figscale{1}
+
+\begin{minipage}[c]{0.23\textwidth}
+\centering
+
+\def\a{1.2 cm}
+\def\nodeSize{0.7}
+\def\selfLoopR{0.5*\nodeSize cm}
+
+\begin{tikzpicture}[
+    scale=\figscale,
+    >={Stealth[length=3mm,width=2mm]},
+    every node/.style={
+        circle,
+        draw,
+        minimum size=\nodeSize cm,
+    }
+]
+
+\node (1) at (-\a,0) {1};
+\node (2) at (\a,0) {2};
+\node (3) at (0,{sqrt(3)*\a}) {3};
+
+\draw[->] (1) to[bend left=12] (3);
+\draw[->] (3) to[bend left=12] (2);
+
+\selfloop{1}{1}
+\selfloop{2}{2}
+\selfloop{3}{3}
+
+\end{tikzpicture}
+
+\end{minipage}%
+\hspace{0\textwidth}%
+\begin{minipage}[c]{0.23\textwidth}
+\raggedright
+
+\[
+\mathbf{A}=
+\begin{bmatrix}
+a & 0 & 0 \\
+0 & a & a_{23} \\
+a_{31} & 0 & a
+\end{bmatrix}
+\]
+
+\end{minipage}%
+\hspace{0.005\textwidth}%
+\begin{minipage}[c]{0.25\textwidth}
+\raggedright
+
+\[
+\mathbf{\Sigma_Y}=
+\begin{bmatrix}
+\sigma_{11} & \sigma_{12} & \sigma_{13} \\
+\sigma_{21} & \sigma_{22} & \sigma_{23} \\
+\sigma_{31} & \sigma_{32} & \sigma_{33}
+\end{bmatrix}
+\]
+
+\end{minipage}%
+\hspace{0.005\textwidth}%
+\begin{minipage}[c]{0.27\textwidth}
+\raggedright
+
+\[
+\mathbf{\Sigma_W}=
+\begin{bmatrix}
+\sigma_{W_1} & 0 & 0 \\
+0 & \sigma_{W_2} & 0 \\
+0 & 0 & \sigma_{W_3}
+\end{bmatrix}
+\]
+
+\end{minipage}%
+
+\caption{A mediator network topology and its associated matrices.}
+\label{fig:network_mediator}
+\end{figure}
+
+% A = [a,0,0; 0,a,a23; a31,0,a] (1->3->2 chain). Same L3/D3/K half-vec
+% technique as the confounder section above; derivation not repeated here.
+The determinant of $\mathbf{L_3}(\mathbf{I} \otimes \mathbf{A} + \mathbf{A} \otimes \mathbf{I}) \mathbf{D_3}$ is
+\begin{equation}
+|\mathbf{K}| = 64a^6
+\end{equation}
+
+The formulae for entries of the covariance matrix are listed below.
+The leading common factor $-1/|\mathbf{K}|$ has been omitted from the
+covariance entries in equations
+(\ref{eq:sigma11_mediator})--(\ref{eq:sigma33_mediator}) below: each
+$\sigma_{ij}$ equals $-1/|\mathbf{K}|$ times the bracketed sum shown.
+\begin{align}
+\sigma_{11} &= \Bigl\{ 32a^5 \Bigr\} \sigma_{W_{1}} \label{eq:sigma11_mediator} \\
+\sigma_{21} &= \Bigl\{ 8a^3a_{23}a_{31} \Bigr\} \sigma_{W_{1}} \label{eq:sigma21_mediator} \\
+\sigma_{31} &= \Bigl\{ -16a^4a_{31} \Bigr\} \sigma_{W_{1}} \label{eq:sigma31_mediator} \\
+\sigma_{22} &= \Bigl\{ 12aa_{23}^2a_{31}^2 \Bigr\} \sigma_{W_{1}} + \Bigl\{ 32a^5 \Bigr\} \sigma_{W_{2}} + \Bigl\{ 16a^3a_{23}^2 \Bigr\} \sigma_{W_{3}} \label{eq:sigma22_mediator} \\
+\sigma_{32} &= \Bigl\{ -12a^2a_{23}a_{31}^2 \Bigr\} \sigma_{W_{1}} + \Bigl\{ -16a^4a_{23} \Bigr\} \sigma_{W_{3}} \label{eq:sigma32_mediator} \\
+\sigma_{33} &= \Bigl\{ 16a^3a_{31}^2 \Bigr\} \sigma_{W_{1}} + \Bigl\{ 32a^5 \Bigr\} \sigma_{W_{3}} \label{eq:sigma33_mediator}
+\end{align}
+
+The formula for $\rho_{21}$ is derived below.
+\begin{equation}
+\begin{aligned}
+\rho_{21}&=\frac{\sigma_{21}}{\sqrt{\sigma_{11}} \sqrt{\sigma_{22}}} \\
+&=\frac{-\frac{1}{|\mathbf{K}|} 8a^3a_{23}a_{31}\sigma_{W_{1}}} {\sqrt{-\frac{1}{|\mathbf{K}|} 32a^5\sigma_{W_{1}}} \sqrt{-\frac{1}{|\mathbf{K}|} 32a^5\sigma_{W_{2}}-\frac{1}{|\mathbf{K}|}16a^3{a_{23}}^2\sigma_{W_{3}}-\frac{1}{|\mathbf{K}|}12a{a_{23}}^2{a_{31}}^2\sigma_{W_{1}}}} \\
+\\
+&=-\frac{8a^3a_{23}a_{31}\sigma_{W_{1}}}{\sqrt{\{ 32a^5\sigma_{W_{1}} \} \{  32a^5\sigma_{W_{2}}+ 16a^3{a_{23}}^2\sigma_{W_{3}}+ 12a{a_{23}}^2{a_{31}}^2\sigma_{W_{1}} \} }} \\
+\\
+&=\frac{ a_{31} a_{23}\sigma_{W_{1}}}{\sqrt{\{ 2\sigma_{W_{1}} \} \{  8a^4\sigma_{W_{2}}+ 4a^2{a_{23}}^2\sigma_{W_{3}}+ 3{a_{23}}^2{a_{31}}^2\sigma_{W_{1}} \} }}
+\end{aligned}
+\label{eq:rho21_mediator}
+\end{equation}
+
+\subsection*{A two-way mediator network topology}
+
+\begin{figure}[H]
+\centering
+
+\def\figscale{1}
+
+\begin{minipage}[c]{0.23\textwidth}
+\centering
+
+\def\a{1.2 cm}
+\def\nodeSize{0.7}
+\def\selfLoopR{0.5*\nodeSize cm}
+
+\begin{tikzpicture}[
+    scale=\figscale,
+    >={Stealth[length=3mm,width=2mm]},
+    every node/.style={
+        circle,
+        draw,
+        minimum size=\nodeSize cm,
+    }
+]
+
+\node (1) at (-\a,0) {1};
+\node (2) at (\a,0) {2};
+\node (3) at (0,{sqrt(3)*\a}) {3};
+
+\draw[->] (1) to[bend left=12] (3);
+\draw[->] (3) to[bend left=12] (1);
+\draw[->] (3) to[bend left=12] (2);
+\draw[->] (2) to[bend left=12] (3);
+
+\selfloop{1}{1}
+\selfloop{2}{2}
+\selfloop{3}{3}
+
+\end{tikzpicture}
+
+\end{minipage}%
+\hspace{0\textwidth}%
+\begin{minipage}[c]{0.23\textwidth}
+\raggedright
+
+\[
+\mathbf{A}=
+\begin{bmatrix}
+a & 0 & a_{13} \\
+0 & a & a_{23} \\
+a_{31} & a_{32} & a
+\end{bmatrix}
+\]
+
+\end{minipage}%
+\hspace{0.005\textwidth}%
+\begin{minipage}[c]{0.25\textwidth}
+\raggedright
+
+\[
+\mathbf{\Sigma_Y}=
+\begin{bmatrix}
+\sigma_{11} & \sigma_{12} & \sigma_{13} \\
+\sigma_{21} & \sigma_{22} & \sigma_{23} \\
+\sigma_{31} & \sigma_{32} & \sigma_{33}
+\end{bmatrix}
+\]
+
+\end{minipage}%
+\hspace{0.005\textwidth}%
+\begin{minipage}[c]{0.27\textwidth}
+\raggedright
+
+\[
+\mathbf{\Sigma_W}=
+\begin{bmatrix}
+\sigma_{W_1} & 0 & 0 \\
+0 & \sigma_{W_2} & 0 \\
+0 & 0 & \sigma_{W_3}
+\end{bmatrix}
+\]
+
+\end{minipage}%
+
+\caption{A two-way mediator network topology and its associated matrices.}
+\label{fig:network_mediator2way}
+\end{figure}
+
+% A = [a,0,a13; 0,a,a23; a31,a32,a] (mediator plus a return path 3->1).
+% Same half-vec technique as the confounder section; not repeated here.
+The determinant of $\mathbf{L_3}(\mathbf{I} \otimes \mathbf{A} + \mathbf{A} \otimes \mathbf{I}) \mathbf{D_3}$ is
+\begin{equation}
+|\mathbf{K}| = 64a^6-80a^4a_{13}a_{31}-80a^4a_{23}a_{32}+16a^2a_{13}^2a_{31}^2+32a^2a_{13}a_{23}a_{31}a_{32}+16a^2a_{23}^2a_{32}^2
+\end{equation}
+
+The formulae for entries of the covariance matrix are listed below.
+The leading common factor $-1/|\mathbf{K}|$ has been omitted from the
+covariance entries in equations
+(\ref{eq:sigma11_mediator2way})--(\ref{eq:sigma33_mediator2way}) below: each
+$\sigma_{ij}$ equals $-1/|\mathbf{K}|$ times the bracketed sum shown.
+\begin{align}
+\sigma_{11}&= \Bigl\{ 32a^5-24a^3a_{13}a_{31}-40a^3a_{23}a_{32}+4aa_{13}^2a_{31}^2+8aa_{23}^2a_{32}^2 \Bigr\} \sigma_{W_{1}} \nonumber \\
+&\quad + \Bigl\{ 12aa_{13}^2a_{32}^2 \Bigr\} \sigma_{W_{2}} + \Bigl\{ 16a^3a_{13}^2-4a_{31}aa_{13}^3-4a_{23}a_{32}aa_{13}^2 \Bigr\} \sigma_{W_{3}} \label{eq:sigma11_mediator2way} \\[8pt]
+\sigma_{21}&= \Bigl\{ 8a^3a_{23}a_{31}-8a_{32}aa_{23}^2a_{31}+4a_{13}aa_{23}a_{31}^2 \Bigr\} \sigma_{W_{1}} \nonumber \\
+&\quad + \Bigl\{ 8a^3a_{13}a_{32}-8a_{31}aa_{13}^2a_{32}+4a_{23}aa_{13}a_{32}^2 \Bigr\} \sigma_{W_{2}} \nonumber \\
+&\quad + \Bigl\{ 16a^3a_{13}a_{23}-4a_{31}aa_{13}^2a_{23}-4a_{32}aa_{13}a_{23}^2 \Bigr\} \sigma_{W_{3}} \label{eq:sigma21_mediator2way} \\[8pt]
+\sigma_{22}&= \Bigl\{ 12aa_{23}^2a_{31}^2 \Bigr\} \sigma_{W_{1}} + \Bigl\{ 16a^3a_{23}^2-4a_{32}aa_{23}^3-4a_{13}a_{31}aa_{23}^2 \Bigr\} \sigma_{W_{3}} \nonumber \\
+&\quad + \Bigl\{ 32a^5-40a^3a_{13}a_{31}-24a^3a_{23}a_{32}+8aa_{13}^2a_{31}^2+4aa_{23}^2a_{32}^2 \Bigr\} \sigma_{W_{2}} \label{eq:sigma22_mediator2way} \\[8pt]
+\sigma_{31}&= \Bigl\{ -16a^4a_{31}+4a_{13}a^2a_{31}^2+16a_{23}a_{32}a^2a_{31} \Bigr\} \sigma_{W_{1}} + \Bigl\{ -12a^2a_{13}a_{32}^2 \Bigr\} \sigma_{W_{2}} \nonumber \\
+&\quad + \Bigl\{ -16a^4a_{13}+4a_{31}a^2a_{13}^2+4a_{23}a_{32}a^2a_{13} \Bigr\} \sigma_{W_{3}} \label{eq:sigma31_mediator2way} \\[8pt]
+\sigma_{32}&= \Bigl\{ -12a^2a_{23}a_{31}^2 \Bigr\} \sigma_{W_{1}} + \Bigl\{ -16a^4a_{32}+4a_{23}a^2a_{32}^2+16a_{13}a_{31}a^2a_{32} \Bigr\} \sigma_{W_{2}} \nonumber \\
+&\quad + \Bigl\{ -16a^4a_{23}+4a_{32}a^2a_{23}^2+4a_{13}a_{31}a^2a_{23} \Bigr\} \sigma_{W_{3}} \label{eq:sigma32_mediator2way} \\[8pt]
+\sigma_{33}&= \Bigl\{ 16a^3a_{31}^2-4a_{13}aa_{31}^3-4a_{23}a_{32}aa_{31}^2 \Bigr\} \sigma_{W_{1}} \nonumber \\
+&\quad + \Bigl\{ 16a^3a_{32}^2-4a_{23}aa_{32}^3-4a_{13}a_{31}aa_{32}^2 \Bigr\} \sigma_{W_{2}} \nonumber \\
+&\quad + \Bigl\{ 32a^5-24a^3a_{13}a_{31}-24a^3a_{23}a_{32}+4aa_{13}^2a_{31}^2+8aa_{13}a_{23}a_{31}a_{32}+4aa_{23}^2a_{32}^2 \Bigr\} \sigma_{W_{3}} \label{eq:sigma33_mediator2way}
+\end{align}
+
+The formula for $\rho_{21}$ is derived below. By definition, $\rho_{21}=\sigma_{21}/\sqrt{\sigma_{11}\sigma_{22}}$. Substituting equations
+\ref{eq:sigma11_mediator2way}, \ref{eq:sigma21_mediator2way}, and \ref{eq:sigma22_mediator2way},
+the common factor $-1/|\mathbf{K}|$ in $\sigma_{21}$ and the two factors of $-1/|\mathbf{K}|$
+inside the square root (which combine to $1/|\mathbf{K}|$) leave an overall
+$-\operatorname{sgn}(|\mathbf{K}|)$ prefactor. Every term in the resulting numerator and
+denominator components carries a common factor of $a$; dividing it out of each and using
+$a<0$ (Hurwitz stability) to fix $a/|a|=-1$ turns that $-\operatorname{sgn}(|\mathbf{K}|)$
+prefactor into $+\operatorname{sgn}(|\mathbf{K}|)$. As established below,
+$\operatorname{sgn}(|\mathbf{K}|)=+1$ throughout the Hurwitz-stable region, so this prefactor is
+simply $+1$. Every remaining term then carries a further
+common factor of $4$, which divides out of $N_{21}$ and $D_{11}D_{22}$ cleanly ($\sqrt{16}=4$),
+giving
+\begin{equation}
+\rho_{21} = \frac{N_{21}}{\sqrt{D_{11}\,D_{22}}},
+\label{eq:rho21_mediator2way}
+\end{equation}
+where the numerator and denominator components are
+\begin{align}
+N_{21} &= 2a^2a_{23}a_{31}\sigma_{W_1} + a_{13}a_{23}a_{31}^2\sigma_{W_1} - 2a_{23}^2a_{31}a_{32}\sigma_{W_1} \notag\\
+&\quad+ 2a^2a_{13}a_{32}\sigma_{W_2} - 2a_{13}^2a_{31}a_{32}\sigma_{W_2} + a_{13}a_{23}a_{32}^2\sigma_{W_2} \notag\\
+&\quad+ 4a^2a_{13}a_{23}\sigma_{W_3} - a_{13}^2a_{23}a_{31}\sigma_{W_3} - a_{13}a_{23}^2a_{32}\sigma_{W_3},
+\label{eq:N21_med2way}\\[4pt]
+D_{11} &= 8a^4\sigma_{W_1} - 6a^2a_{13}a_{31}\sigma_{W_1} - 10a^2a_{23}a_{32}\sigma_{W_1} + a_{13}^2a_{31}^2\sigma_{W_1} + 2a_{23}^2a_{32}^2\sigma_{W_1} \notag\\
+&\quad+ 3a_{13}^2a_{32}^2\sigma_{W_2} \notag\\
+&\quad+ 4a^2a_{13}^2\sigma_{W_3} - a_{13}^3a_{31}\sigma_{W_3} - a_{13}^2a_{23}a_{32}\sigma_{W_3},
+\label{eq:D11_med2way}\\[4pt]
+D_{22} &= 3a_{23}^2a_{31}^2\sigma_{W_1} \notag\\
+&\quad+ 8a^4\sigma_{W_2} - 10a^2a_{13}a_{31}\sigma_{W_2} - 6a^2a_{23}a_{32}\sigma_{W_2} + 2a_{13}^2a_{31}^2\sigma_{W_2} + a_{23}^2a_{32}^2\sigma_{W_2} \notag\\
+&\quad+ 4a^2a_{23}^2\sigma_{W_3} - a_{23}^3a_{32}\sigma_{W_3} - a_{13}a_{23}^2a_{31}\sigma_{W_3}.
+\label{eq:D22_med2way}
+\end{align}
+To see that $\operatorname{sgn}(|\mathbf{K}|)=+1$, write $s=a_{13}a_{31}+a_{23}a_{32}$. The
+bracketed factor of
+$|\mathbf{K}|=16a^2\bigl(4a^4-5a^2a_{13}a_{31}-5a^2a_{23}a_{32}+a_{13}^2a_{31}^2+2a_{13}a_{23}a_{31}a_{32}+a_{23}^2a_{32}^2\bigr)$
+factors exactly as $\bigl(s-a^2\bigr)\bigl(s-4a^2\bigr)$. The characteristic polynomial of
+$\mathbf{A}$ is $\lambda^3-3a\lambda^2+(3a^2-s)\lambda-a(a^2-s)$, whose Routh--Hurwitz conditions
+reduce to $a<0$ and $s<a^2$ (the third condition, $s<4a^2$, is then automatic since
+$a^2\le4a^2$). On this stable region $s<a^2\le4a^2$, so both $\bigl(s-a^2\bigr)$ and
+$\bigl(s-4a^2\bigr)$ are negative and $|\mathbf{K}|>0$; hence $\operatorname{sgn}(|\mathbf{K}|)=+1$
+identically, and no sign prefactor survives in $\rho_{21}$.
+
+\subsection*{A collider network topology}
+
+\begin{figure}[H]
+\centering
+
+\def\figscale{1}
+
+\begin{minipage}[c]{0.23\textwidth}
+\centering
+
+\def\a{1.2 cm}
+\def\nodeSize{0.7}
+\def\selfLoopR{0.5*\nodeSize cm}
+
+\begin{tikzpicture}[
+    scale=\figscale,
+    >={Stealth[length=3mm,width=2mm]},
+    every node/.style={
+        circle,
+        draw,
+        minimum size=\nodeSize cm,
+    }
+]
+
+\node (1) at (-\a,0) {1};
+\node (2) at (\a,0) {2};
+\node (3) at (0,{sqrt(3)*\a}) {3};
+
+\draw[->] (1) to[bend left=12] (3);
+\draw[->] (2) to[bend right=12] (3);
+
+\selfloop{1}{1}
+\selfloop{2}{2}
+\selfloop{3}{3}
+
+\end{tikzpicture}
+
+\end{minipage}%
+\hspace{0\textwidth}%
+\begin{minipage}[c]{0.23\textwidth}
+\raggedright
+
+\[
+\mathbf{A}=
+\begin{bmatrix}
+a & 0 & 0 \\
+0 & a & 0 \\
+a_{31} & a_{32} & a
+\end{bmatrix}
+\]
+
+\end{minipage}%
+\hspace{0.005\textwidth}%
+\begin{minipage}[c]{0.25\textwidth}
+\raggedright
+
+\[
+\mathbf{\Sigma_Y}=
+\begin{bmatrix}
+\sigma_{11} & \sigma_{12} & \sigma_{13} \\
+\sigma_{21} & \sigma_{22} & \sigma_{23} \\
+\sigma_{31} & \sigma_{32} & \sigma_{33}
+\end{bmatrix}
+\]
+
+\end{minipage}%
+\hspace{0.005\textwidth}%
+\begin{minipage}[c]{0.27\textwidth}
+\raggedright
+
+\[
+\mathbf{\Sigma_W}=
+\begin{bmatrix}
+\sigma_{W_1} & 0 & 0 \\
+0 & \sigma_{W_2} & 0 \\
+0 & 0 & \sigma_{W_3}
+\end{bmatrix}
+\]
+
+\end{minipage}%
+
+\caption{A collider network topology and its associated matrices.}
+\label{fig:network_collider}
+\end{figure}
+
+% A = [a,0,0; 0,a,0; a31,a32,a] (1,2 -> 3). Same half-vec technique as the
+% confounder section; not repeated here.
+The determinant of $\mathbf{L_3}(\mathbf{I} \otimes \mathbf{A} + \mathbf{A} \otimes \mathbf{I}) \mathbf{D_3}$ is
+\begin{equation}
+|\mathbf{K}| = 64a^6
+\end{equation}
+
+The formulae for entries of the covariance matrix are listed below.
+The leading common factor $-1/|\mathbf{K}|$ has been omitted from the
+covariance entries in equations
+(\ref{eq:sigma11_collider})--(\ref{eq:sigma33_collider}) below: each
+$\sigma_{ij}$ equals $-1/|\mathbf{K}|$ times the bracketed sum shown.
+\begin{align}
+\sigma_{11}&= \Bigl\{ 32a^5\sigma_{W_{1}} \Bigr\} \label{eq:sigma11_collider} \\
+\sigma_{21}&= 0 \label{eq:sigma21_collider} \\
+\sigma_{31}&= \Bigl\{ -16a^4a_{31}\sigma_{W_{1}} \Bigr\} \label{eq:sigma31_collider} \\
+\sigma_{22}&= \Bigl\{ 32a^5\sigma_{W_{2}} \Bigr\} \label{eq:sigma22_collider} \\
+\sigma_{32}&= \Bigl\{ -16a^4a_{32}\sigma_{W_{2}} \Bigr\} \label{eq:sigma32_collider} \\
+\sigma_{33}&= \Bigl\{ 16a^3a_{31}^2\sigma_{W_{1}}+16a^3a_{32}^2\sigma_{W_{2}}+32a^5\sigma_{W_{3}} \Bigr\} \label{eq:sigma33_collider}
+\end{align}
+
+The formulae for $\rho_{21}$, $\rho_{31}$, and $\rho_{32}$ are derived below.
+\begin{equation}
+\begin{aligned}
+\rho_{21}&=\frac{\sigma_{21}}{\sqrt{\sigma_{11}} \sqrt{\sigma_{22}}}=\frac{0}{\sqrt{\sigma_{11}} \sqrt{\sigma_{22}}}=0
+\end{aligned}
+\end{equation}
+
+\begin{equation}
+\begin{aligned}
+\rho_{31}&=\frac{\sigma_{31}}{\sqrt{\sigma_{11}} \sqrt{\sigma_{33}}} \\
+&=\frac{ 16a^4a_{31} {\sigma_{W}}_{1}} {\sqrt{ \left( - 32a^5{\sigma_{W}}_{1} \right) } \sqrt{ -32a^5{\sigma_{W_{3}}}-16a^3{a_{31}}^2{\sigma_{W_{1}}}-16a^3{a_{32}}^2{\sigma_{W_{2}}}  }} \\
+\\
+&=\frac{a^4a_{31}{\sigma_{W}}_{1}}{\sqrt{ 2 a^5{\sigma_{W}}_{1} \{ 2 a^5{\sigma_{W}}_{3} + a^3{a_{32}}^2{\sigma_{W}}_{2} +  a^3{a_{31}}^2 {\sigma_{W}}_{1} \} }  } \\
+\\
+&=\frac{ a_{31}{\sigma_{W}}_{1}}{\sqrt{ 2 {\sigma_{W}}_{1} \{  2a^2{\sigma_{W}}_{3} +  {a_{32}}^2{\sigma_{W}}_{2} +{a_{31}}^2 {\sigma_{W}}_{1} \} }  }
+\end{aligned}
+\end{equation}
+
+By the same steps,
+\begin{equation}
+\begin{aligned}
+\rho_{32}&=\frac{\sigma_{32}}{\sqrt{\sigma_{22}} \sqrt{\sigma_{33}}}=\frac{a_{32}{\sigma_{W}}_{2}}{\sqrt{ 2 {\sigma_{W}}_{2} \{ 2a^2{\sigma_{W}}_{3} +  {a_{32}}^2 {\sigma_{W}}_{2} + {a_{31}}^2{\sigma_{W}}_{1} \} }  }
+\end{aligned}
+\end{equation}
+
+\subsection*{A moderator network topology}
+
+\begin{figure}[H]
+\centering
+
+\def\figscale{1}
+
+\begin{minipage}[c]{0.23\textwidth}
+\centering
+
+\def\a{1.2 cm}
+\def\nodeSize{0.7}
+\def\selfLoopR{0.5*\nodeSize cm}
+
+\begin{tikzpicture}[
+    scale=\figscale,
+    >={Stealth[length=3mm,width=2mm]},
+    every node/.style={
+        circle,
+        draw,
+        minimum size=\nodeSize cm,
+    }
+]
+
+\node (1) at (-\a,0) {1};
+\node (2) at (\a,0) {2};
+\node (3) at (0,{sqrt(3)*\a}) {3};
+
+\draw[->] (1) to[bend left=12] (2);
+\draw[->] (2) to[bend left=12] (1);
+\draw[->] (3) to[bend right=12] (1);
+\draw[->] (3) to[bend left=12] (2);
+
+\selfloop{1}{1}
+\selfloop{2}{2}
+\selfloop{3}{3}
+
+\end{tikzpicture}
+
+\end{minipage}%
+\hspace{0\textwidth}%
+\begin{minipage}[c]{0.23\textwidth}
+\raggedright
+
+\[
+\mathbf{A}=
+\begin{bmatrix}
+a & a_{12} & a_{13} \\
+a_{21} & a & a_{23} \\
+0 & 0 & a
+\end{bmatrix}
+\]
+
+\end{minipage}%
+\hspace{0.005\textwidth}%
+\begin{minipage}[c]{0.25\textwidth}
+\raggedright
+
+\[
+\mathbf{\Sigma_Y}=
+\begin{bmatrix}
+\sigma_{11} & \sigma_{12} & \sigma_{13} \\
+\sigma_{21} & \sigma_{22} & \sigma_{23} \\
+\sigma_{31} & \sigma_{32} & \sigma_{33}
+\end{bmatrix}
+\]
+
+\end{minipage}%
+\hspace{0.005\textwidth}%
+\begin{minipage}[c]{0.27\textwidth}
+\raggedright
+
+\[
+\mathbf{\Sigma_W}=
+\begin{bmatrix}
+\sigma_{W_1} & 0 & 0 \\
+0 & \sigma_{W_2} & 0 \\
+0 & 0 & \sigma_{W_3}
+\end{bmatrix}
+\]
+
+\end{minipage}%
+
+\caption{A moderator network topology and its associated matrices.}
+\label{fig:network_moderator}
+\end{figure}
+
+% A = [a,a12,a13; a21,a,a23; 0,0,a] (reciprocal 1<->2, both driving 3).
+% Same half-vec technique as the confounder section; not repeated here.
+The determinant of $\mathbf{L_3}(\mathbf{I} \otimes \mathbf{A} + \mathbf{A} \otimes \mathbf{I}) \mathbf{D_3}$ is
+\begin{equation}
+|\mathbf{K}| = 16a^{2}\left(a^{2}-a_{12}a_{21}\right)\left(4a^{2}-a_{12}a_{21}\right)
+\end{equation}
+
+The formulae for entries of the covariance matrix are listed below.
+The leading common factor $-1/|\mathbf{K}|$ has been omitted from the
+covariance entries in equations
+(\ref{eq:sigma11_moderator})--(\ref{eq:sigma33_moderator}) below: each
+$\sigma_{ij}$ equals $-1/|\mathbf{K}|$ times the bracketed sum shown.
+\begin{align}
+\sigma_{11}&= \Bigl\{ 32a^5-24a^3a_{12}a_{21}+4aa_{12}^2a_{21}^2 \Bigr\} \sigma_{W_{1}}
++ \Bigl\{ 16a^3a_{12}^2-4aa_{12}^3a_{21} \Bigr\} \sigma_{W_{2}} \nonumber \\
+&\quad + \Bigl\{ 16a^3a_{13}^2-24a^2a_{12}a_{13}a_{23}+12aa_{12}^2a_{23}^2-4aa_{12}a_{13}^2a_{21} \Bigr\} \sigma_{W_{3}} \label{eq:sigma11_moderator} \\[8pt]
+\sigma_{21}&= \Bigl\{ 4a^2a_{12}a_{21}^2-16a^4a_{21} \Bigr\} \sigma_{W_{1}}
++ \Bigl\{ 4a^2a_{12}^2a_{21}-16a^4a_{12} \Bigr\} \sigma_{W_{2}} \nonumber \\
+&\quad + \Bigl\{ 16a^3a_{13}a_{23}-12a^2a_{13}^2a_{21}-12a^2a_{12}a_{23}^2+8aa_{12}a_{13}a_{21}a_{23} \Bigr\} \sigma_{W_{3}} \label{eq:sigma21_moderator} \\[8pt]
+\sigma_{22}&= \Bigl\{ 16a^3a_{21}^2-4aa_{12}a_{21}^3 \Bigr\} \sigma_{W_{1}}
++ \Bigl\{ 32a^5-24a^3a_{12}a_{21}+4aa_{12}^2a_{21}^2 \Bigr\} \sigma_{W_{2}} \nonumber \\
+&\quad + \Bigl\{ 16a^3a_{23}^2-24a^2a_{13}a_{21}a_{23}+12aa_{13}^2a_{21}^2-4aa_{12}a_{21}a_{23}^2 \Bigr\} \sigma_{W_{3}} \label{eq:sigma22_moderator} \\[8pt]
+\sigma_{31}&= \Bigl\{ -16a^4a_{13}+8a^3a_{12}a_{23}+16a^2a_{12}a_{13}a_{21}-8aa_{12}^2a_{21}a_{23} \Bigr\} \sigma_{W_{3}} \label{eq:sigma31_moderator} \\[8pt]
+\sigma_{32}&= \Bigl\{ -16a^4a_{23}+8a^3a_{13}a_{21}+16a^2a_{12}a_{21}a_{23}-8aa_{12}a_{13}a_{21}^2 \Bigr\} \sigma_{W_{3}} \label{eq:sigma32_moderator} \\[8pt]
+\sigma_{33}&= \Bigl\{ 32a^5-40a^3a_{12}a_{21}+8aa_{12}^2a_{21}^2 \Bigr\} \sigma_{W_{3}} \label{eq:sigma33_moderator}
+\end{align}
+
+The formula for $\rho_{21}$ is derived below. By definition,
+$\rho_{21}=\sigma_{21}/\sqrt{\sigma_{11}\sigma_{22}}$. Substituting equations
+\ref{eq:sigma11_moderator}, \ref{eq:sigma21_moderator}, and \ref{eq:sigma22_moderator},
+the common factor $-1/|\mathbf{K}|$ in $\sigma_{21}$ and the two factors of $-1/|\mathbf{K}|$
+inside the square root (which combine to $1/|\mathbf{K}|$) leave an overall
+$-\operatorname{sgn}(|\mathbf{K}|)$ prefactor. Every term in the resulting numerator and
+denominator components carries a common factor of $4a$; dividing it out of each (using
+$\sqrt{16a^2}=4|a|$ for the denominator) turns that prefactor into
+$-\operatorname{sgn}(|\mathbf{K}|)\operatorname{sgn}(a)$. Using $a<0$ (Hurwitz stability) to fix
+$\operatorname{sgn}(a)=-1$ leaves an overall $\operatorname{sgn}(|\mathbf{K}|)$ prefactor.
+
+$\operatorname{sgn}(|\mathbf{K}|)$ is fixed here: from
+$|\mathbf{K}|=16a^2(a^2-a_{12}a_{21})(4a^2-a_{12}a_{21})$, Hurwitz stability of the
+$1\leftrightarrow2$ reciprocal pair requires $a_{12}a_{21}<a^2$ whenever $a_{12}a_{21}>0$
+(else the bracketed factors are trivially positive), so both $(a^2-a_{12}a_{21})$ and
+$(4a^2-a_{12}a_{21})$ are strictly positive and $|\mathbf{K}|>0$ identically. Hence
+$\operatorname{sgn}(|\mathbf{K}|)=+1$ always, giving
+\begin{equation}
+\rho_{21} = \frac{N_{21}}{\sqrt{D_{11}\,D_{22}}},
+\label{eq:rho21_moderator}
+\end{equation}
+where the numerator and denominator components are
+\begin{align}
+N_{21} &= \bigl(aa_{12}a_{21}^2-4a^3a_{21}\bigr)\sigma_{W_1} + \bigl(aa_{12}^2a_{21}-4a^3a_{12}\bigr)\sigma_{W_2} \notag\\
+&\quad+ \bigl(-3aa_{12}a_{23}^2-3aa_{13}^2a_{21}+2a_{12}a_{13}a_{21}a_{23}+4a^2a_{13}a_{23}\bigr)\sigma_{W_3},
+\label{eq:N21_moderator}\\[4pt]
+D_{11} &= \bigl(8a^4-6a^2a_{12}a_{21}+a_{12}^2a_{21}^2\bigr)\sigma_{W_1} + \bigl(4a^2a_{12}^2-a_{12}^3a_{21}\bigr)\sigma_{W_2} \notag\\
+&\quad+ \bigl(4a^2a_{13}^2-6aa_{12}a_{13}a_{23}+3a_{12}^2a_{23}^2-a_{12}a_{13}^2a_{21}\bigr)\sigma_{W_3},
+\label{eq:D11_moderator}\\[4pt]
+D_{22} &= \bigl(4a^2a_{21}^2-a_{12}a_{21}^3\bigr)\sigma_{W_1} + \bigl(8a^4-6a^2a_{12}a_{21}+a_{12}^2a_{21}^2\bigr)\sigma_{W_2} \notag\\
+&\quad+ \bigl(4a^2a_{23}^2-6aa_{13}a_{21}a_{23}+3a_{13}^2a_{21}^2-a_{12}a_{21}a_{23}^2\bigr)\sigma_{W_3}.
+\label{eq:D22_moderator}
+\end{align}
+
+\subsection*{A coupled drivers network topology}
+
+\begin{figure}[H]
+\centering
+
+\def\figscale{1}
+
+\begin{minipage}[c]{0.23\textwidth}
+\centering
+
+\def\a{1.2 cm}
+\def\nodeSize{0.7}
+\def\selfLoopR{0.5*\nodeSize cm}
+
+\begin{tikzpicture}[
+    scale=\figscale,
+    >={Stealth[length=3mm,width=2mm]},
+    every node/.style={
+        circle,
+        draw,
+        minimum size=\nodeSize cm,
+    }
+]
+
+\node (1) at (-\a,0) {1};
+\node (2) at (\a,0) {2};
+\node (3) at (0,{sqrt(3)*\a}) {3};
+
+\draw[->] (1) to[bend left=12] (2);
+\draw[->] (2) to[bend left=12] (1);
+\draw[->] (1) to[bend left=12] (3);
+\draw[->] (2) to[bend right=12] (3);
+
+\selfloop{1}{1}
+\selfloop{2}{2}
+\selfloop{3}{3}
+
+\end{tikzpicture}
+
+\end{minipage}%
+\hspace{0\textwidth}%
+\begin{minipage}[c]{0.23\textwidth}
+\raggedright
+
+\[
+\mathbf{A}=
+\begin{bmatrix}
+a & a_{12} & 0 \\
+a_{21} & a & 0 \\
+a_{31} & a_{32} & a
+\end{bmatrix}
+\]
+
+\end{minipage}%
+\hspace{0.005\textwidth}%
+\begin{minipage}[c]{0.25\textwidth}
+\raggedright
+
+\[
+\mathbf{\Sigma_Y}=
+\begin{bmatrix}
+\sigma_{11} & \sigma_{12} & \sigma_{13} \\
+\sigma_{21} & \sigma_{22} & \sigma_{23} \\
+\sigma_{31} & \sigma_{32} & \sigma_{33}
+\end{bmatrix}
+\]
+
+\end{minipage}%
+\hspace{0.005\textwidth}%
+\begin{minipage}[c]{0.27\textwidth}
+\raggedright
+
+\[
+\mathbf{\Sigma_W}=
+\begin{bmatrix}
+\sigma_{W_1} & 0 & 0 \\
+0 & \sigma_{W_2} & 0 \\
+0 & 0 & \sigma_{W_3}
+\end{bmatrix}
+\]
+
+\end{minipage}%
+
+\caption{A coupled drivers network topology and its associated matrices.}
+\label{fig:network_coupled}
+\end{figure}
+
+% A = [a,a12,0; a21,a,0; a31,a32,a] (reciprocal 1<->2, both driving 3, no
+% feedback from 3). Same half-vec technique as confounder; not repeated here.
+The determinant of $\mathbf{L_3}(\mathbf{I} \otimes \mathbf{A} + \mathbf{A} \otimes \mathbf{I}) \mathbf{D_3}$ is
+\begin{equation}
+|\mathbf{K}| = 16a^{2}\left(a^{2}-a_{12}a_{21}\right)\left(4a^{2}-a_{12}a_{21}\right)
+\end{equation}
+
+The formulae for entries of the covariance matrix are listed below.
+The leading common factor $-1/|\mathbf{K}|$ has been omitted from the
+covariance entries in equations
+(\ref{eq:sigma11_coupled})--(\ref{eq:sigma33_coupled}) below: each
+$\sigma_{ij}$ equals $-1/|\mathbf{K}|$ times the bracketed sum shown.
+\begin{align}
+\sigma_{11}&= \Bigl\{ 32a^5-24a^3a_{12}a_{21}+4aa_{12}^2a_{21}^2 \Bigr\} \sigma_{W_{1}}
++ \Bigl\{ 16a^3a_{12}^2-4aa_{12}^3a_{21} \Bigr\} \sigma_{W_{2}} \label{eq:sigma11_coupled} \\[8pt]
+\sigma_{21}&= \Bigl\{ 4a^2a_{12}a_{21}^2-16a^4a_{21} \Bigr\} \sigma_{W_{1}}
++ \Bigl\{ 4a^2a_{12}^2a_{21}-16a^4a_{12} \Bigr\} \sigma_{W_{2}} \label{eq:sigma21_coupled} \\[8pt]
+\sigma_{22}&= \Bigl\{ 16a^3a_{21}^2-4aa_{12}a_{21}^3 \Bigr\} \sigma_{W_{1}}
++ \Bigl\{ 32a^5-24a^3a_{12}a_{21}+4aa_{12}^2a_{21}^2 \Bigr\} \sigma_{W_{2}} \label{eq:sigma22_coupled} \\[8pt]
+\sigma_{31}&= \Bigl\{ -16a^4a_{31}+8a^3a_{21}a_{32}+4a^2a_{12}a_{21}a_{31}+4aa_{12}a_{21}^2a_{32} \Bigr\} \sigma_{W_{1}} \nonumber \\
+&\quad + \Bigl\{ 16a^3a_{12}a_{32}-12a^2a_{12}^2a_{31}-4aa_{12}^2a_{21}a_{32} \Bigr\} \sigma_{W_{2}} \label{eq:sigma31_coupled} \\[8pt]
+\sigma_{32}&= \Bigl\{ 16a^3a_{21}a_{31}-12a^2a_{21}^2a_{32}-4aa_{12}a_{21}^2a_{31} \Bigr\} \sigma_{W_{1}} \nonumber \\
+&\quad + \Bigl\{ -16a^4a_{32}+8a^3a_{12}a_{31}+4a^2a_{12}a_{21}a_{32}+4aa_{12}^2a_{21}a_{31} \Bigr\} \sigma_{W_{2}} \label{eq:sigma32_coupled} \\[8pt]
+\sigma_{33}&= \Bigl\{ 16a^3a_{31}^2-24a^2a_{21}a_{31}a_{32}+12aa_{21}^2a_{32}^2-4aa_{12}a_{21}a_{31}^2 \Bigr\} \sigma_{W_{1}} \nonumber \\
+&\quad + \Bigl\{ 16a^3a_{32}^2-24a^2a_{12}a_{31}a_{32}+12aa_{12}^2a_{31}^2-4aa_{12}a_{21}a_{32}^2 \Bigr\} \sigma_{W_{2}} \nonumber \\
+&\quad + \Bigl\{ 32a^5-40a^3a_{12}a_{21}+8aa_{12}^2a_{21}^2 \Bigr\} \sigma_{W_{3}} \label{eq:sigma33_coupled}
+\end{align}
+
+The formula for $\rho_{21}$ is derived below. By definition,
+$\rho_{21}=\sigma_{21}/\sqrt{\sigma_{11}\sigma_{22}}$. Substituting equations
+\ref{eq:sigma11_coupled}, \ref{eq:sigma21_coupled}, and \ref{eq:sigma22_coupled}, the common
+factor $-1/|\mathbf{K}|$ in $\sigma_{21}$ and the two factors of $-1/|\mathbf{K}|$ inside the
+square root leave an overall $\operatorname{sgn}(|\mathbf{K}|)=+1$ prefactor (fixed under Hurwitz
+stability: $|\mathbf{K}|=16a^2(a^2-a_{12}a_{21})(4a^2-a_{12}a_{21})$ with both bracketed factors
+strictly positive). A further common factor of $(4a^2-a_{12}a_{21})$ — also strictly positive —
+cancels between the numerator and each square-root factor of the denominator, giving the closed
+form:
+\begin{equation}
+\rho_{21} = \frac{|a|\left(a_{21}\sigma_{W_1}+a_{12}\sigma_{W_2}\right)}{\sqrt{D_{11}\,D_{22}}},
+\label{eq:rho21_coupled}
+\end{equation}
+where
+\begin{align}
+D_{11} &= \left(2a^2-a_{12}a_{21}\right)\sigma_{W_1} + a_{12}^2\sigma_{W_2}, \label{eq:D11_coupled}\\
+D_{22} &= \left(2a^2-a_{12}a_{21}\right)\sigma_{W_2} + a_{21}^2\sigma_{W_1}. \label{eq:D22_coupled}
+\end{align}
+
+\subsection*{A cycle network topology}
+
+\begin{figure}[H]
+\centering
+
+\def\figscale{1}
+
+\begin{minipage}[c]{0.23\textwidth}
+\centering
+
+\def\a{1.2 cm}
+\def\nodeSize{0.7}
+\def\selfLoopR{0.5*\nodeSize cm}
+
+\begin{tikzpicture}[
+    scale=\figscale,
+    >={Stealth[length=3mm,width=2mm]},
+    every node/.style={
+        circle,
+        draw,
+        minimum size=\nodeSize cm,
+    }
+]
+
+\node (1) at (-\a,0) {1};
+\node (2) at (\a,0) {2};
+\node (3) at (0,{sqrt(3)*\a}) {3};
+
+\draw[->] (2) to[bend left=12] (1);
+\draw[->] (3) to[bend left=12] (2);
+\draw[->] (1) to[bend left=12] (3);
+
+\selfloop{1}{1}
+\selfloop{2}{2}
+\selfloop{3}{3}
+
+\end{tikzpicture}
+
+\end{minipage}%
+\hspace{0\textwidth}%
+\begin{minipage}[c]{0.23\textwidth}
+\raggedright
+
+\[
+\mathbf{A}=
+\begin{bmatrix}
+a & a_{12} & 0 \\
+0 & a & a_{23} \\
+a_{31} & 0 & a
+\end{bmatrix}
+\]
+
+\end{minipage}%
+\hspace{0.005\textwidth}%
+\begin{minipage}[c]{0.25\textwidth}
+\raggedright
+
+\[
+\mathbf{\Sigma_Y}=
+\begin{bmatrix}
+\sigma_{11} & \sigma_{12} & \sigma_{13} \\
+\sigma_{21} & \sigma_{22} & \sigma_{23} \\
+\sigma_{31} & \sigma_{32} & \sigma_{33}
+\end{bmatrix}
+\]
+
+\end{minipage}%
+\hspace{0.005\textwidth}%
+\begin{minipage}[c]{0.27\textwidth}
+\raggedright
+
+\[
+\mathbf{\Sigma_W}=
+\begin{bmatrix}
+\sigma_{W_1} & 0 & 0 \\
+0 & \sigma_{W_2} & 0 \\
+0 & 0 & \sigma_{W_3}
+\end{bmatrix}
+\]
+
+\end{minipage}%
+
+\caption{A cycle network topology and its associated matrices.}
+\label{fig:network_cycle}
+\end{figure}
+
+% A = [a,a12,0; 0,a,a23; a31,0,a] (directed 1->2->3->1 cycle). Same
+% half-vec technique as the confounder section; not repeated here.
+The determinant of $\mathbf{L_3}(\mathbf{I} \otimes \mathbf{A} + \mathbf{A} \otimes \mathbf{I}) \mathbf{D_3}$ is
+\begin{equation}
+|\mathbf{K}| = 64a^6+56a^3a_{12}a_{23}a_{31}-8a_{12}^2a_{23}^2a_{31}^2
+= 8\left(8a^3-a_{12}a_{23}a_{31}\right)\left(a^3+a_{12}a_{23}a_{31}\right).
+\label{eq:detK_cycle}
+\end{equation}
+
+The formulae for entries of the covariance matrix are listed below.
+The leading common factor $-1/|\mathbf{K}|$ has been omitted from the
+covariance entries in equations
+(\ref{eq:sigma11_cycle})--(\ref{eq:sigma33_cycle}) below: each
+$\sigma_{ij}$ equals $-1/|\mathbf{K}|$ times the bracketed sum shown.
+\begin{align}
+\sigma_{11}&= \Bigl\{ 32a^5+20a^2a_{12}a_{23}a_{31} \Bigr\} \sigma_{W_{1}}
++ \Bigl\{ 16a^3a_{12}^2+4a_{12}^3a_{23}a_{31} \Bigr\} \sigma_{W_{2}}
++ \Bigl\{ 12aa_{12}^2a_{23}^2 \Bigr\} \sigma_{W_{3}} \label{eq:sigma11_cycle} \\[8pt]
+\sigma_{21}&= \Bigl\{ 8a^3a_{23}a_{31}-4a_{12}a_{23}^2a_{31}^2 \Bigr\} \sigma_{W_{1}}
++ \Bigl\{ -16a^4a_{12}-4aa_{12}^2a_{23}a_{31} \Bigr\} \sigma_{W_{2}}
++ \Bigl\{ -12a^2a_{12}a_{23}^2 \Bigr\} \sigma_{W_{3}} \label{eq:sigma21_cycle} \\[8pt]
+\sigma_{22}&= \Bigl\{ 12aa_{23}^2a_{31}^2 \Bigr\} \sigma_{W_{1}}
++ \Bigl\{ 32a^5+20a^2a_{12}a_{23}a_{31} \Bigr\} \sigma_{W_{2}}
++ \Bigl\{ 16a^3a_{23}^2+4a_{12}a_{23}^3a_{31} \Bigr\} \sigma_{W_{3}} \label{eq:sigma22_cycle} \\[8pt]
+\sigma_{31}&= \Bigl\{ -16a^4a_{31}-4aa_{12}a_{23}a_{31}^2 \Bigr\} \sigma_{W_{1}}
++ \Bigl\{ -12a^2a_{12}^2a_{31} \Bigr\} \sigma_{W_{2}}
++ \Bigl\{ 8a^3a_{12}a_{23}-4a_{12}^2a_{23}^2a_{31} \Bigr\} \sigma_{W_{3}} \label{eq:sigma31_cycle} \\[8pt]
+\sigma_{32}&= \Bigl\{ -12a^2a_{23}a_{31}^2 \Bigr\} \sigma_{W_{1}}
++ \Bigl\{ 8a^3a_{12}a_{31}-4a_{12}^2a_{23}a_{31}^2 \Bigr\} \sigma_{W_{2}}
++ \Bigl\{ -16a^4a_{23}-4aa_{12}a_{23}^2a_{31} \Bigr\} \sigma_{W_{3}} \label{eq:sigma32_cycle} \\[8pt]
+\sigma_{33}&= \Bigl\{ 16a^3a_{31}^2+4a_{12}a_{23}a_{31}^3 \Bigr\} \sigma_{W_{1}}
++ \Bigl\{ 12aa_{12}^2a_{31}^2 \Bigr\} \sigma_{W_{2}}
++ \Bigl\{ 32a^5+20a^2a_{12}a_{23}a_{31} \Bigr\} \sigma_{W_{3}} \label{eq:sigma33_cycle}
+\end{align}
+
+The formulae for $\rho_{21}$, $\rho_{31}$, and $\rho_{32}$ are derived below. By definition,
+$\rho_{21}=\sigma_{21}/\sqrt{\sigma_{11}\sigma_{22}}$ (and cyclically for
+$\rho_{31}$, $\rho_{32}$). Substituting equations \ref{eq:sigma11_cycle}--\ref{eq:sigma33_cycle}
+and simplifying, the common factor $-1/|\mathbf{K}|$ in the numerator and the two factors of
+$-1/|\mathbf{K}|$ inside the square root leave an overall $\operatorname{sgn}(|\mathbf{K}|)$
+prefactor. Writing $c=a_{12}a_{23}a_{31}$, the characteristic polynomial of $\mathbf{A}$ is
+$(\lambda-a)^3=c$, so the three eigenvalues are $\lambda_k=a+c^{1/3}\omega^k$ ($\omega=e^{2\pi i/3}$,
+$k=0,1,2$). The real root $a+c^{1/3}$ is negative iff $c<-a^3$, and the complex pair
+$a-\tfrac12 c^{1/3}\pm\tfrac{\sqrt3}{2}c^{1/3}i$ has negative real part iff $c>8a^3$; hence
+Hurwitz stability requires the two-sided bound $8a^3<c<-a^3$ (together with $a<0$). On this
+region $|\mathbf{K}|=8(8a^3-c)(a^3+c)$ is strictly positive: $c<-a^3$ gives $a^3+c<0$, and
+$c>8a^3$ gives $8a^3-c<0$, so the product of the two negative factors is positive. Hence
+$\operatorname{sgn}(|\mathbf{K}|)=+1$ identically, and the closed forms carry no sign prefactor.
+They are cyclically symmetric:
+\begin{align}
+\rho_{21} &= \frac{N_{21}}{\sqrt{D_{11}D_{22}}}, &
+\rho_{31} &= \frac{N_{31}}{\sqrt{D_{11}D_{33}}}, &
+\rho_{32} &= \frac{N_{32}}{\sqrt{D_{22}D_{33}}},
+\label{eq:rho_cycle}
+\end{align}
+where
+\begin{align}
+D_{11} &= \left(8a^5+5a^2a_{12}a_{23}a_{31}\right)\sigma_{W_1} + \left(4a^3a_{12}^2+a_{12}^3a_{23}a_{31}\right)\sigma_{W_2} + 3aa_{12}^2a_{23}^2\,\sigma_{W_3}, \label{eq:D11_cycle}\\
+D_{22} &= \left(8a^5+5a^2a_{12}a_{23}a_{31}\right)\sigma_{W_2} + \left(4a^3a_{23}^2+a_{12}a_{23}^3a_{31}\right)\sigma_{W_3} + 3aa_{23}^2a_{31}^2\,\sigma_{W_1}, \label{eq:D22_cycle}\\
+D_{33} &= \left(8a^5+5a^2a_{12}a_{23}a_{31}\right)\sigma_{W_3} + \left(4a^3a_{31}^2+a_{12}a_{23}a_{31}^3\right)\sigma_{W_1} + 3aa_{12}^2a_{31}^2\,\sigma_{W_2}, \label{eq:D33_cycle}
+\end{align}
+and
+\begin{align}
+N_{21} &= \left(-2a^3a_{23}a_{31}+a_{12}a_{23}^2a_{31}^2\right)\sigma_{W_1} + \left(4a^4a_{12}+aa_{12}^2a_{23}a_{31}\right)\sigma_{W_2} + 3a^2a_{12}a_{23}^2\,\sigma_{W_3}, \label{eq:N21_cycle}\\
+N_{31} &= \left(4a^4a_{31}+aa_{12}a_{23}a_{31}^2\right)\sigma_{W_1} + 3a^2a_{12}^2a_{31}\,\sigma_{W_2} + \left(-2a^3a_{12}a_{23}+a_{12}^2a_{23}^2a_{31}\right)\sigma_{W_3}, \label{eq:N31_cycle}\\
+N_{32} &= 3a^2a_{23}a_{31}^2\,\sigma_{W_1} + \left(-2a^3a_{12}a_{31}+a_{12}^2a_{23}a_{31}^2\right)\sigma_{W_2} + \left(4a^4a_{23}+aa_{12}a_{23}^2a_{31}\right)\sigma_{W_3}. \label{eq:N32_cycle}
+\end{align}
+
+\bibliographystyle{apacite}
+\bibliography{appendix_d}
+
+\end{document}

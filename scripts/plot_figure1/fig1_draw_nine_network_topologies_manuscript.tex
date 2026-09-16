@@ -1,0 +1,211 @@
+\begin{figure}[H]
+\centering
+
+% -------- Row 1: Dyad | Confounder | Collider --------
+
+% Dyad
+\begin{subfigure}[b]{0.32\textwidth}
+\centering
+\begin{tikzpicture}[
+    thick,
+    >={Stealth[length=3mm,width=2mm]},
+    every node/.style={circle, draw, minimum size=\nodeSize cm}
+]
+\node (1) at (-\a,0) {1};
+\node (2) at (\a,0) {2};
+\draw[->] (1) to[bend left=12] (2);
+\draw[->] (2) to[bend left=12] (1);
+\selfloop{1}{1}
+\selfloop{2}{2}
+\end{tikzpicture}
+\caption{Dyad}
+\end{subfigure}
+\hfill
+%
+% Confounder
+\begin{subfigure}[b]{0.32\textwidth}
+\centering
+\begin{tikzpicture}[
+    thick,
+    >={Stealth[length=3mm,width=2mm]},
+    every node/.style={circle, draw, minimum size=\nodeSize cm}
+]
+\node (1) at (-\a,0) {1};
+\node (2) at (\a,0) {2};
+\node (3) at (0,{sqrt(3)*\a}) {3};
+\draw[->] (3) to[bend right=12] (1);
+\draw[->] (3) to[bend left=12] (2);
+\selfloop{1}{1}
+\selfloop{2}{2}
+\selfloop{3}{3}
+\end{tikzpicture}
+\caption{Confounder}
+\end{subfigure}
+\hfill
+%
+% Collider
+\begin{subfigure}[b]{0.32\textwidth}
+\centering
+\begin{tikzpicture}[
+    thick,
+    >={Stealth[length=3mm,width=2mm]},
+    every node/.style={circle, draw, minimum size=\nodeSize cm}
+]
+\node (1) at (-\a,0) {1};
+\node (2) at (\a,0) {2};
+\node (3) at (0,{sqrt(3)*\a}) {3};
+\draw[->] (1) to[bend left=12] (3);
+\draw[->] (2) to[bend right=12] (3);
+\selfloop{1}{1}
+\selfloop{2}{2}
+\selfloop{3}{3}
+\end{tikzpicture}
+\caption{Collider}
+\end{subfigure}
+
+\vspace{0.5cm}
+
+% -------- Row 2: Mediator | Two-Way Mediator | 3-Cycle --------
+
+% Mediator
+\begin{subfigure}[b]{0.32\textwidth}
+\centering
+\begin{tikzpicture}[
+    thick,
+    >={Stealth[length=3mm,width=2mm]},
+    every node/.style={circle, draw, minimum size=\nodeSize cm}
+]
+\node (1) at (-\a,0) {1};
+\node (2) at (\a,0) {2};
+\node (3) at (0,{sqrt(3)*\a}) {3};
+\draw[->] (1) to[bend left=12] (3);
+\draw[->] (3) to[bend left=12] (2);
+\selfloop{1}{1}
+\selfloop{2}{2}
+\selfloop{3}{3}
+\end{tikzpicture}
+\caption{Mediator}
+\end{subfigure}
+\hfill
+%
+% Two-Way Mediator
+\begin{subfigure}[b]{0.32\textwidth}
+\centering
+\begin{tikzpicture}[
+    thick,
+    >={Stealth[length=3mm,width=2mm]},
+    every node/.style={circle, draw, minimum size=\nodeSize cm}
+]
+\node (1) at (-\a,0) {1};
+\node (2) at (\a,0) {2};
+\node (3) at (0,{sqrt(3)*\a}) {3};
+\draw[->] (1) to[bend left=12] (3);
+\draw[->] (3) to[bend left=12] (1);
+\draw[->] (3) to[bend left=12] (2);
+\draw[->] (2) to[bend left=12] (3);
+\selfloop{1}{1}
+\selfloop{2}{2}
+\selfloop{3}{3}
+\end{tikzpicture}
+\caption{Two-Way Mediator}
+\end{subfigure}
+\hfill
+%
+% 3-Cycle
+\begin{subfigure}[b]{0.32\textwidth}
+\centering
+\begin{tikzpicture}[
+    thick,
+    >={Stealth[length=3mm,width=2mm]},
+    every node/.style={circle, draw, minimum size=\nodeSize cm}
+]
+\node (1) at (-\a,0) {1};
+\node (2) at (\a,0) {2};
+\node (3) at (0,{sqrt(3)*\a}) {3};
+\draw[->] (2) to[bend left=12] (1);
+\draw[->] (3) to[bend left=12] (2);
+\draw[->] (1) to[bend left=12] (3);
+\selfloop{1}{1}
+\selfloop{2}{2}
+\selfloop{3}{3}
+\end{tikzpicture}
+\caption{3-Cycle}
+\end{subfigure}
+
+\vspace{0.5cm}
+
+% -------- Row 3: Moderator | Coupled Drivers | Fully Connected --------
+
+% Moderator
+\begin{subfigure}[b]{0.32\textwidth}
+\centering
+\begin{tikzpicture}[
+    thick,
+    >={Stealth[length=3mm,width=2mm]},
+    every node/.style={circle, draw, minimum size=\nodeSize cm}
+]
+\node (1) at (-\a,0) {1};
+\node (2) at (\a,0) {2};
+\node (3) at (0,{sqrt(3)*\a}) {3};
+\draw[->] (1) to[bend left=12] (2);
+\draw[->] (2) to[bend left=12] (1);
+\draw[->] (3) to[bend right=12] (1);
+\draw[->] (3) to[bend left=12] (2);
+\selfloop{1}{1}
+\selfloop{2}{2}
+\selfloop{3}{3}
+\end{tikzpicture}
+\caption{Moderator}
+\end{subfigure}
+\hfill
+%
+% Coupled Drivers
+\begin{subfigure}[b]{0.32\textwidth}
+\centering
+\begin{tikzpicture}[
+    thick,
+    >={Stealth[length=3mm,width=2mm]},
+    every node/.style={circle, draw, minimum size=\nodeSize cm}
+]
+\node (1) at (-\a,0) {1};
+\node (2) at (\a,0) {2};
+\node (3) at (0,{sqrt(3)*\a}) {3};
+\draw[->] (1) to[bend left=12] (2);
+\draw[->] (2) to[bend left=12] (1);
+\draw[->] (1) to[bend left=12] (3);
+\draw[->] (2) to[bend right=12] (3);
+\selfloop{1}{1}
+\selfloop{2}{2}
+\selfloop{3}{3}
+\end{tikzpicture}
+\caption{Coupled Drivers}
+\end{subfigure}
+\hfill
+%
+% Fully Connected
+\begin{subfigure}[b]{0.32\textwidth}
+\centering
+\begin{tikzpicture}[
+    thick,
+    >={Stealth[length=3mm,width=2mm]},
+    every node/.style={circle, draw, minimum size=\nodeSize cm}
+]
+\node (1) at (-\a,0) {1};
+\node (2) at (\a,0) {2};
+\node (3) at (0,{sqrt(3)*\a}) {3};
+\draw[->] (1) to[bend left=12] (2);
+\draw[->] (2) to[bend left=12] (1);
+\draw[->] (1) to[bend left=12] (3);
+\draw[->] (3) to[bend left=12] (1);
+\draw[->] (2) to[bend left=12] (3);
+\draw[->] (3) to[bend left=12] (2);
+\selfloop{1}{1}
+\selfloop{2}{2}
+\selfloop{3}{3}
+\end{tikzpicture}
+\caption{Fully Connected}
+\end{subfigure}
+
+\caption{Nine network topologies analyzed in the current study.}
+\label{fig:schematic_network_topo}
+\end{figure}

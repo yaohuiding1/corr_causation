@@ -1,0 +1,155 @@
+\documentclass{article}
+
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=2.54cm,right=2.54cm,marginparwidth=1.75cm]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{comment}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage[natbibapa]{apacite}
+
+\setlength{\parindent}{0pt}
+
+%\title{Appendix E: A Brief Summary of Closely Related Prior Work}
+
+%\author{Yaohui Ding}
+
+\begin{document}
+
+%\maketitle
+
+\section*{Appendix E: A Brief Survey of Prior Work}
+\phantomsection\label{app:appE}
+
+\begin{table}[H]
+\centering
+\caption{\raggedright Summary of the most closely related prior work.}
+\label{tab:prior_work}
+\fontsize{9}{11}\selectfont
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{p{1.8cm} p{2.0cm} p{2.6cm} p{3.0cm} p{4.8cm}}
+\hline
+\textbf{Citation} &
+\textbf{Modeling Framework} &
+\textbf{Network Topology} &
+\textbf{Noise Assumption} &
+\textbf{Analytic Relationship} \\
+\hline
+\citet{Wright1921} &
+Path analysis &
+Directed acyclic graph; arbitrary size &
+Deterministic; residual factors &
+$r_{ij}$ = sum of products of path coefficients along
+all open paths (tracing rule) \\
+
+\citet{Haavelmo1943} &
+Simultaneous equations &
+Two-variable; cyclic (one lag) &
+Additive Gaussian &
+Explicit $\rho(\alpha,\kappa,\sigma_x^2,\sigma_y^2)$ for a specific
+lagged feedback system; conditional on the lagged value as a
+fixed constant, not a dynamical steady state \\
+
+\citet{Wright1960} &
+Path analysis &
+Cyclic graph; small sizes &
+Deterministic; residual factors &
+Implicit simultaneous equations; no closed-form solution \\
+
+\citet{Spirtes1995} &
+Directed cyclic graphs &
+General $N\times N$; cyclic &
+Independent (or correlated) Gaussian errors &
+Graphical (d-separation~\citep{Pearl1986}) conditions for vanishing partial
+correlations; no closed-form $\rho_{ij}(\mathbf{A})$ \\
+
+Huang et al.\ (\citeyear{HuangWuLuoPetrosyan2010}) &
+Linear SDE &
+Two-node; symmetric inhibitory &
+Gaussian colored noise &
+Explicit $\sigma_{11}$, $\sigma_{22}$, $\sigma_{12}$
+for two specific symmetric topologies under colored noise \\
+
+\citet{PearlSEMFoundations2012} &
+Structural causal models (SCM) &
+General $N\times N$; cyclic (equilibrium) &
+Mutually independent, arbitrarily distributed &
+Identification conditions (back-door criterion, do-calculus);
+no closed-form $\rho_{ij}(\mathbf{A})$ for the cyclic case \\
+
+Friston et al.\ (\citeyear{Friston2014}) &
+Spectral DCM &
+General $N\times N$; symmetric
+($\mathbf{A}=\mathbf{A}^T$) &
+Colored noise; scale-free power-law &
+Eigenmode relationship: eigenmodes of
+$\boldsymbol{\Sigma}_Y$ $=$ eigenmodes of $\mathbf{A}$;
+no entry-level $\sigma_{ij}$ \\
+
+Chawla et al.\ (\citeyear{ChawlaEtAl2018}) &
+Linear SDE &
+Three-node; acyclic and cyclic &
+Independent additive noise &
+Qualitative prediction signatures
+(e.g.\ $r_{AC}^2 = r_{AB}^2 \cdot r_{BC}^2$);
+no closed-form $\sigma_{ij}(\mathbf{A},
+\boldsymbol{\Sigma}_W)$ \\
+
+\citet{VarandoHansen2020} &
+GCLM &
+General $N\times N$; arbitrary topology &
+Additive Gaussian white noise; diagonal
+$\boldsymbol{\Sigma}_W$ &
+Power series expansion for $\sigma_{ij}$;
+no closed-form entry-level formula \\
+
+Novelli et al.\ (\citeyear{NovelliRazi2024}) &
+Spectral DCM &
+General $N\times N$; arbitrary topology &
+Colored noise; scale-free power-law &
+Closed-form cross-spectral density $\mathbf{g}(\omega)$
+as function of $\mathbf{A}$; frequency domain only \\
+
+\citet{HansenTrek2025} &
+GCLM &
+General $N\times N$; arbitrary topology &
+Additive Gaussian white noise; diagonal
+$\boldsymbol{\Sigma}_W$ &
+Infinite power series expansion for $\sigma_{ij}$
+in cyclic case \\
+\hline
+\end{tabular}
+
+\medskip
+\begin{minipage}{\textwidth}
+\noindent\textit{Notes.} SDE: stochastic differential equation;
+DCM: dynamic causal modeling; GCLM: graphical continuous
+Lyapunov model.
+$\mathbf{A}$: the causal-influence matrix, whose off-diagonal
+entry $a_{ij}$ is the direct causal influence of variable $j$ on
+variable $i$; $\boldsymbol{\Sigma}_W$: the noise covariance
+matrix; $\boldsymbol{\Sigma}_Y$: the steady-state covariance
+matrix of the system, with entries $\sigma_{ij}$: the
+steady-state covariance between variables $i$ and $j$;
+$\rho_{ij}$: the corresponding normalized correlation
+coefficient, $\rho_{ij}=\sigma_{ij}/\sqrt{\sigma_{ii}\sigma_{jj}}$;
+$r_{ij}$: the same normalized correlation coefficient, in
+Wright's own path-analysis notation.
+$\alpha$, $\kappa$: structural (path) coefficients;
+$\sigma_x^2$, $\sigma_y^2$: noise variances;
+``No closed-form'' / ``no entry-level formula'' indicates that
+the cited work does not derive $\rho_{ij}$ (or $\sigma_{ij}$)
+as an explicit rational function of $\mathbf{A}$ and
+$\boldsymbol{\Sigma}_W$ for a specific network topology, even
+though most of these studies solve or invoke a Lyapunov (or
+discrete-time Stein/Yule--Walker) equation as part of their own
+derivation.
+\end{minipage}
+\end{table}
+
+\clearpage
+\bibliographystyle{apacite}
+\bibliography{appendix_e}
+
+\end{document}

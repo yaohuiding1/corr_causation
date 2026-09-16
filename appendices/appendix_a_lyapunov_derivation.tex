@@ -1,0 +1,333 @@
+\documentclass{article}
+
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=2.54cm,right=2.54cm,marginparwidth=1.75cm]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage[normalem]{ulem}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{comment}
+\usepackage[natbibapa]{apacite}
+
+\setlength{\parindent}{0pt}
+
+% =====================================================================
+% EDITED COPY of appendix_a_lyapunov_derivation.tex
+% All inline reviewer comments and the "Reviewer's Summary" have been removed
+% for readability; the reviewer-recommended corrections and citations have
+% been incorporated into the text.
+% =====================================================================
+
+%\title{Appendix A: Deriving the Lyapunov Equation for Linear Stochastic Dynamical Systems}
+
+%\author{Yaohui Ding}
+
+\begin{document}
+
+%\maketitle
+
+\section*{Appendix A: Deriving the Lyapunov Equation for Linear Stochastic Dynamical Systems}
+\phantomsection\label{app:appA}
+\renewcommand{\theequation}{A-\arabic{equation}}
+\setcounter{equation}{0}
+
+\subsection*{Linear Stochastic Dynamical Systems}
+%
+% Governing SDE for the system -- everything below derives from this.
+The state equation of a linear stochastic dynamical system is often given by
+\begin{equation}
+d \mathbf{X}(t) = \mathbf{A} \mathbf{X}(t)\, dt + \boldsymbol{\xi} \, d\mathbf{B}_t
+\label{eq:lds_state_eq}
+\end{equation}
+
+\begin{comment}
+With no loss of generality, let us assume $n=d$.
+\end{comment}
+
+where $\mathbf{X}(t) \in \mathbb{R}^n,\ \mathbf{B}_t \in \mathbb{R}^d$ and
+$\mathbf{A} \in \mathbb{R}^{n \times n} , \boldsymbol{\xi} \in \mathbb{R}^{n \times d}$. We make the following assumptions, which are used throughout the
+derivation: (i) $\mathbf{A}$ is Hurwitz (all eigenvalues
+have strictly negative real part); (ii) the noise (diffusion) covariance is defined as
+$\mathbf{\Sigma}_\mathbf{W}:=\boldsymbol{\xi}\boldsymbol{\xi}^T$, a symmetric
+positive-semidefinite matrix that is assumed to be constant and diagonal; (iii) $\mathbf{B}_t$ is a standard $d$-dimensional Brownian motion; and (iv) the initial condition $\mathbf{X}(0)$ is independent of $\mathbf{B}_t$. Equivalently, the noise $\boldsymbol{\xi}\,d\mathbf{B}_t$ has no memory in time: Brownian increments over non-overlapping intervals are independent, so the noise at any two distinct times is uncorrelated, $E[d\mathbf{B}_{\tau_1}\,d\mathbf{B}_{\tau_2}^T]=\mathbf{I}\,\delta(\tau_1-\tau_2)\,d\tau_1\,d\tau_2$. Given this assumption (\citealp[\S1.3]{Pavliotis2014}), we have
+%
+% Zero mean and covariance Sigma_W dt for the noise increment xi*dB_t --
+% used later in the Ito-isometry step.
+\begin{equation}
+E[\boldsymbol{\xi} d\mathbf{B}_t]=\boldsymbol{\xi} * E[d\mathbf{B}_t]=\boldsymbol{\xi}*\mathbf{0}=\mathbf{0}
+\label{eq:noise_mean}
+\end{equation}
+%
+\begin{equation}
+Cov(\boldsymbol{\xi} d\mathbf{B}_t)=E[\boldsymbol{\xi} d\mathbf{B}_t d\mathbf{B}^T_t \boldsymbol{\xi}^T]
+=\boldsymbol{\xi} E[d\mathbf{B}_t d\mathbf{B}^T_t] \boldsymbol{\xi}^T=
+\boldsymbol{\xi} * \mathbf{I}_{d \times d}* \boldsymbol{\xi}^T * dt=\boldsymbol{\xi}\boldsymbol{\xi}^T dt=\mathbf{\Sigma}_\mathbf{W}\, dt
+\label{eq:noise_cov}
+\end{equation}
+
+
+%
+% seperator %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{The Solution $\mathbf{X}(t)$}
+% Closed-form (mild) solution of the SDE via variation of parameters:
+% deterministic decay of the initial condition, plus a stochastic
+% convolution integral over the noise.
+The solution to equation~\ref{eq:lds_state_eq}, valid for every $t\ge 0$, is (\citealp[\S3.7]{Pavliotis2014}),
+\begin{equation}
+\mathbf{X}(t)=e^{\mathbf{A}t}\mathbf{X}(0)+\int_0^t e^{\mathbf{A}(t-\tau)} \boldsymbol{\xi} d\mathbf{B}_\tau
+\label{eq:ss_solution}
+\end{equation}
+
+% seperator %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Where $\mathbf{X}(0)$ is the initial condition. Let us denote $Cov \left ( \mathbf{X}(0) \right)=\mathbf{\Sigma}_0$. 
+\subsection*{Autocovariance of $\mathbf{X}(t)$ }
+The autocovariance of the solution $\mathbf{X}(t)$ at two arbitrary time points $t_1$ and $t_2$ is defined as
+% seperator %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{equation}
+\mathbf{K}_{XX} (t_1, t_2) :=E\Bigl[\Bigl(\mathbf{X}(t_{1})-E\left [\mathbf{X}(t_{1}) \right] \Bigr) \Bigl(\mathbf{X}(t_{2})-E\left [\mathbf{X}(t_{2}) \right] \Bigr)^T \Bigr]
+\end{equation}
+
+Without loss of generality, let us assume we are working with mean-centered $\mathbf{X}(t)$. Thus, $E[\mathbf{X}(t_{1})]=E[\mathbf{X}(t_{2})]=\mathbf{0}$, and
+\begin{equation}
+\begin{aligned}
+% Substitute the solution (eq:ss_solution) at both t1,t2 and expand the
+% product into 4 cross-terms: IC-IC, noise-noise, and two IC-noise terms.
+\mathbf{K}_{XX}(t_1, t_2) &=E\Bigl [\mathbf{X}(t_{1})\mathbf{X}(t_{2})^T \Bigr] \\
+&=E\Bigl[\left \{e^{\mathbf{A}t_{1}}\mathbf{X}(0)+\int_0^{t_{1}} e^{\mathbf{A}(t_{1}-\tau_1)} \boldsymbol{\xi} d\mathbf{B}_{\tau_1} \right \} \left \{ e^{\mathbf{A}t_{2}}\mathbf{X}(0)+\int_0^{t_{2}} e^{\mathbf{A}(t_{2}-\tau_2)} \boldsymbol{\xi} d\mathbf{B}_{\tau_2} \right \}^T \Bigr] \\
+&= E \left[ e^{\mathbf{A}t_{1}} \mathbf{X}(0) \mathbf{X}(0)^T e^{\mathbf{A}^T t_{2}} \right]  +  E \left [ \left \{ \int_0^{t_{1}} e^{\mathbf{A}(t_{1}-\tau_1)} \boldsymbol{\xi} d\mathbf{B}_{\tau_1} \right \}  \left \{ \int_0^{t_{2}} e^{\mathbf{A}(t_{2}-\tau_2)} \boldsymbol{\xi} d\mathbf{B}_{\tau_2} \right \}^T \right ] +\\
+& \quad E \left[ e^{\mathbf{A}t_{1}} \mathbf{X}(0) \left \{ \int_0^{t_{2}} e^{\mathbf{A}(t_{2}-\tau_2)} \boldsymbol{\xi} d\mathbf{B}_{\tau_2} \right \}^T \right] + E \left [ \left \{ \int_0^{t_{1}} e^{\mathbf{A}(t_{1}-\tau_1)} \boldsymbol{\xi} d\mathbf{B}_{\tau_1} \right \} \mathbf{X}(0)^T e^{\mathbf{A}^T t_{2}} \right ]
+\end{aligned}
+\label{eq:ss_autocov_0}
+\end{equation}
+
+% seperator %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 1st_term
+% Term 1 of the 4-term expansion above (IC-IC): deterministic, factors
+% straight out of the expectation.
+Let us evaluate the first term on the right hand side of equation \ref{eq:ss_autocov_0}.
+\begin{equation}
+\begin{aligned}
+ E \left[ e^{\mathbf{A}t_{1}} \mathbf{X}(0) \mathbf{X}(0)^T e^{\mathbf{A}^T t_{2}} \right]=
+  e^{\mathbf{A}t_{1}}  E\Bigl[\mathbf{X}(0) \mathbf{X}(0)^T \Bigr] e^{\mathbf{A}^T t_{2}} = e^{\mathbf{A}t_{1}} \mathbf{\Sigma}_0 e^{\mathbf{A}^T t_{2}}
+\end{aligned}
+\label{eq:ss_autocov_1st_term}
+\end{equation}
+
+% seperator %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%2nd_term
+% Term 3 of the 4-term expansion (IC-noise cross term; label says
+% "2nd_term" but this is actually the 3rd of the 4 terms -- term 2, the
+% noise-noise term, is deferred to the steady-state-covariance section).
+% Vanishes since X(0) and B_t are independent and X(t) is mean-centered.
+Now the third term of equation \ref{eq:ss_autocov_0} is,
+\begin{equation}
+\begin{aligned}
+E \left[ e^{\mathbf{A}t_{1}} \mathbf{X}(0) \left \{ \int_0^{t_{2}} e^{\mathbf{A}(t_{2}-\tau_2)} \boldsymbol{\xi} d\mathbf{B}_{\tau_2} \right \}^T \right] &=E\left[ e^{\mathbf{A}t_{1}} \mathbf{X}(0) \right] E \left[ \left \{ \int_0^{t_{2}} e^{\mathbf{A}(t_{2}-\tau_2)} \boldsymbol{\xi} d\mathbf{B}_{\tau_2} \right \}^T \right] \\
+& = e^{\mathbf{A}t_{1}} E\left[  \mathbf{X}(0) \right] E \left[ \left \{ \int_0^{t_{2}} e^{\mathbf{A}(t_{2}-\tau_2)} \boldsymbol{\xi} d\mathbf{B}_{\tau_2} \right \}^T \right] \\
+&= e^{\mathbf{A}t_{1}} * \mathbf{0} * E \left[ \left \{ \int_0^{t_{2}} e^{\mathbf{A}(t_{2}-\tau_2)} \boldsymbol{\xi} d\mathbf{B}_{\tau_2} \right \}^T \right]=\mathbf{0}
+\end{aligned}
+\label{eq:ss_autocov_2nd_term}
+\end{equation}
+
+Here we utilize the fact that $\mathbf{X}(t)$ is mean-centered and the assumption that the initial condition $\mathbf{X}(0)$ and $\mathbf{B}_t$ are independent from each other.
+% Term 4 of the 4-term expansion (noise-IC cross term; label says
+% "3rd_term" for the same reason as above). Vanishes by the same argument.
+Similarly, the fourth term of equation \ref{eq:ss_autocov_0} is,
+\begin{equation}
+\begin{aligned}
+E \left [ \left \{ \int_0^{t_{1}} e^{\mathbf{A}(t_{1}-\tau_1)} \boldsymbol{\xi} d\mathbf{B}_{\tau_1} \right \} \mathbf{X}(0)^T e^{\mathbf{A}^T t_{2}} \right ] & = E\left[\left \{ \int_0^{t_{1}} e^{\mathbf{A}(t_{1}-\tau_1)} \boldsymbol{\xi} d\mathbf{B}_{\tau_1} \right \} \right] E \left[ \mathbf{X}(0)^T e^{\mathbf{A}^T t_{2}} \right] \\
+&= E\left[ \left \{ \int_0^{t_{1}} e^{\mathbf{A}(t_{1}-\tau_1)} \boldsymbol{\xi} d\mathbf{B}_{\tau_1} \right \} \right] E \left[ \mathbf{X}(0)^T \right] e^{\mathbf{A}^T t_{2}} \\
+&=E\left[ \left \{ \int_0^{t_{1}} e^{\mathbf{A}(t_{1}-\tau_1)} \boldsymbol{\xi} d\mathbf{B}_{\tau_1} \right \} \right] * \mathbf{0} * e^{\mathbf{A}^T t_{2}}=\mathbf{0}
+\end{aligned}
+\label{eq:ss_autocov_3rd_term}
+\end{equation}
+
+% seperator %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Therefore, equation \ref{eq:ss_autocov_0} can be simplified as
+\begin{equation}
+\begin{aligned}
+\mathbf{K}_{XX} (t_1, t_2) &=e^{\mathbf{A}t_{1}} \mathbf{\Sigma}_0 e^{\mathbf{A}^T t_{2}}  + E \left [ \left \{ \int_0^{t_{1}} e^{\mathbf{A}(t_{1}-\tau_1)} \boldsymbol{\xi} d\mathbf{B}_{\tau_1} \right \}  \left \{ \int_0^{t_{2}} e^{\mathbf{A}(t_{2}-\tau_2)} \boldsymbol{\xi} d\mathbf{B}_{\tau_2} \right \}^T \right ] + \mathbf{0}+ \mathbf{0} \\
+&=e^{\mathbf{A}t_{1}} \mathbf{\Sigma}_0 e^{\mathbf{A}^T t_{2}}  + E \left [ \left \{ \int_0^{t_{1}} e^{\mathbf{A}(t_{1}-\tau_1)} \boldsymbol{\xi} d\mathbf{B}_{\tau_1} \right \}  \left \{ \int_0^{t_{2}} e^{\mathbf{A}(t_{2}-\tau_2)} \boldsymbol{\xi} d\mathbf{B}_{\tau_2} \right \}^T \right ]
+\end{aligned}
+\label{eq:ss_autocov_1}
+\end{equation}
+
+\subsection*{Covariance of $\mathbf{X}(t)$ }
+The covariance $\mathbf{\Sigma}_{\mathbf{X}(t)}$ of $\mathbf{X}(t)$ can be obtained by letting $t_{1}=t_{2}=t$, i.e.,
+\begin{equation}
+\begin{aligned}
+\mathbf{\Sigma}_{\mathbf{X}(t)} &= {\mathbf{K}_{XX} (t_{1}, t_{2})|}_{t_{1}=t_{2}=t} \\
+& =e^{\mathbf{A}t} \mathbf{\Sigma}_0 e^{\mathbf{A}^Tt}+ E \left [ \left \{ \int_0^{t} e^{\mathbf{A}(t-\tau_1)} \boldsymbol{\xi} d\mathbf{B}_{\tau_1} \right \}  \left \{ \int_0^{t} e^{\mathbf{A}(t-\tau_2)} \boldsymbol{\xi} d\mathbf{B}_{\tau_2} \right \}^T \right ]
+\end{aligned}
+\label{eq:ss_cov_t_0}
+\end{equation}
+
+The second term in equation \ref{eq:ss_cov_t_0} is the product of two independent It\^{o} integrals. By the It\^{o} isometry (\citealp[\S3.2]{Pavliotis2014}) and the Brownian motion assumption, the double integral collapses to a single integral.
+\begin{equation}
+\begin{aligned}
+% This is the noise-noise term deferred from eq:ss_autocov_0's expansion.
+% The delta function from E[dB dB^T] (eq:noise_cov) collapses the double
+% time-integral to a single one.
+ E \left [ \left \{ \int_0^{t} e^{\mathbf{A}(t-\tau_1)} \boldsymbol{\xi} d\mathbf{B}_{\tau_1} \right \}  \left \{ \int_0^{t} e^{\mathbf{A}(t-\tau_2)} \boldsymbol{\xi} d\mathbf{B}_{\tau_2} \right \}^T \right ]
+&=\int_0^t \int_0^t e^{\mathbf{A}(t-\tau_1)} \boldsymbol{\xi} \, E\left[ d\mathbf{B}_{\tau_1} d\mathbf{B}^T_{\tau_2} \right] \boldsymbol{\xi}^T e^{\mathbf{A}^T(t-\tau_2)} \\
+&=\int_0^t \int_0^t e^{\mathbf{A}(t-\tau_1)} \boldsymbol{\xi} \boldsymbol{\xi}^T e^{\mathbf{A}^T(t-\tau_2)} \, \delta(\tau_1-\tau_2) \, d\tau_1 d\tau_2 \\
+&=\int_0^t  e^{\mathbf{A}(t-\tau_1)} \boldsymbol{\xi} \boldsymbol{\xi}^T e^{\mathbf{A}^T(t-\tau_1)} \, d\tau_1 \\
+&=\int_0^t  e^{\mathbf{A}(t-\tau)} \mathbf{\Sigma}_\mathbf{W} e^{\mathbf{A}^T(t-\tau)} d\tau
+\end{aligned}
+\label{eq:ss_cov_ito_isometry}
+\end{equation}
+
+Finally, substituting the result from equation \ref{eq:ss_cov_ito_isometry} back into equation \ref{eq:ss_cov_t_0}, we get.
+\begin{equation}
+\begin{aligned}
+\mathbf{\Sigma}_{\mathbf{X}(t)} =e^{\mathbf{A}t} \mathbf{\Sigma}_0 e^{\mathbf{A}^Tt}+ \int_0^t e^{\mathbf{A}(t-\tau)}  \mathbf{\Sigma}_\mathbf{W}  e^{\mathbf{A}^T(t-\tau)} d\tau
+\end{aligned}
+\end{equation}
+
+\subsection*{The Time Derivative of $\mathbf{\Sigma}_{\mathbf{X}(t)}$}
+Let us evaluate the derivative of $\mathbf{\Sigma}_{\mathbf{X}(t)}$ with respect to time $t$.
+\begin{equation}
+\begin{aligned}
+\frac{d \mathbf{\Sigma}_{\mathbf{X}(t)}}{dt}
+& =\frac{d}{dt} \Bigl \{ e^{\mathbf{A}t} \mathbf{\Sigma}_0 e^{\mathbf{A}^Tt} \Bigr \}
++ \frac{d}{dt} \Bigl \{ \int_0^t e^{\mathbf{A}(t-\tau)}  \mathbf{\Sigma}_\mathbf{W}  e^{\mathbf{A}^T(t-\tau)} d\tau \Bigr \}
+\end{aligned}
+\label{eq:sigma_t_deriv}
+\end{equation}
+
+The first part of equation \ref{eq:sigma_t_deriv} is,
+\begin{equation}
+\begin{aligned}
+\frac{d}{dt} \Bigl \{ e^{\mathbf{A}t} \mathbf{\Sigma}_0 e^{\mathbf{A}^Tt} \Bigr \} &=
+\frac{d}{dt} \Bigl \{ e^{\mathbf{A}t} \Bigr \} \mathbf{\Sigma}_0 e^{\mathbf{A}^Tt}  + e^{\mathbf{A}t} \frac{d}{dt} \Bigl \{ \mathbf{\Sigma}_0 e^{\mathbf{A}^Tt}  \Bigr \} \\
+&=\mathbf{A} e^{\mathbf{A}t} \mathbf{\Sigma}_0 e^{\mathbf{A}^Tt}+ e^{\mathbf{A}t} \mathbf{\Sigma}_0 e^{\mathbf{A}^Tt} \mathbf{A}^T
+\end{aligned}
+\label{eq:sigma_t_part1}
+\end{equation}
+
+The second part of equation \ref{eq:sigma_t_deriv} can be evaluated with the help of the Leibniz integral rule \citep{Flanders1973}. According to the Leibniz integral rule, we have
+% formula for Leibniz Rule
+\begin{equation}
+\frac{d}{dt} \Bigl( \int_{a(t)}^{b(t)} f(t, \tau) d \tau \Bigr)=
+f \Bigl(t,b(t) \Bigr) * \frac{db(t)}{dt}  -
+f \Bigl( t, a(t) \Bigr) * \frac{da(t)}{dt}  + \int_{a(t)}^{b(t)} \frac{\partial}{\partial t} f(t, \tau) d \tau
+\end{equation}
+
+Therefore, the second part of equation \ref{eq:sigma_t_deriv} is, where $a(t)=0$ and $b(t)=t$.
+\begin{equation}
+    \begin{aligned}
+\frac{d}{dt} \Bigl \{ \int_0^t e^{\mathbf{A}(t-\tau)}  \mathbf{\Sigma}_\mathbf{W}  e^{\mathbf{A}^T(t-\tau)} d\tau \Bigr \}
+&=e^{\mathbf{A}(t-b(t))}  \mathbf{\Sigma}_\mathbf{W}  e^{\mathbf{A}^T(t-b(t))} \frac{db(t)}{dt} -
+e^{\mathbf{A}(t-a(t))}  \mathbf{\Sigma}_\mathbf{W}  e^{\mathbf{A}^T(t-a(t))} \frac{da(t)}{dt}  \\
+& +
+\int_0^t \frac{\partial}{\partial t} \Bigl \{ e^{\mathbf{A}(t-\tau)}  \mathbf{\Sigma}_\mathbf{W}  e^{\mathbf{A}^T(t-\tau)} \Bigr \} d\tau \\
+&=e^{\mathbf{A}(t-t)}  \mathbf{\Sigma}_\mathbf{W}  e^{\mathbf{A}^T(t-t)} \frac{dt}{dt} -
+e^{\mathbf{A}(t-0)}  \mathbf{\Sigma}_\mathbf{W}  e^{\mathbf{A}^T(t-0)} \frac{d(0)}{dt}  \\
+& +
+\int_0^t \frac{\partial}{\partial t} \Bigl \{ e^{\mathbf{A}(t-\tau)}  \mathbf{\Sigma}_\mathbf{W}  e^{\mathbf{A}^T(t-\tau)} \Bigr \} d\tau  \\
+&=\mathbf{\Sigma}_\mathbf{W} - 0 + \int_0^t \frac{\partial}{\partial t} \Bigl \{ e^{\mathbf{A}(t-\tau)}  \mathbf{\Sigma}_\mathbf{W}  e^{\mathbf{A}^T(t-\tau)} \Bigr \} d\tau
+    \end{aligned}
+\label{eq:sigma_t_part2}
+\end{equation}
+ 
+The third term of equation \ref{eq:sigma_t_part2} is,
+\begin{equation}
+    \begin{aligned}
+\int_0^t \frac{\partial}{\partial t} \Bigl \{ e^{\mathbf{A}(t-\tau)}  \mathbf{\Sigma}_\mathbf{W}  e^{\mathbf{A}^T(t-\tau)} \Bigr \} d\tau
+&=\int_0^t \Bigl \{ \frac{\partial}{\partial t}  \{ e^{\mathbf{A}(t-\tau)}  \} \mathbf{\Sigma}_\mathbf{W} e^{\mathbf{A}^T(t-\tau)}  +  e^{\mathbf{A}(t-\tau)} \frac{\partial}{\partial t}  \{ \mathbf{\Sigma}_\mathbf{W} e^{\mathbf{A}^T(t-\tau)}  \} \Bigr \} d\tau \\
+   &=\int_0^t \Bigl \{ \mathbf{A}  e^{\mathbf{A}(t-\tau)}  \mathbf{\Sigma}_\mathbf{W} e^{\mathbf{A}^T(t-\tau)}  +   e^{\mathbf{A}(t-\tau)} \mathbf{\Sigma}_\mathbf{W} e^{\mathbf{A}^T(t-\tau)} \mathbf{A}^T \Bigr \} d\tau \\
+   &=\mathbf{A} \int_0^t  e^{\mathbf{A}(t-\tau)}  \mathbf{\Sigma}_\mathbf{W} e^{\mathbf{A}^T(t-\tau)} d\tau  + \left \{ \int_0^t  e^{\mathbf{A}(t-\tau)} \mathbf{\Sigma}_\mathbf{W} e^{\mathbf{A}^T(t-\tau)} d\tau \right \} \mathbf{A}^T \\
+    \end{aligned}
+    \label{eq:sigma_t_part2_3rd_term}
+\end{equation}
+
+Finally, substituting results from equations \ref{eq:sigma_t_part1}, \ref{eq:sigma_t_part2}, and \ref{eq:sigma_t_part2_3rd_term} back into equation \ref{eq:sigma_t_deriv}, we get.
+\begin{equation}
+\begin{aligned}
+\frac{d \mathbf{\Sigma}_{\mathbf{X}(t)}}{dt}
+&= \mathbf{A} e^{\mathbf{A}t} \mathbf{\Sigma}_0 e^{\mathbf{A}^Tt}+ e^{\mathbf{A}t} \mathbf{\Sigma}_0 e^{\mathbf{A}^Tt} \mathbf{A}^T +\mathbf{\Sigma}_\mathbf{W} + \mathbf{A} \int_0^t  e^{\mathbf{A}(t-\tau)}  \mathbf{\Sigma}_\mathbf{W} e^{\mathbf{A}^T(t-\tau)} d\tau \\
+& + \left \{ \int_0^t  e^{\mathbf{A}(t-\tau)} \mathbf{\Sigma}_\mathbf{W} e^{\mathbf{A}^T(t-\tau)} d\tau \right \} \mathbf{A}^T \\
+&=\mathbf{\Sigma}_\mathbf{W} +\mathbf{A} \Bigl \{ e^{\mathbf{A}t} \mathbf{\Sigma}_0 e^{\mathbf{A}^Tt} + \int_0^t  e^{\mathbf{A}(t-\tau)}  \mathbf{\Sigma}_\mathbf{W} e^{\mathbf{A}^T(t-\tau)} d\tau \Bigr \} \\
+& + \Bigl \{ e^{\mathbf{A}t} \mathbf{\Sigma}_0 e^{\mathbf{A}^Tt} + \int_0^t  e^{\mathbf{A}(t-\tau)}  \mathbf{\Sigma}_\mathbf{W} e^{\mathbf{A}^T(t-\tau)} d\tau \Bigr \}  \mathbf{A}^T \\
+&=\mathbf{\Sigma}_\mathbf{W} + \mathbf{A} \mathbf{\Sigma}_{\mathbf{X}(t)} + \mathbf{\Sigma}_{\mathbf{X}(t)} \mathbf{A}^T
+\end{aligned}
+\label{eq:sigma_t_deriv_final}
+\end{equation}
+
+% seperator %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{Steady-State Covariance Satisfies the Lyapunov Equation}
+% Strategy for this subsection: (1) show the steady-state mean is 0; (2)
+% show the steady-state covariance is a constant matrix, hence has zero
+% time derivative; (3) plug that into eq:sigma_t_deriv_final to get the
+% Lyapunov equation -- the appendix's final result.
+Before turning to the covariance, we first establish that the mean of
+$\mathbf{X}(t)$ vanishes at steady state. Taking the expectation of the solution
+$\mathbf{X}(t)$ in equation~\ref{eq:ss_solution}, and using that the matrix
+exponential $e^{\mathbf{A}t}$ is deterministic so that it factors out of the
+expectation,
+\begin{equation}
+\begin{aligned}
+E[\mathbf{X}(t)]
+&= E\left[ e^{\mathbf{A}t}\mathbf{X}(0) \right] + E\left[ \int_0^t e^{\mathbf{A}(t-\tau)} \boldsymbol{\xi}\, d\mathbf{B}_\tau \right] \\
+&= e^{\mathbf{A}t}\, E[\mathbf{X}(0)] + E\left[ \int_0^t e^{\mathbf{A}(t-\tau)} \boldsymbol{\xi}\, d\mathbf{B}_\tau \right] .
+\end{aligned}
+\label{eq:ss_mean_t_0}
+\end{equation}
+The second term is the expectation of an It\^{o} integral whose integrand
+$e^{\mathbf{A}(t-\tau)}\boldsymbol{\xi}$ is deterministic, and therefore adapted and
+square-integrable on $[0,t]$. Such an integral is a zero-mean martingale
+(\citealp[\S3.2]{Pavliotis2014}), so its
+expectation is the zero vector and
+\begin{equation}
+E[\mathbf{X}(t)] = e^{\mathbf{A}t}\, E[\mathbf{X}(0)] .
+\label{eq:ss_mean_t}
+\end{equation}
+Finally, taking $t\to\infty$ and using that $\mathbf{A}$ is Hurwitz
+(\citealp[Theorem~5.1]{AstromMurray2021}) so that $e^{\mathbf{A}t}\to\mathbf{0}$,
+\begin{equation}
+E[\mathbf{X}(\infty)] = \lim_{t\to\infty} E[\mathbf{X}(t)] = \lim_{t\to\infty} e^{\mathbf{A}t}\, E[\mathbf{X}(0)] = \mathbf{0} .
+\label{eq:ss_mean_steady}
+\end{equation}
+The steady-state mean is therefore the zero vector, regardless of the initial
+mean $E[\mathbf{X}(0)]$.
+
+% seperator %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+At steady state ($t\to\infty$) we establish that the covariance of
+$\mathbf{X}(t)$ settles to a constant matrix. Writing the covariance obtained
+above with the substitution $\sigma=t-\tau$,
+\begin{equation}
+\mathbf{\Sigma}_{\mathbf{X}(t)} = e^{\mathbf{A}t} \mathbf{\Sigma}_0 e^{\mathbf{A}^Tt} + \int_0^t e^{\mathbf{A}\sigma}  \mathbf{\Sigma}_\mathbf{W}  e^{\mathbf{A}^T\sigma} d\sigma ,
+\end{equation}
+and using that $\mathbf{A}$ is Hurwitz (\citealp[Theorem~5.1]{AstromMurray2021}) so
+$e^{\mathbf{A}t}\to\mathbf{0}$, the initial-condition transient vanishes and the
+integral converges to a finite, time-independent limit,
+\begin{equation}
+\mathbf{\Sigma}_{\mathbf{X}(\infty)} = \lim_{t\to\infty} \mathbf{\Sigma}_{\mathbf{X}(t)} = \int_0^\infty e^{\mathbf{A}\sigma} \mathbf{\Sigma}_\mathbf{W} e^{\mathbf{A}^T\sigma} d\sigma .
+\label{eq:ss_cov_steady}
+\end{equation}
+The steady-state covariance $\mathbf{\Sigma}_{\mathbf{X}(\infty)}$ is therefore a
+constant matrix, independent of time; the process is covariance stationary. A constant matrix has zero time derivative. Therefore, we have
+\begin{equation}
+\begin{aligned}
+{\frac{d \mathbf{\Sigma}_{\mathbf{X}(t)}}{dt}|}_{t=\infty}=\mathbf{0}
+\end{aligned}
+\end{equation}
+
+From equation~\ref{eq:sigma_t_deriv_final}, we have
+% The Lyapunov equation -- the appendix's end result, used throughout the
+% rest of the paper (solved via the Kronecker-sum/vec approach in Appendix
+% B; refined via half-vectorization for the concrete cases in Appendix
+% C/D).
+\begin{equation}
+\begin{aligned}
+\mathbf{A} \mathbf{\Sigma}_{\mathbf{X}(\infty)} + \mathbf{\Sigma}_{\mathbf{X}(\infty)} \mathbf{A}^T +\mathbf{\Sigma}_\mathbf{W} =\mathbf{0}
+\end{aligned}
+\label{eq:lyapunov_eq0}
+\end{equation}
+
+The equation above (\ref{eq:lyapunov_eq0}) is commonly referred to as the Lyapunov equation, after Lyapunov's 1892 study of the general problem of the stability of motion (\citealp{Lyapunov1892}; see also \citealp[\S8.5]{Hespanha2018}).
+
+% =====================================================================
+
+\bibliographystyle{apacite}
+\bibliography{appendix_a}
+
+\end{document}
