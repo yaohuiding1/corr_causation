@@ -137,7 +137,7 @@ https://doi.org/10.20944/preprints202608.1393.v1
   title   = {How does correlation relate to causation: seven insights from an analytic relationship between the two},
   year    = {2026},
   journal = {Preprints.org},
-  doi     = {10.20944/preprints202608.1393.v1}
+  doi     = {10.20944/preprints202608.1393.v2}
 }
 ```
 
