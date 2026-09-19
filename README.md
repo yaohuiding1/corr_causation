@@ -4,11 +4,9 @@
 
 ## Project Overview
 
-This paper derives closed-form analytic expressions for pairwise correlation
-coefficients as explicit functions of causal parameters and noise variances,
-for linear stochastic dynamical systems at steady state. The central
-mathematical object is the Lyapunov equation, solved via the half-vectorization
-technique and symbolic matrix inversion. The Lyapunov equation is solved for
+We derive closed-form analytic expressions for pairwise correlation
+coefficients as explicit functions of causal parameters and noise variances for linear stochastic dynamical systems at steady state in the current study. The central
+mathematical object is the Lyapunov equation, solved via half-vectorization and symbolic matrix inversion. The Lyapunov equation is solved for
 nine network topologies (one dyadic, eight triadic) to illustrate the analytic
 relationship between correlation and causation for this widely used class of
 dynamical system.
@@ -66,12 +64,11 @@ solver, e.g.:
 solve_topo_3node_full
 ```
 
-Each script defines the topology's `A` matrix (diagonal entries kept distinct),
+Each script defines the topology's `A` matrix,
 checks its permutation symmetry via `network_symmetry`, then calls the shared
-engine `lyap_halfvec` to get the determinant `|K|`, covariance entries, and
-headline correlation. `lyap_halfvec(A, Sigma_W)` is dual-mode: symbolic input
-returns the closed-form solution; numeric input defers to MATLAB's built-in
-`lyap` and also returns the correlation matrix.
+engine `lyap_halfvec` to get the formuale for the determinant `|K|`, covariance entries,one or two representative correlation coefficient for the network. `lyap_halfvec(A, Sigma_W)` is dual-mode: symbolic input
+returns the closed-form formulae; numeric input defers to MATLAB's built-in
+`lyap` and also returns numeric solutions for the covariance and correlation matrices.
 
 ### Reproducing the figures in the manuscript
 
@@ -82,7 +79,7 @@ From `scripts/plot_networks/`, run any subplot script, e.g.:
 plot_topo_2node_dyad_subplot
 ```
 
-Each script sweeps a topology's off-diagonal causal parameters over a grid,
+Each script sweeps a topology's two chosen off-diagonal causal parameters over a grid,
 evaluates the closed-form correlation formula from `scripts/solve_networks/`
 at each point, and exports one contour/vector-field panel per parameter
 combination as a standalone PDF (plus a shared colorbar), matching the layout
@@ -129,7 +126,7 @@ needs it.
 
 Ding, Y. (2026). *How does correlation relate to causation: seven insights from
 an analytic relationship between the two.* Preprints.org.
-https://doi.org/10.20944/preprints202608.1393.v1
+https://doi.org/10.20944/preprints202608.1393.v2
 
 ```bibtex
 @article{Ding2026CorrCausation,
